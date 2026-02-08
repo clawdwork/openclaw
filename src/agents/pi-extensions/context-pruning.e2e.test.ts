@@ -482,6 +482,93 @@ describe("context-pruning", () => {
     expect(text).toContain("[Tool result trimmed:");
   });
 
+  it("soft-trims media-derived user messages (audio transcripts)", () => {
+    const transcript = "[Audio]\nUser text:\nTranscript:\n" + "word ".repeat(2000);
+    const messages: AgentMessage[] = [
+      makeUser("u1"),
+      makeAssistant("a1"),
+      makeUser(transcript),
+      makeAssistant("a2"),
+      makeUser("u3"),
+      makeAssistant("a3"),
+    ];
+
+    const settings = {
+      ...DEFAULT_CONTEXT_PRUNING_SETTINGS,
+      keepLastAssistants: 1,
+      softTrimRatio: 0.0,
+      hardClearRatio: 10.0,
+      softTrim: { maxChars: 100, headChars: 50, tailChars: 50 },
+    };
+
+    const ctx = {
+      model: { contextWindow: 1000 },
+    } as unknown as ExtensionContext;
+    const next = pruneContextMessages({ messages, settings, ctx });
+
+    const trimmedMsg = next[2] as { role: string; content: string };
+    expect(trimmedMsg.role).toBe("user");
+    const text = trimmedMsg.content;
+    expect(text).toContain("[Audio]");
+    expect(text).toContain("[Media content trimmed:");
+    expect(text.length).toBeLessThan(transcript.length);
+  });
+
+  it("does not trim short media user messages", () => {
+    const shortAudio = "[Audio]\nTranscript:\nshort message";
+    const messages: AgentMessage[] = [makeUser(shortAudio), makeAssistant("a1")];
+
+    const settings = {
+      ...DEFAULT_CONTEXT_PRUNING_SETTINGS,
+      keepLastAssistants: 0,
+      softTrimRatio: 0.0,
+      softTrim: { maxChars: 4000, headChars: 1500, tailChars: 1500 },
+    };
+
+    const ctx = {
+      model: { contextWindow: 1000 },
+    } as unknown as ExtensionContext;
+    const next = pruneContextMessages({ messages, settings, ctx });
+
+    const msg = next[0] as { role: string; content: string };
+    const text = msg.content;
+    expect(text).toBe(shortAudio);
+  });
+
+  it("soft-trims file block user messages", () => {
+    const fileBlock =
+      "[media attached: /path/to/doc.pdf (application/pdf)]\n" +
+      '<file name="doc.pdf" mime="application/pdf">\n' +
+      "content ".repeat(2000) +
+      "\n</file>";
+    const messages: AgentMessage[] = [
+      makeUser("u1"),
+      makeAssistant("a1"),
+      makeUser(fileBlock),
+      makeAssistant("a2"),
+      makeUser("u3"),
+      makeAssistant("a3"),
+    ];
+
+    const settings = {
+      ...DEFAULT_CONTEXT_PRUNING_SETTINGS,
+      keepLastAssistants: 1,
+      softTrimRatio: 0.0,
+      hardClearRatio: 10.0,
+      softTrim: { maxChars: 100, headChars: 50, tailChars: 50 },
+    };
+
+    const ctx = {
+      model: { contextWindow: 1000 },
+    } as unknown as ExtensionContext;
+    const next = pruneContextMessages({ messages, settings, ctx });
+
+    const trimmedMsg = next[2] as { role: string; content: string };
+    const text = trimmedMsg.content;
+    expect(text).toContain("[Media content trimmed:");
+    expect(text.length).toBeLessThan(fileBlock.length);
+  });
+
   it("soft-trims oversized tool results and preserves head/tail with a note", () => {
     const messages: AgentMessage[] = [
       makeUser("u1"),

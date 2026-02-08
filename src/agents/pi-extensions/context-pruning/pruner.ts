@@ -9,6 +9,17 @@ const CHARS_PER_TOKEN_ESTIMATE = 4;
 // we start trimming prunable tool results earlier when image-heavy context is consuming the window.
 const IMAGE_CHAR_ESTIMATE = 8_000;
 
+// Patterns that identify user messages containing media-derived content (audio transcripts,
+// file blocks, media attachments). These are candidates for aggressive trimming since the
+// extracted text is re-sent to the API on every turn.
+const MEDIA_USER_MSG_PATTERNS = [
+  /^\[Audio\]/m,
+  /<file\s+name="/,
+  /^\[media attached:/m,
+  /^Transcript:/m,
+];
+const MEDIA_TRIM_MIN_CHARS = 500;
+
 function asText(text: string): TextContent {
   return { type: "text", text };
 }
@@ -187,6 +198,58 @@ function findFirstUserIndex(messages: AgentMessage[]): number | null {
   return null;
 }
 
+function getUserMessageText(msg: AgentMessage): string | null {
+  if (msg.role !== "user") {
+    return null;
+  }
+  const content = msg.content;
+  if (typeof content === "string") {
+    return content;
+  }
+  const parts: string[] = [];
+  for (const block of content) {
+    if (block.type === "text") {
+      parts.push(block.text);
+    }
+  }
+  return parts.length > 0 ? parts.join("\n") : null;
+}
+
+function isMediaDerivedUserMessage(msg: AgentMessage): boolean {
+  const text = getUserMessageText(msg);
+  if (!text || text.length < MEDIA_TRIM_MIN_CHARS) {
+    return false;
+  }
+  return MEDIA_USER_MSG_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+function softTrimMediaUserMessage(params: {
+  msg: AgentMessage;
+  settings: EffectiveContextPruningSettings;
+}): AgentMessage | null {
+  const { msg, settings } = params;
+  const text = getUserMessageText(msg);
+  if (!text) {
+    return null;
+  }
+  const rawLen = text.length;
+  if (rawLen <= settings.softTrim.maxChars) {
+    return null;
+  }
+  const headChars = Math.max(0, settings.softTrim.headChars);
+  const tailChars = Math.max(0, settings.softTrim.tailChars);
+  if (headChars + tailChars >= rawLen) {
+    return null;
+  }
+  const head = text.slice(0, headChars);
+  const tail = text.slice(rawLen - tailChars);
+  const trimmed = `${head}\n...\n${tail}`;
+  const note = `\n\n[Media content trimmed: kept first ${headChars} chars and last ${tailChars} chars of ${rawLen} chars.]`;
+  const content = (msg as { content: unknown }).content;
+  const newContent = typeof content === "string" ? trimmed + note : [asText(trimmed + note)];
+  return { ...msg, content: newContent } as AgentMessage;
+}
+
 function softTrimToolResultMessage(params: {
   msg: ToolResultMessage;
   settings: EffectiveContextPruningSettings;
@@ -266,10 +329,35 @@ export function pruneContextMessages(params: {
   }
 
   const prunableToolIndexes: number[] = [];
+  const prunableMediaUserIndexes: number[] = [];
   let next: AgentMessage[] | null = null;
 
+  // Phase 1a: Soft-trim media-derived user messages (audio transcripts, file blocks, etc.)
   for (let i = pruneStartIndex; i < cutoffIndex; i++) {
     const msg = messages[i];
+    if (!msg || msg.role !== "user") {
+      continue;
+    }
+    if (!isMediaDerivedUserMessage(msg)) {
+      continue;
+    }
+    prunableMediaUserIndexes.push(i);
+    const updated = softTrimMediaUserMessage({ msg, settings });
+    if (!updated) {
+      continue;
+    }
+    const beforeChars = estimateMessageChars(msg);
+    const afterChars = estimateMessageChars(updated);
+    totalChars += afterChars - beforeChars;
+    if (!next) {
+      next = messages.slice();
+    }
+    next[i] = updated;
+  }
+
+  // Phase 1b: Soft-trim prunable tool results
+  for (let i = pruneStartIndex; i < cutoffIndex; i++) {
+    const msg = (next ?? messages)[i];
     if (!msg || msg.role !== "toolResult") {
       continue;
     }

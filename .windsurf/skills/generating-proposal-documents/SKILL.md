@@ -113,13 +113,91 @@ className = "bg-[#0066FF] text-white";
 
 ## Tech Stack (Mandatory)
 
-- **Framework**: Next.js with React + TypeScript
-- **Styling**: Tailwind CSS
-- **Charts**: **Static HTML/CSS (preferred for print)** or Recharts (web presentations only)
-- **Icons**: Lucide-react
-- **Components**: shadcn/ui patterns
+All generated projects use this stack. The template `package.json` declares all packages — **Vercel installs them during remote build** (agents do NOT run `npm install` locally).
+
+### Framework & Core
+
+| Package      | Version  | Use For                                                |
+| ------------ | -------- | ------------------------------------------------------ |
+| `next`       | ^15.5.12 | React framework (static export via `output: "export"`) |
+| `react`      | ^19.2.4  | UI library                                             |
+| `react-dom`  | ^19.2.4  | DOM renderer                                           |
+| `typescript` | ^5.7.0   | Type safety                                            |
+
+### Styling & UI Components
+
+| Package                    | Version  | Use For                                                  |
+| -------------------------- | -------- | -------------------------------------------------------- |
+| `tailwindcss`              | ^4.1.18  | Utility-first CSS                                        |
+| `@tailwindcss/postcss`     | ^4.1.18  | PostCSS integration                                      |
+| `lucide-react`             | ^0.563.0 | Icon library (org standard)                              |
+| `framer-motion`            | ^12.33.0 | Animations & micro-interactions (presentations/web only) |
+| `clsx`                     | ^2.1.1   | Conditional classnames                                   |
+| `tailwind-merge`           | ^3.4.0   | Merge Tailwind classes                                   |
+| `class-variance-authority` | ^0.7.1   | Component variants (shadcn pattern)                      |
+
+### shadcn/ui Primitives (Radix)
+
+| Package                         | Version | Use For          |
+| ------------------------------- | ------- | ---------------- |
+| `@radix-ui/react-dialog`        | ^1.1.15 | Modals           |
+| `@radix-ui/react-dropdown-menu` | ^2.1.16 | Dropdown menus   |
+| `@radix-ui/react-tabs`          | ^1.1.13 | Tab navigation   |
+| `@radix-ui/react-tooltip`       | ^1.2.8  | Tooltips         |
+| `@radix-ui/react-select`        | ^2.2.6  | Select inputs    |
+| `@radix-ui/react-accordion`     | ^1.2.12 | Accordion panels |
+| `@radix-ui/react-slot`          | ^1.2.4  | Slot composition |
+
+### Charts & Data Visualization
+
+| Package              | Version  | Use For                                                        |
+| -------------------- | -------- | -------------------------------------------------------------- |
+| `recharts`           | ^3.7.0   | Interactive charts — **web presentations only, NOT for print** |
+| `d3-array`           | ^3.2.4   | Data manipulation (min, max, group, sort)                      |
+| `three`              | ^0.182.0 | 3D graphics (presentations)                                    |
+| `@react-three/fiber` | ^9.5.0   | React renderer for Three.js                                    |
+| `@react-three/drei`  | ^10.7.7  | Three.js helpers                                               |
+
+### Data Processing
+
+| Package     | Version | Use For                          |
+| ----------- | ------- | -------------------------------- |
+| `papaparse` | ^5.5.3  | CSV parsing and generation       |
+| `xlsx`      | ^0.18.5 | Excel file read/write            |
+| `date-fns`  | ^4.1.0  | Date formatting and manipulation |
+
+### Document & PDF
+
+| Package                    | Version | Use For                                         |
+| -------------------------- | ------- | ----------------------------------------------- |
+| `@react-pdf/renderer`      | ^4.3.2  | Generate PDFs from React components (preferred) |
+| `react-pdf`                | ^10.3.0 | PDF viewer/embed                                |
+| `jspdf`                    | ^4.1.0  | Lightweight PDF export                          |
+| `html2canvas`              | ^1.4.1  | Capture HTML as images                          |
+| `react-markdown`           | ^10.1.0 | Render markdown content                         |
+| `remark-gfm`               | ^4.0.1  | GitHub Flavored Markdown support                |
+| `react-syntax-highlighter` | ^16.1.0 | Code syntax highlighting                        |
+
+### Forms & Tables
+
+| Package                 | Version | Use For                              |
+| ----------------------- | ------- | ------------------------------------ |
+| `react-hook-form`       | ^7.71.1 | Form state management                |
+| `zod`                   | ^4.3.6  | Schema validation                    |
+| `@tanstack/react-table` | ^8.21.3 | Data tables (sort, filter, paginate) |
+
+### Utilities
+
+| Package        | Version | Use For                             |
+| -------------- | ------- | ----------------------------------- |
+| `qrcode.react` | ^4.2.0  | QR code generation                  |
+| `nuqs`         | ^2.8.8  | URL-based state (shareable filters) |
+| `swr`          | ^2.4.0  | Client-side data fetching           |
+| `cmdk`         | ^1.1.1  | Command palette                     |
+| `sonner`       | ^2.0.7  | Toast notifications                 |
 
 > **Note**: Tech stack rules are also defined in `@brand-identity/resources/tech-stack.md` — that file takes precedence if it exists.
+> Full inventory: `~/org/config/PACKAGE-INVENTORY.md`
 
 ---
 
