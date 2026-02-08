@@ -1,13 +1,13 @@
-import { chunkText } from "../../../auto-reply/chunk.js";
+import type { ChannelOutboundAdapter } from "../types.js";
 import { shouldLogVerbose } from "../../../globals.js";
 import { sendPollWhatsApp } from "../../../web/outbound.js";
 import { resolveWhatsAppOutboundTarget } from "../../../whatsapp/resolve-outbound-target.js";
-import type { ChannelOutboundAdapter } from "../types.js";
+import { markdownToWhatsAppChunks } from "../../../whatsapp/format.js";
 
 export const whatsappOutbound: ChannelOutboundAdapter = {
   deliveryMode: "gateway",
-  chunker: chunkText,
-  chunkerMode: "text",
+  chunker: markdownToWhatsAppChunks,
+  chunkerMode: "markdown",
   textChunkLimit: 4000,
   pollMaxOptions: 12,
   resolveTarget: ({ to, allowFrom, mode }) =>
