@@ -116,6 +116,8 @@ Since sub-agents have limited visibility, domain context is provided through 3 l
 
 ```
 Layer 1: TOOLS.md (global — all sub-agents see)
+  → File Routing Cheat Sheet: project structure, save paths, template locations
+  → Per-agent-type paths: coder, data, grunt, planner each have specific save targets
   → Self-documenting rules: "ALWAYS save findings to projects/{project}/research/{domain}/"
   → Skill reading pattern: "Read skills/{domain}/{skill}/SKILL.md for guidance"
 
