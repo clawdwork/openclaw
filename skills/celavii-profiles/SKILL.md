@@ -113,6 +113,18 @@ curl -s https://www.celavii.com/api/v1/profiles/leomessi/contact \
 
 Returns emails, phones, websites. **Requires `profiles:contact` scope.**
 
+## Important: New / Untraced Profiles
+
+Profiles that have **never been tracked** in the Celavii database will return **limited information** (basic public bio only — no affinities, demographics, audience data, or enriched metrics).
+
+To get full data on a new profile:
+
+1. **Trigger an enhancement** via `celavii-data-ops` (`POST /enhance/profiles` with `dry_run: true` first)
+2. **Wait 24-48 hours** — affinities, demographics, audience analysis, and AI-processed insights are generated internally and take 24-48 hours to complete after enhancement
+3. **Re-query** the profile endpoints to get the full enriched data
+
+Do NOT assume empty affinities or missing demographics means the profile lacks them — it likely just hasn't been processed yet.
+
 ## Notes
 
 - All profile endpoints cost 0 credits — use freely for research

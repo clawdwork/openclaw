@@ -194,6 +194,15 @@ curl -s https://www.celavii.com/api/v1/scrape/<job_id>/status \
 4. **Poll status** — check job status until completion
 5. **Verify** — use `celavii-profiles` to confirm updated data
 
+## Important: Processing Time for New Profiles
+
+When enhancing profiles that have **never been tracked** in the Celavii database:
+
+- The enhancement job itself may complete quickly (minutes), but **AI-processed data takes 24-48 hours** to become available
+- This includes: **affinities, demographics, audience analysis, brand alignment scores, and enriched metrics**
+- After triggering enhancement, inform the user that full data will be available in 24-48 hours
+- Use `celavii-profiles` endpoints to verify when enriched data is ready (affinities endpoint returns results)
+
 ## Notes
 
 - All scrape/enhance operations are async — poll the status endpoint
