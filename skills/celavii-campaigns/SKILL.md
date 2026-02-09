@@ -65,7 +65,7 @@ curl -s "https://www.celavii.com/api/v1/campaigns/<campaign_id>/content?match_ty
 | Parameter    | Type    | Required | Description                                                |
 | ------------ | ------- | -------- | ---------------------------------------------------------- |
 | `match_type` | string  | no       | `all` (default), `direct`, `hashtag`, `keyword`, `mention` |
-| `sort`       | string  | no       | `engagement` (default) or `date`                           |
+| `sort`       | string  | no       | `engagement` (default), `date`, or `relevance`             |
 | `limit`      | integer | no       | Results per page (default 25, max 100)                     |
 | `cursor`     | string  | no       | Pagination cursor                                          |
 
