@@ -14,7 +14,8 @@ This architecture is split into focused modules. Each file is self-contained.
 | ---------------------------------------- | ------------------------------------------------------------------------------------------ |
 | **[README.md](README.md)** (this file)   | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
 | **[agents.md](agents.md)**               | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
-| **[skills.md](skills.md)**               | Full skills inventory (50 skills), domain table, custom skills, loading mechanics          |
+| **[skills.md](skills.md)**               | Skills inventory (20 managed + 60 bundled), domain table, Celavii API, loading             |
+| **[VALUES.md](VALUES.md)**               | Single source of truth for runtime values (ports, counts, paths)                           |
 | **[org-structure.md](org-structure.md)** | Org directory layout, workspace structure, access matrix, roles, migration path            |
 | **[deployments.md](deployments.md)**     | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
 | **[security.md](security.md)**           | Token architecture, env siloing, credential isolation, sandbox, leakage prevention         |
@@ -29,7 +30,7 @@ This architecture is split into focused modules. Each file is self-contained.
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           OPENCLAW GATEWAY                                  │
-│                        ws://127.0.0.1:49152                                 │
+│                        ws://127.0.0.1:19400                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
@@ -107,7 +108,7 @@ This architecture is split into focused modules. Each file is self-contained.
 
 | Domain Agent          | Model  | Why                       | Skills                |
 | --------------------- | ------ | ------------------------- | --------------------- |
-| **Marketing**         | Flash  | Speed, volume, web search | 6 skills, 7 commands  |
+| **Marketing**         | Flash  | Speed, volume, web search | 6 + 7 Celavii skills  |
 | **Sales**             | Flash  | Research, outreach        | 6 skills, 3 commands  |
 | **Product**           | Flash  | Specs, roadmaps           | 6 skills, 6 commands  |
 | **Support**           | Flash  | Triage, responses         | 5 skills, 5 commands  |
@@ -292,13 +293,13 @@ Every 30 Minutes
 ```bash
 kill $(pgrep -f "openclaw.*gateway")
 cd /path/to/openclaw
-nohup node dist/index.js gateway run --port 49152 &
+nohup node dist/index.js gateway run --port 19400 &
 ```
 
 ### WebChat URL
 
 ```
-http://127.0.0.1:49152/?token=<encoded_token>
+http://127.0.0.1:19400/?token=<encoded_token>
 ```
 
 ---
@@ -331,7 +332,7 @@ session_status
 
 ## Security Notes
 
-1. **API keys**: Stored in `~/.openclaw/.env` (chmod 600) — invisible to sandboxed agents
+1. **API keys**: Stored in `~/.openclaw/.env` (chmod 600) — invisible to sandboxed agents (includes `CELAVII_API_KEY` for Creator Intelligence)
 2. **Gateway token**: In `openclaw.json`, required for CLI/WebChat access
 3. **Exec security**: `full` for admin (unsandboxed); sandboxed agents run tools inside Docker
 4. **Sandbox**: Off for admin-001; On (`mode: all`) for member/guest/service agents

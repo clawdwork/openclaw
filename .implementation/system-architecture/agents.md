@@ -79,7 +79,7 @@ The gateway resolves per-agent config: model, skills filter, workspace, identity
 | Agent             | ID           | Model      | Role Summary                                                    | Session Type   |
 | ----------------- | ------------ | ---------- | --------------------------------------------------------------- | -------------- |
 | **Coordinator**   | `main`       | Flash      | User conversations, routing, web search, synthesis              | Main session   |
-| Marketing         | `marketing`  | Flash      | SEO, content, campaigns, brand voice, analytics                 | Ephemeral      |
+| Marketing         | `marketing`  | Flash      | SEO, content, campaigns, brand voice, analytics, Celavii CIP    | Ephemeral      |
 | Sales             | `sales`      | Flash      | Account research, outreach, pipeline, call summaries            | Ephemeral      |
 | Product           | `product`    | Flash      | Specs, roadmaps, competitive analysis, user stories             | Ephemeral      |
 | Support           | `support`    | Flash      | Ticket triage, KB management, escalation                        | Ephemeral      |
@@ -205,6 +205,9 @@ Flash (coordinator):
 | Task Type             | Use Sub-Agent? | Which Agent               |
 | --------------------- | -------------- | ------------------------- |
 | Marketing content/SEO | ✅ Yes         | Marketing (Flash)         |
+| Creator discovery     | ✅ Yes         | Marketing (Flash)         |
+| Campaign analytics    | ✅ Yes         | Marketing (Flash)         |
+| CRM pipeline check    | ✅ Yes         | Marketing (Flash)         |
 | Account research      | ✅ Yes         | Sales (Flash)             |
 | Contract review       | ✅ Yes         | Legal (Sonnet)            |
 | Financial analysis    | ✅ Yes         | Finance (Sonnet)          |
@@ -408,4 +411,5 @@ Agent: "PR #456 created. Summary: [changes made]. Ready for review."
 | Repository      | vercel         | Live site             |
 | Research        | brand-identity | Branded content       |
 | Branded content | proposals      | Client-ready document |
+| Creator search  | celavii-\*     | Creator intelligence  |
 | Any output      | sag/sherpa     | Spoken response       |

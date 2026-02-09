@@ -16,7 +16,7 @@ guest-001  ← WhatsApp DM-split by sender E.164
 
 ## Frontend / WebChat Channel
 
-OpenClaw includes a built-in **WebChat** channel (`ws://127.0.0.1:49152`). Each agent can be accessed via WebChat by selecting the agent. For a custom webapp or iOS app, hit the gateway HTTP API directly — the gateway IS the backend. No additional server required.
+OpenClaw includes a built-in **WebChat** channel (`ws://127.0.0.1:19400`). Each agent can be accessed via WebChat by selecting the agent. For a custom webapp or iOS app, hit the gateway HTTP API directly — the gateway IS the backend. No additional server required.
 
 | Channel    | Protocol           | Per-Agent?                      | Notes                             |
 | ---------- | ------------------ | ------------------------------- | --------------------------------- |

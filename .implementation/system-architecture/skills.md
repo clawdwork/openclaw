@@ -8,7 +8,8 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 50 skills (admin workspace, canonical source)
+~/agent-workspace/skills/     ← 20 skills (managed: domain categories + celavii + custom)
+repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
 All agents read skills from `~/.openclaw/skills/` (managed dir), which symlinks to the admin workspace. Edits in the admin workspace are instantly visible to all agents.
@@ -66,6 +67,24 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ---
 
+## Creator Intelligence Skills (Celavii API)
+
+| Skill                    | Status   | Purpose                                                    | Credits   |
+| ------------------------ | -------- | ---------------------------------------------------------- | --------- |
+| 🔍 **celavii-discover**  | ✅ Ready | Search creators by keyword, niche, affinities, hashtags    | 1/query   |
+| 👤 **celavii-profiles**  | ✅ Ready | Full profile detail, affinities, posts, network, contact   | 0 (free)  |
+| 📊 **celavii-campaigns** | ✅ Ready | Campaign list, metrics, creators, matched content          | 0–1       |
+| 🤝 **celavii-crm**       | ✅ Ready | CRM pipeline, managed profiles, lists, org stats           | 0 (free)  |
+| 📈 **celavii-analytics** | ✅ Ready | Demographics, locations, niches, overlap, affinity posts   | 1/query   |
+| 📚 **celavii-knowledge** | ✅ Ready | Knowledge base CRUD, semantic search for AI context        | 0 (free)  |
+| ⚡ **celavii-data-ops**  | ✅ Ready | Profile enhancement, follower/hashtag/URL scrapes, job ops | 1-2+Apify |
+
+**Base URL**: `https://www.celavii.com/api/v1`  
+**Auth**: `CELAVII_API_KEY` (shared across all agents, stored in `~/.openclaw/.env`)  
+**Tier**: Pro (60 req/min, 10k req/day)
+
+---
+
 ## Custom Skills (Non-Domain)
 
 | Skill                             | Category | Purpose                                        |
@@ -91,12 +110,12 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ## Agent-to-Skill Access Matrix
 
-| Agent Type                        | Workspace Skills                | Managed Skills (`~/.openclaw/skills/` → symlink) |
-| --------------------------------- | ------------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 50 skills (canonical source) | ✅ same via symlink                              |
-| **Sub-agents** (spawned by admin) | ✅ synced from parent           | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/)     | ✅ 50 skills via symlink                         |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/)     | ✅ 50 skills via symlink                         |
+| Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
+| --------------------------------- | --------------------------- | ------------------------------------------------ |
+| **admin-001**                     | ✅ 20 managed + 60 bundled  | ✅ same via symlink                              |
+| **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 20 managed + 60 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 20 managed + 60 bundled                       |
 
 ---
 
@@ -107,7 +126,7 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 | Channel      | Status            | Config                                |
 | ------------ | ----------------- | ------------------------------------- |
 | **Telegram** | ✅ Active         | Bot: `@maxious_bot`, Allowlist policy |
-| **WebChat**  | ✅ Active         | `ws://127.0.0.1:49152`                |
+| **WebChat**  | ✅ Active         | `ws://127.0.0.1:19400`                |
 | **WhatsApp** | ✅ Plugin enabled | Requires phone setup                  |
 | **Signal**   | ✅ Plugin enabled | Requires setup                        |
 
