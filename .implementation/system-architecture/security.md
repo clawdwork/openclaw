@@ -20,6 +20,9 @@ FIRECRAWL_API_KEY=fc-...
 
 # VOICE & MEDIA
 ELEVENLABS_API_KEY=           # ← Add your key here for sag TTS
+
+# CREATOR INTELLIGENCE (shared across all agents)
+CELAVII_API_KEY=              # ← cvii_live_* key from Celavii dashboard
 ```
 
 ### Permissions
