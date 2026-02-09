@@ -731,6 +731,52 @@ describe("CronService", () => {
     await store.cleanup();
   });
 
+  it("fires recurring cron job when timer triggers at the scheduled time", async () => {
+    const store = await makeStorePath();
+    const enqueueSystemEvent = vi.fn();
+    const requestHeartbeatNow = vi.fn();
+    const runIsolatedAgentJob = vi.fn(async () => ({
+      status: "ok" as const,
+      summary: "done",
+    }));
+
+    const cron = new CronService({
+      storePath: store.storePath,
+      cronEnabled: true,
+      log: noopLogger,
+      enqueueSystemEvent,
+      requestHeartbeatNow,
+      runIsolatedAgentJob,
+    });
+
+    await cron.start();
+
+    // Add a recurring job that fires 2 seconds from now.
+    const fireAt = Date.parse("2025-12-13T00:00:02.000Z");
+    const job = await cron.add({
+      name: "recurring ingest",
+      enabled: true,
+      schedule: { kind: "every", everyMs: 60_000, anchorMs: fireAt },
+      sessionTarget: "isolated",
+      wakeMode: "now",
+      payload: { kind: "agentTurn", message: "run ingest" },
+    });
+
+    expect(job.state.nextRunAtMs).toBe(fireAt);
+
+    // Advance to the scheduled time and run the pending timer.
+    await vi.advanceTimersByTimeAsync(2050);
+
+    expect(runIsolatedAgentJob).toHaveBeenCalledTimes(1);
+
+    const jobs = await cron.list();
+    const updated = jobs.find((j) => j.id === job.id);
+    expect(updated?.state.lastStatus).toBe("ok");
+
+    cron.stop();
+    await store.cleanup();
+  });
+
   it("skips invalid main jobs with agentTurn payloads from disk", async () => {
     ensureDir(fixturesRoot);
     const store = await makeStorePath();
