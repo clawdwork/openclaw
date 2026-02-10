@@ -82,10 +82,106 @@ curl -s -X POST https://www.celavii.com/api/v1/enhance/profiles \
 
 **Credits**: 1-2 per profile + Apify cost. **Requires `enhance:trigger` scope.**
 
+### Bulk enhancement from source (dry run first!)
+
+Enhance profiles in bulk from a source: followers of a profile, following of a profile, both, or a search query.
+
+```bash
+# Dry run — check cost and profile count
+curl -s -X POST https://www.celavii.com/api/v1/enhance/bulk \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": {
+      "type": "followers",
+      "target": "nike",
+      "filters": { "min_followers": 10000, "verified_only": true },
+      "limit": 1000
+    },
+    "mode": "basic",
+    "dry_run": true
+  }'
+
+# Execute (search source example)
+curl -s -X POST https://www.celavii.com/api/v1/enhance/bulk \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": {
+      "type": "search",
+      "filters": { "niche": "golf", "min_followers": 10000, "max_followers": 50000 },
+      "limit": 100
+    },
+    "mode": "basic",
+    "skip_already_enhanced": true
+  }'
+```
+
+| Field                   | Type    | Required | Description                                                 |
+| ----------------------- | ------- | -------- | ----------------------------------------------------------- |
+| `source.type`           | string  | yes      | `followers`, `following`, `both`, or `search`               |
+| `source.target`         | string  | yes\*    | Username or ig:ID (\*required for network sources)          |
+| `source.filters`        | object  | no       | Filter criteria (see below)                                 |
+| `source.limit`          | integer | no       | Max profiles (default 500; network cap 50K, search cap 500) |
+| `mode`                  | string  | no       | `basic` (default) or `enhanced`                             |
+| `dry_run`               | boolean | no       | If `true`, returns cost estimate without executing          |
+| `skip_already_enhanced` | boolean | no       | Skip profiles already enhanced (default `false`)            |
+
+**Network filters** (`followers`/`following`/`both`): `min_followers`, `max_followers`, `verified_only`
+**Search filters** (`search`): `query`, `niche`, `location`, `gender`, `has_contact`, `min_followers`, `max_followers`
+
+**Processing**: Async — jobs are queued and processed in batches of 300 profiles (~5 min/batch). Response includes `estimated_processing_time` and `status_url` to poll progress.
+
+**Credits**: 1-2 per profile + processing cost. **Requires `enhance:trigger` scope.**
+
 ### Check enhancement job status
 
 ```bash
 curl -s https://www.celavii.com/api/v1/enhance/<job_id>/status \
+  -H "Authorization: Bearer $CELAVII_API_KEY"
+```
+
+**Credits**: 0
+
+## Profile Refinement
+
+Refinement runs AI analysis on **already-enhanced profiles** to generate affinities, demographics, audience insights, and brand alignment scores. Profiles MUST have posts/captions from a prior enhancement before refinement will work.
+
+### Trigger refinement (dry run first!)
+
+```bash
+# Dry run — check cost
+curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "profiles": ["leomessi", "selenagomez"],
+    "dry_run": true
+  }'
+
+# Execute
+curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "profiles": ["leomessi", "selenagomez"],
+    "dry_run": false
+  }'
+```
+
+| Field      | Type     | Required | Description                                        |
+| ---------- | -------- | -------- | -------------------------------------------------- |
+| `profiles` | string[] | yes      | Usernames, @handles, or ig:IDs                     |
+| `dry_run`  | boolean  | no       | If `true`, returns cost estimate without executing |
+
+**Processing**: ≤100 profiles are processed immediately (synchronous). >100 profiles creates an async job — poll status.
+
+**Credits**: per profile. **Requires `enhance:trigger` scope.**
+
+### Check refinement job status
+
+```bash
+curl -s https://www.celavii.com/api/v1/refine/<job_id>/status \
   -H "Authorization: Bearer $CELAVII_API_KEY"
 ```
 
@@ -192,7 +288,15 @@ curl -s https://www.celavii.com/api/v1/scrape/<job_id>/status \
 2. **Dry run** — always estimate cost before executing
 3. **Execute** — trigger the operation with `dry_run: false`
 4. **Poll status** — check job status until completion
-5. **Verify** — use `celavii-profiles` to confirm updated data
+5. **Refine** (if needed) — after enhancement completes, trigger refinement to generate AI insights
+6. **Wait 24-48 hours** — AI-processed data (affinities, demographics) becomes available asynchronously
+7. **Verify** — use `celavii-profiles` to confirm enriched data
+
+### Typical pipeline for new profiles
+
+```
+enhance/profiles (or enhance/bulk) → poll status → refine/profiles → poll status → wait 24-48h → query celavii-profiles
+```
 
 ## Important: Processing Time for New Profiles
 
@@ -207,6 +311,9 @@ When enhancing profiles that have **never been tracked** in the Celavii database
 
 - All scrape/enhance operations are async — poll the status endpoint
 - Enhancement and scrape require `enhance:trigger` and `scrape:trigger` scopes
+- Refinement requires `enhance:trigger` scope (same as enhancement)
+- **Refinement requires enhanced profiles** — only profiles with posts/captions can be refined. Run enhancement first.
 - Always dry-run first to avoid unexpected credit consumption
 - Batch enhancements are more efficient than individual ones (max 500 profiles)
+- Bulk enhance jobs are queued with fair scheduling (max 5 concurrent batches per org, 15 globally)
 - Rate limit: Pro tier = 60 req/min — check `X-RateLimit-Remaining` header
