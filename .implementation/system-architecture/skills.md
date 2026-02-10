@@ -143,13 +143,13 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ### Voice & Media
 
-| Capability       | Primary               | Fallback                       |
-| ---------------- | --------------------- | ------------------------------ |
-| Speech-to-text   | Whisper (local)       | —                              |
-| Text-to-speech   | ElevenLabs (sag)      | MiniMax 2.6 HD (minimax-voice) |
-| Voice cloning    | MiniMax (voice-clone) | —                              |
-| Image generation | Gemini 3 Pro          | —                              |
-| Video generation | Veo 3.1 (veo3-gen)    | Sora 2 (sora2-gen)             |
+| Capability       | Primary                   | Fallback                                 |
+| ---------------- | ------------------------- | ---------------------------------------- |
+| Speech-to-text   | Whisper (local)           | —                                        |
+| Text-to-speech   | ElevenLabs (sag, primary) | MiniMax 2.6 HD (minimax-voice, fallback) |
+| Voice cloning    | MiniMax (voice-clone)     | —                                        |
+| Image generation | Gemini 3 Pro              | —                                        |
+| Video generation | Veo 3.1 (veo3-gen)        | Sora 2 (sora2-gen)                       |
 
 ### Memory & Context
 
