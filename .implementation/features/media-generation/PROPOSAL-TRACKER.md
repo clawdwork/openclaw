@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09  
+> **Last Updated**: 2026-02-09 (Phase 1 complete)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -14,61 +14,61 @@
 
 | #   | Step                                                               | Status |
 | --- | ------------------------------------------------------------------ | ------ |
-| 1.0 | Create `skills/media-content/` directory in repo (source of truth) | ⬜     |
+| 1.0 | Create `skills/media-content/` directory in repo (source of truth) | ✅     |
 
 ### Skill 1: `media-content/image-prompting`
 
 | #    | Step                                                                                             | Status |
 | ---- | ------------------------------------------------------------------------------------------------ | ------ |
-| 1.1a | Write `SKILL.md` (~300 lines) — prompt structure, formulas, equipment selection, dimensions      | ⬜     |
-| 1.1b | Write `references/visual-assets.md` — cameras, lenses, film stocks, lighting, composition tables | ⬜     |
-| 1.1c | Write `references/dimensions-formats.md` — physical format specs (banners, cans, print, digital) | ⬜     |
+| 1.1a | Write `SKILL.md` (~300 lines) — prompt structure, formulas, equipment selection, dimensions      | ✅     |
+| 1.1b | Write `references/visual-assets.md` — cameras, lenses, film stocks, lighting, composition tables | ✅     |
+| 1.1c | Write `references/dimensions-formats.md` — physical format specs (banners, cans, print, digital) | ✅     |
 
 ### Skill 2: `media-content/video-prompting`
 
 | #    | Step                                                                                              | Status |
 | ---- | ------------------------------------------------------------------------------------------------- | ------ |
-| 1.2a | Write `SKILL.md` (~350 lines) — Six Key Aspects, action-in-beats, duration strategy               | ⬜     |
-| 1.2b | Write `references/veo3-rules.md` — Veo 3 specifics: Scenebuilder, dialogue format, 200-word limit | ⬜     |
-| 1.2c | Write `references/sora2-rules.md` — Sora 2 specifics: API params, remix workflow, image input     | ⬜     |
+| 1.2a | Write `SKILL.md` (~350 lines) — Six Key Aspects, action-in-beats, duration strategy               | ✅     |
+| 1.2b | Write `references/veo3-rules.md` — Veo 3 specifics: Scenebuilder, dialogue format, 200-word limit | ✅     |
+| 1.2c | Write `references/sora2-rules.md` — Sora 2 specifics: API params, remix workflow, image input     | ✅     |
 
 ### Skill 3: `media-content/character-consistency`
 
 | #    | Step                                                                                       | Status |
 | ---- | ------------------------------------------------------------------------------------------ | ------ |
-| 1.3a | Write `SKILL.md` (~250 lines) — Master Descriptor Protocol, shot splitting, visual anchors | ⬜     |
+| 1.3a | Write `SKILL.md` (~250 lines) — Master Descriptor Protocol, shot splitting, visual anchors | ✅     |
 
 ### Skill 4: `media-content/commercial-styles`
 
 | #    | Step                                                                                               | Status |
 | ---- | -------------------------------------------------------------------------------------------------- | ------ |
-| 1.4a | Write `SKILL.md` (~300 lines) — ad genres, mood boards, brand identity workflow, platform specs    | ⬜     |
-| 1.4b | Write `references/genre-templates.md` — per-genre vocabulary banks, sound design, prompt templates | ⬜     |
+| 1.4a | Write `SKILL.md` (~300 lines) — ad genres, mood boards, brand identity workflow, platform specs    | ✅     |
+| 1.4b | Write `references/genre-templates.md` — per-genre vocabulary banks, sound design, prompt templates | ✅     |
 
 ### Skill 5: `media-content/creative-direction`
 
 | #    | Step                                                                             | Status |
 | ---- | -------------------------------------------------------------------------------- | ------ |
-| 1.5a | Write `SKILL.md` (~250 lines) — OBSERVE→REASON→ACT, 3+ directions, style mashups | ⬜     |
-| 1.5b | Write `references/prompt-examples.md` — curated prompts across genres            | ⬜     |
+| 1.5a | Write `SKILL.md` (~250 lines) — OBSERVE→REASON→ACT, 3+ directions, style mashups | ✅     |
+| 1.5b | Write `references/prompt-examples.md` — curated prompts across genres            | ✅     |
 
 ### Command Templates
 
 | #    | Step                                | Status |
 | ---- | ----------------------------------- | ------ |
-| 1.6a | Write `commands/generate-image.md`  | ⬜     |
-| 1.6b | Write `commands/generate-video.md`  | ⬜     |
-| 1.6c | Write `commands/mood-board.md`      | ⬜     |
-| 1.6d | Write `commands/product-shoot.md`   | ⬜     |
-| 1.6e | Write `commands/character-sheet.md` | ⬜     |
-| 1.6f | Write `commands/shot-sequence.md`   | ⬜     |
+| 1.6a | Write `commands/generate-image.md`  | ✅     |
+| 1.6b | Write `commands/generate-video.md`  | ✅     |
+| 1.6c | Write `commands/mood-board.md`      | ✅     |
+| 1.6d | Write `commands/product-shoot.md`   | ✅     |
+| 1.6e | Write `commands/character-sheet.md` | ✅     |
+| 1.6f | Write `commands/shot-sequence.md`   | ✅     |
 
 ### Deploy to Managed Dir
 
 | #    | Step                                                                     | Status |
 | ---- | ------------------------------------------------------------------------ | ------ |
-| 1.7a | Copy `skills/media-content/` → `~/agent-workspace/skills/media-content/` | ⬜     |
-| 1.7b | Verify symlink: `ls ~/.openclaw/skills/media-content/`                   | ⬜     |
+| 1.7a | Copy `skills/media-content/` → `~/agent-workspace/skills/media-content/` | ✅     |
+| 1.7b | Verify symlink: `ls ~/.openclaw/skills/media-content/`                   | ✅     |
 
 ---
 
@@ -184,11 +184,11 @@
 
 ## Summary
 
-| Phase        | Total Steps | Done  | In Progress | Blocked |
-| ------------ | ----------- | ----- | ----------- | ------- |
-| **Phase 1**  | 20          | 0     | 0           | 0       |
-| **Phase 1b** | 14          | 0     | 0           | 0       |
-| **Phase 2**  | 14          | 0     | 0           | 0       |
-| **Phase 3A** | 10          | 0     | 0           | 0       |
-| **Phase 3B** | 10          | 0     | 0           | 0       |
-| **Total**    | **68**      | **0** | **0**       | **0**   |
+| Phase        | Total Steps | Done   | In Progress | Blocked |
+| ------------ | ----------- | ------ | ----------- | ------- |
+| **Phase 1**  | 20          | 20     | 0           | 0       |
+| **Phase 1b** | 14          | 0      | 0           | 0       |
+| **Phase 2**  | 14          | 0      | 0           | 0       |
+| **Phase 3A** | 10          | 0      | 0           | 0       |
+| **Phase 3B** | 10          | 0      | 0           | 0       |
+| **Total**    | **68**      | **20** | **0**       | **0**   |
