@@ -170,6 +170,20 @@ Sizes: 1920×1080, 1080×1920, 1080×1080. Duration: 5, 10, 15, 20 sec.
 | Incoherent transitions   | Simplify to one clear action sequence per generation                 |
 | Camera ignores subject   | Move subject description to first 1-2 sentences                      |
 
+## Image-to-Video Workflow
+
+For maximum control over the first frame, generate a still image first, then animate it:
+
+1. Craft an image prompt using `media-content/image-prompting/SKILL.md`
+2. Generate via `nano-banana-pro`: `uv run .../generate_image.py --prompt "..." --filename "frame.png" --resolution 2K`
+3. Get user approval on the still frame
+4. Craft a video prompt describing the motion, camera, and audio
+5. Feed the approved image to the video model:
+   - **Veo 3.1**: `uv run .../veo3-gen/scripts/generate_video.py --prompt "motion description" --filename "out.mp4" -i frame.png --person allow_adult`
+   - **Sora 2**: `uv run .../sora2-gen/scripts/generate_video.py --prompt "motion description" --filename "out.mp4" -i frame.png --size 1280x720`
+
+This workflow is ideal for: brand assets, character introductions, product reveals, hero shots.
+
 ## Key Rules
 
 1. **Self-contained** — every prompt has ALL information, no references to "previous"

@@ -181,6 +181,21 @@ uv run {baseDir}/scripts/generate_image.py --prompt "your prompt" --filename "ou
 - Multi-image composition: add multiple `-i` flags
 - Do not read the image back; report the saved path only
 
+### Image-to-Video Seeding
+
+Generated images can seed video generation for maximum first-frame control:
+
+```bash
+# 1. Generate still image
+uv run .../nano-banana-pro/scripts/generate_image.py --prompt "..." --filename "frame.png" --resolution 2K
+# 2. Animate with Veo 3.1
+uv run .../veo3-gen/scripts/generate_video.py --prompt "motion description" --filename "out.mp4" -i frame.png
+# 3. Or animate with Sora 2
+uv run .../sora2-gen/scripts/generate_video.py --prompt "motion description" --filename "out.mp4" -i frame.png
+```
+
+See `media-content/video-prompting/SKILL.md` § Image-to-Video Workflow for full details.
+
 ## Key Rules
 
 1. **Specificity over generality** — always specify camera, lighting, palette
