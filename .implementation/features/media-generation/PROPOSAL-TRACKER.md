@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (Phase 1 + 1b + 2 + 3A/veo3 complete, 2 tests pending gateway restart)  
+> **Last Updated**: 2026-02-09 (Phase 1 + 1b + 2 + 3A complete, 2 tests pending gateway restart)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -153,11 +153,11 @@
 
 | #     | Step                                       | Status |
 | ----- | ------------------------------------------ | ------ |
-| 3A.6  | Confirm Sora 2 API key                     | ⬜     |
-| 3A.7  | Write `scripts/generate_video.py` (Sora 2) | ⬜     |
-| 3A.8  | Write `SKILL.md` with usage examples       | ⬜     |
-| 3A.9  | Test video generation end-to-end           | ⬜     |
-| 3A.10 | Add to agent skills filter                 | ⬜     |
+| 3A.6  | Confirm Sora 2 API key                     | ✅     |
+| 3A.7  | Write `scripts/generate_video.py` (Sora 2) | ✅     |
+| 3A.8  | Write `SKILL.md` with usage examples       | ✅     |
+| 3A.9  | Test video generation end-to-end           | ✅     |
+| 3A.10 | Add to agent skills filter                 | ✅     |
 
 ---
 
@@ -189,6 +189,6 @@
 | **Phase 1**  | 20          | 20     | 0           | 0       |
 | **Phase 1b** | 14          | 14     | 0           | 0       |
 | **Phase 2**  | 14          | 12     | 0           | 2       |
-| **Phase 3A** | 10          | 5      | 0           | 0       |
+| **Phase 3A** | 10          | 10     | 0           | 0       |
 | **Phase 3B** | 10          | 0      | 0           | 0       |
-| **Total**    | **68**      | **51** | **0**       | **2**   |
+| **Total**    | **68**      | **56** | **0**       | **2**   |

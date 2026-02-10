@@ -20,8 +20,8 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 22    | skills.md (×4)                    | 2026-02-09    |
-| Skill count (managed SKILL.md files) | 63    | (nested inside domain categories) | 2026-02-09    |
+| Skill count (managed top-level dirs) | 23    | skills.md (×4)                    | 2026-02-09    |
+| Skill count (managed SKILL.md files) | 64    | (nested inside domain categories) | 2026-02-09    |
 | Skill count (bundled repo dirs)      | 60    | skills.md, README.md              | 2026-02-09    |
 | Skill count (celavii)                | 7     | skills.md                         | 2026-02-09    |
 | Skill count (custom)                 | 5     | skills.md                         | 2026-02-07    |
