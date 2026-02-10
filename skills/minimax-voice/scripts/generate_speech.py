@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.10,<3.14"
 # dependencies = [
 #     "replicate>=1.0.0",
 # ]
@@ -224,11 +224,12 @@ def main():
 
         full_path = output_path.resolve()
         file_size = output_path.stat().st_size / 1024
-        duration = output.get("duration", "unknown") if isinstance(output, dict) else "unknown"
+        duration = output.get("duration", "") if isinstance(output, dict) else ""
 
         print(f"\nAudio saved: {full_path}")
         print(f"  Size: {file_size:.1f} KB")
-        print(f"  Duration: ~{duration}s")
+        if duration:
+            print(f"  Duration: ~{duration}s")
         print(f"  Format: {args.audio_format}")
         print(f"  Voice: {args.voice}")
         # OpenClaw parses MEDIA tokens and will attach the file on supported providers.

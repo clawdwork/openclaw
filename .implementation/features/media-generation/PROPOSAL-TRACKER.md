@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (All phases implemented, 4 tests pending: 2 gateway restart, 2 REPLICATE_API_TOKEN)  
+> **Last Updated**: 2026-02-09 (All phases implemented, 3 tests pending: 2 gateway restart, 1 voice clone audio sample)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -169,16 +169,16 @@
 
 | #     | Step                                                | Status |
 | ----- | --------------------------------------------------- | ------ |
-| 3B.1  | Receive MiniMax/Replicate documentation from user   | ⬜     |
-| 3B.2  | Obtain `REPLICATE_API_TOKEN`                        | ⬜     |
-| 3B.3  | Write `scripts/clone_voice.py`                      | ⬜     |
-| 3B.4  | Write `scripts/generate_audio.py`                   | ⬜     |
-| 3B.5  | Write `SKILL.md` with usage examples                | ⬜     |
-| 3B.6  | Add `audio/` directory to workspace template        | ⬜     |
-| 3B.7  | Test voice cloning end-to-end                       | ⬜     |
-| 3B.8  | Test audio generation end-to-end                    | ⬜     |
-| 3B.9  | Add to agent skills filter                          | ⬜     |
-| 3B.10 | Update architecture docs (new API key, skill count) | ⬜     |
+| 3B.1  | Receive MiniMax/Replicate documentation from user   | ✅     |
+| 3B.2  | Obtain `REPLICATE_API_TOKEN`                        | ✅     |
+| 3B.3  | Write `scripts/clone_voice.py`                      | ✅     |
+| 3B.4  | Write `scripts/generate_speech.py`                  | ✅     |
+| 3B.5  | Write `SKILL.md` with usage examples (both skills)  | ✅     |
+| 3B.6  | Add skills to agent config + deploy                 | ✅     |
+| 3B.7  | Test TTS generation end-to-end                      | ✅     |
+| 3B.8  | Test voice cloning end-to-end                       | ⏸️     |
+| 3B.9  | Fix Python 3.14 compat (pin <3.14)                  | ✅     |
+| 3B.10 | Update architecture docs (new API key, skill count) | ✅     |
 
 ---
 
@@ -190,5 +190,5 @@
 | **Phase 1b** | 14          | 14     | 0           | 0       |
 | **Phase 2**  | 14          | 12     | 0           | 2       |
 | **Phase 3A** | 10          | 10     | 0           | 0       |
-| **Phase 3B** | 10          | 8      | 0           | 2       |
-| **Total**    | **68**      | **64** | **0**       | **4**   |
+| **Phase 3B** | 10          | 9      | 0           | 1       |
+| **Total**    | **68**      | **65** | **0**       | **3**   |
