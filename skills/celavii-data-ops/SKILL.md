@@ -1,6 +1,6 @@
 ---
 name: celavii-data-ops
-description: "Trigger profile enhancements and data scrapes via the Celavii API. Refresh creator data, collect followers/following, scrape locations/hashtags/URLs, check job status, and monitor credit usage."
+description: "Trigger profile enhancements, AI refinement, and data scrapes via the Celavii API. Refresh creator data, refine profiles for affinities/demographics, collect followers/following, scrape locations/hashtags/URLs, check job status, and monitor credit usage."
 metadata:
   {
     "openclaw":
@@ -145,18 +145,23 @@ curl -s https://www.celavii.com/api/v1/enhance/<job_id>/status \
 
 ## Profile Refinement
 
-Refinement runs AI analysis on **already-enhanced profiles** to generate affinities, demographics, audience insights, and brand alignment scores. Profiles MUST have posts/captions from a prior enhancement before refinement will work.
+Refinement runs AI analysis (via Gemini) on **already-enhanced profiles** to generate affinities, demographics, audience insights, and brand alignment scores. Profiles MUST have 5+ posts with captions from a prior enhancement before refinement will work.
 
 ### Trigger refinement (dry run first!)
 
+Two modes are available:
+
+**Mode A — Direct profiles list:**
+
 ```bash
-# Dry run — check cost
+# Dry run — eligibility check + cost estimate
 curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
   -H "Authorization: Bearer $CELAVII_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "profiles": ["leomessi", "selenagomez"],
-    "dry_run": true
+    "dry_run": true,
+    "skip_already_refined": false
   }'
 
 # Execute
@@ -165,18 +170,49 @@ curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
   -H "Content-Type: application/json" \
   -d '{
     "profiles": ["leomessi", "selenagomez"],
-    "dry_run": false
+    "dry_run": false,
+    "skip_already_refined": true
   }'
 ```
 
-| Field      | Type     | Required | Description                                        |
-| ---------- | -------- | -------- | -------------------------------------------------- |
-| `profiles` | string[] | yes      | Usernames, @handles, or ig:IDs                     |
-| `dry_run`  | boolean  | no       | If `true`, returns cost estimate without executing |
+**Mode B — Source-based (followers, following, search):**
 
-**Processing**: ≤100 profiles are processed immediately (synchronous). >100 profiles creates an async job — poll status.
+```bash
+curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": {
+      "type": "followers",
+      "target": "nike",
+      "filters": { "min_followers": 10000 },
+      "limit": 500
+    },
+    "dry_run": true,
+    "skip_already_refined": true
+  }'
+```
 
-**Credits**: per profile. **Requires `enhance:trigger` scope.**
+| Field                  | Type     | Required | Description                                                     |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------- |
+| `profiles`             | string[] | yes\*    | Usernames, @handles, or ig:IDs (Mode A)                         |
+| `source.type`          | string   | yes\*    | `followers`, `following`, `both`, or `search` (Mode B)          |
+| `source.target`        | string   | yes\*    | Username or ig:ID (\*required for network sources)              |
+| `source.filters`       | object   | no       | Same filters as bulk enhance                                    |
+| `source.limit`         | integer  | no       | Max profiles (default 500)                                      |
+| `dry_run`              | boolean  | no       | If `true`, returns eligibility check + cost estimate            |
+| `skip_already_refined` | boolean  | no       | Skip profiles that already have affinity data (default `false`) |
+
+\*Provide either `profiles` (Mode A) or `source` (Mode B), not both.
+
+**Pre-flight validation**: Checks each profile has 5+ posts, captions, and has been enhanced. Ineligible profiles are reported in the dry-run response.
+
+**Processing**:
+
+- **≤100 eligible profiles**: Processed **immediately via Gemini AI** — affinities, demographics, and insights returned inline in the response
+- **>100 eligible profiles**: Creates an async job — returns `job_id` + `status_url` for polling
+
+**Credits**: 1 per profile. **Requires `refine:trigger` scope.**
 
 ### Check refinement job status
 
@@ -184,6 +220,8 @@ curl -s -X POST https://www.celavii.com/api/v1/refine/profiles \
 curl -s https://www.celavii.com/api/v1/refine/<job_id>/status \
   -H "Authorization: Bearer $CELAVII_API_KEY"
 ```
+
+Returns: status, completed/failed counts, progress percentage, estimated remaining time.
 
 **Credits**: 0
 
@@ -311,8 +349,9 @@ When enhancing profiles that have **never been tracked** in the Celavii database
 
 - All scrape/enhance operations are async — poll the status endpoint
 - Enhancement and scrape require `enhance:trigger` and `scrape:trigger` scopes
-- Refinement requires `enhance:trigger` scope (same as enhancement)
-- **Refinement requires enhanced profiles** — only profiles with posts/captions can be refined. Run enhancement first.
+- Refinement requires `refine:trigger` scope
+- **Refinement requires enhanced profiles** — only profiles with 5+ posts and captions can be refined. Run enhancement first.
+- Use `skip_already_refined: true` to avoid re-processing profiles that already have affinity data
 - Always dry-run first to avoid unexpected credit consumption
 - Batch enhancements are more efficient than individual ones (max 500 profiles)
 - Bulk enhance jobs are queued with fair scheduling (max 5 concurrent batches per org, 15 globally)

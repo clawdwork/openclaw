@@ -120,10 +120,12 @@ Profiles that have **never been tracked** in the Celavii database will return **
 To get full data on a new profile:
 
 1. **Trigger an enhancement** via `celavii-data-ops` (`POST /enhance/profiles` with `dry_run: true` first)
-2. **Wait 24-48 hours** — affinities, demographics, audience analysis, and AI-processed insights are generated internally and take 24-48 hours to complete after enhancement
+2. **Trigger immediate refinement** via `celavii-data-ops` (`POST /refine/profiles`) — for ≤100 profiles this returns affinities, demographics, and insights **synchronously** in the response (no waiting)
 3. **Re-query** the profile endpoints to get the full enriched data
 
-Do NOT assume empty affinities or missing demographics means the profile lacks them — it likely just hasn't been processed yet.
+If refinement is NOT triggered explicitly, the internal AI pipeline processes profiles asynchronously over **24-48 hours**. Use refinement for immediate results.
+
+Do NOT assume empty affinities or missing demographics means the profile lacks them — it likely just hasn't been enhanced/refined yet.
 
 ## Notes
 
