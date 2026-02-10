@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (Phase 1 + 1b complete)  
+> **Last Updated**: 2026-02-09 (Phase 1 + 1b + 2 complete, 2 tests pending gateway restart)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -103,35 +103,35 @@
 
 | #   | Step                                                                              | Status |
 | --- | --------------------------------------------------------------------------------- | ------ |
-| 2.1 | Add `media-content` agent entry to `openclaw.json` agents.list                    | ⬜     |
-| 2.2 | Add `"media-content"` to member `subagents.allowAgents` for relevant team members | ⬜     |
-| 2.3 | Test agent spawning via coordinator                                               | ⬜     |
+| 2.1 | Add `media-content` agent entry to `openclaw.json` agents.list                    | ✅     |
+| 2.2 | Add `"media-content"` to member `subagents.allowAgents` for relevant team members | ✅     |
+| 2.3 | Test agent spawning via coordinator                                               | ⏸️     |
 
 ### Workspace Template
 
 | #   | Step                                                                                      | Status |
 | --- | ----------------------------------------------------------------------------------------- | ------ |
-| 2.4 | Create workspace directory template (`sources/`, `generated/`, `characters/`, `prompts/`) | ⬜     |
-| 2.5 | Create `MEDIA-CONFIG.md` template                                                         | ⬜     |
-| 2.6 | Commission workspace for Max Kick project                                                 | ⬜     |
-| 2.7 | Commission workspace for Celavii project                                                  | ⬜     |
+| 2.4 | Create workspace directory template (`sources/`, `generated/`, `characters/`, `prompts/`) | ✅     |
+| 2.5 | Create `MEDIA-CONFIG.md` template                                                         | ✅     |
+| 2.6 | Commission workspace for Max Kick project                                                 | ✅     |
+| 2.7 | Commission workspace for Celavii project                                                  | ✅     |
 
 ### Feedback Loop
 
 | #    | Step                                                        | Status |
 | ---- | ----------------------------------------------------------- | ------ |
-| 2.8  | Implement approve flow (drafts/ → approved/ + .prompt.md)   | ⬜     |
-| 2.9  | Implement reject flow (drafts/ → rejected/ + .feedback.md)  | ⬜     |
-| 2.10 | Implement prompt-log.md append on approve/reject            | ⬜     |
-| 2.11 | Implement MEDIA-CONFIG.md style notes auto-update on reject | ⬜     |
+| 2.8  | Implement approve flow (drafts/ → approved/ + .prompt.md)   | ✅     |
+| 2.9  | Implement reject flow (drafts/ → rejected/ + .feedback.md)  | ✅     |
+| 2.10 | Implement prompt-log.md append on approve/reject            | ✅     |
+| 2.11 | Implement MEDIA-CONFIG.md style notes auto-update on reject | ✅     |
 
 ### Routing & Context
 
 | #    | Step                                                                                            | Status |
 | ---- | ----------------------------------------------------------------------------------------------- | ------ |
-| 2.12 | Update TOOLS.md with media file routing rules                                                   | ⬜     |
-| 2.13 | Update AGENTS.md with media-content routing entry                                               | ⬜     |
-| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute → save | ⬜     |
+| 2.12 | Update TOOLS.md with media file routing rules                                                   | ✅     |
+| 2.13 | Update AGENTS.md with media-content routing entry                                               | ✅     |
+| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute → save | ⏸️     |
 
 ---
 
@@ -188,7 +188,7 @@
 | ------------ | ----------- | ------ | ----------- | ------- |
 | **Phase 1**  | 20          | 20     | 0           | 0       |
 | **Phase 1b** | 14          | 14     | 0           | 0       |
-| **Phase 2**  | 14          | 0      | 0           | 0       |
+| **Phase 2**  | 14          | 12     | 0           | 2       |
 | **Phase 3A** | 10          | 0      | 0           | 0       |
 | **Phase 3B** | 10          | 0      | 0           | 0       |
-| **Total**    | **68**      | **34** | **0**       | **0**   |
+| **Total**    | **68**      | **46** | **0**       | **2**   |
