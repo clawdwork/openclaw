@@ -169,7 +169,8 @@ async def run(args):
     print(f"  Resolution: {args.size or '1280x720'}")
     print(f"  Model: {args.model}")
     # OpenClaw parses MEDIA tokens and will attach the file on supported providers.
-    print(f"MEDIA: {full_path}")
+    # Use the original filename (preserves ./ relative paths for chat delivery).
+    print(f"MEDIA: {args.filename}")
 
 
 def main():

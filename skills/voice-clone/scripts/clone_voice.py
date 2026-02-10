@@ -190,7 +190,8 @@ def main():
                     urllib.request.urlretrieve(audio_url, str(demo_path))
                     full_demo = demo_path.resolve()
                     print(f"  Demo saved: {full_demo}")
-                    print(f"MEDIA: {full_demo}")
+                    # Use original path (preserves ./ relative paths for chat delivery).
+                    print(f"MEDIA: {demo_output}")
 
     except Exception as e:
         error_msg = str(e)

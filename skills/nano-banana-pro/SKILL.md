@@ -53,6 +53,6 @@ API key
 Notes
 
 - Resolutions: `1K` (default), `2K`, `4K`.
-- Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.png`.
+- **Always use `./` relative paths** for filenames so OpenClaw can auto-attach via chat (e.g., `./media/generated/drafts/2026-02-09-hero.png`).
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
 - Do not read the image back; report the saved path only.

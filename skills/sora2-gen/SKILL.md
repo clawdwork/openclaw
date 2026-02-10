@@ -99,7 +99,7 @@ Notes
 - Audio is NOT natively generated — Sora 2 outputs silent video.
 - Image input must match the target video resolution (size parameter).
 - Remix preserves original structure/composition — best for single focused edits.
-- Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.mp4`.
+- **Always use `./` relative paths** for filenames so OpenClaw can auto-attach via chat (e.g., `./media/generated/drafts/2026-02-09-scene.mp4`).
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
 - Do not read the video back; report the saved path only.
 - Latency: 2-5 minutes depending on model, duration, and API load.

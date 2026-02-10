@@ -102,7 +102,7 @@ Notes
 - Duration is always 4, 6, or 8 seconds (Veo 3.1 limit).
 - Audio is natively generated — describe sounds, music, and dialogue in the prompt.
 - Dialogue format: use natural speech in the prompt (e.g., "A man says: Hello there").
-- Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.mp4`.
+- **Always use `./` relative paths** for filenames so OpenClaw can auto-attach via chat (e.g., `./media/generated/drafts/2026-02-09-scene.mp4`).
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
 - Do not read the video back; report the saved path only.
 - Videos are stored on Google servers for 2 days — download promptly.

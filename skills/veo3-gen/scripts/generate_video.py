@@ -230,7 +230,8 @@ def main():
         print(f"  Resolution: {args.resolution}")
         print(f"  Aspect: {args.aspect}")
         # OpenClaw parses MEDIA tokens and will attach the file on supported providers.
-        print(f"MEDIA: {full_path}")
+        # Use the original filename (preserves ./ relative paths for chat delivery).
+        print(f"MEDIA: {args.filename}")
 
     except Exception as e:
         error_msg = str(e)

@@ -121,7 +121,7 @@ Popular voices
 
 Notes
 
-- Use timestamps in filenames: `yyyy-mm-dd-hh-mm-ss-name.mp3`.
+- **Always use `./` relative paths** for filenames so OpenClaw can auto-attach via chat (e.g., `./media/generated/drafts/2026-02-09-narration.mp3`).
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
 - Do not read the audio back; report the saved path only.
 - Pause syntax: `<#1.5#>` inserts a 1.5-second pause.
