@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 21 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 22 skills (managed: domain categories + celavii + custom)
 repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
@@ -113,10 +113,10 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 21 managed + 60 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 22 managed + 60 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 21 managed + 60 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 21 managed + 60 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 22 managed + 60 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 22 managed + 60 bundled                       |
 
 ---
 
@@ -143,12 +143,12 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ### Voice & Media
 
-| Capability       | Primary          | Fallback              |
-| ---------------- | ---------------- | --------------------- |
-| Speech-to-text   | Whisper (local)  | —                     |
-| Text-to-speech   | ElevenLabs (sag) | sherpa-onnx (local)   |
-| Image generation | Gemini 3 Pro     | —                     |
-| Video prompting  | Veo 3 / Sora 2   | — (future exec skill) |
+| Capability       | Primary            | Fallback            |
+| ---------------- | ------------------ | ------------------- |
+| Speech-to-text   | Whisper (local)    | —                   |
+| Text-to-speech   | ElevenLabs (sag)   | sherpa-onnx (local) |
+| Image generation | Gemini 3 Pro       | —                   |
+| Video generation | Veo 3.1 (veo3-gen) | —                   |
 
 ### Memory & Context
 
