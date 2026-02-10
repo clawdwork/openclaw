@@ -410,7 +410,7 @@ def main():
 
             # Voice with MiniMax
             voice1 = args.voice1 or "English_expressive_narrator"
-            voice2 = args.voice2 or "English_female_narrator"
+            voice2 = args.voice2 or "Wise_Woman"
             api_token = os.environ.get("REPLICATE_API_TOKEN", "")
             print(f"  Voice 1 (host): {voice1}")
             print(f"  Voice 2 (co-host): {voice2}")
