@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 25 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 26 skills (managed: domain categories + celavii + custom)
 repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
@@ -148,6 +148,7 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 | Speech-to-text   | Whisper (local)           | —                                        |
 | Text-to-speech   | ElevenLabs (sag, primary) | MiniMax 2.6 HD (minimax-voice, fallback) |
 | Voice cloning    | MiniMax (voice-clone)     | —                                        |
+| Podcast gen      | Podcastfy (podcast-gen)   | — (Edge TTS free; OpenAI/ElevenLabs opt) |
 | Image generation | Gemini 3 Pro              | —                                        |
 | Video generation | Veo 3.1 (veo3-gen)        | Sora 2 (sora2-gen)                       |
 
