@@ -63,24 +63,28 @@ curl -s -X POST https://www.celavii.com/api/v1/enhance/profiles \
     "dry_run": true
   }'
 
-# Step 2: Execute (only after reviewing dry run cost)
+# Step 2: Execute with auto-confirm (skips manual confirmation step)
 curl -s -X POST https://www.celavii.com/api/v1/enhance/profiles \
   -H "Authorization: Bearer $CELAVII_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "profiles": ["leomessi", "selenagomez"],
     "mode": "basic",
-    "dry_run": false
+    "dry_run": false,
+    "auto_confirm": true,
+    "authorize_overage": false
   }'
 ```
 
-| Field      | Type     | Required | Description                                        |
-| ---------- | -------- | -------- | -------------------------------------------------- |
-| `profiles` | string[] | yes      | Usernames, @handles, or ig:IDs (max 500)           |
-| `mode`     | string   | no       | `basic` (default) or `enhanced`                    |
-| `dry_run`  | boolean  | no       | If `true`, returns cost estimate without executing |
+| Field               | Type     | Required | Description                                                                                      |
+| ------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `profiles`          | string[] | yes      | Usernames, @handles, or ig:IDs (max 500)                                                         |
+| `mode`              | string   | no       | `basic` (default) or `enhanced`                                                                  |
+| `dry_run`           | boolean  | no       | If `true`, returns cost estimate without executing                                               |
+| `auto_confirm`      | boolean  | no       | If `true`, immediately confirms the job (skips manual confirmation step)                         |
+| `authorize_overage` | boolean  | no       | If `true`, authorize overage charges if credit balance is insufficient (requires `auto_confirm`) |
 
-**Credits**: 1-2 per profile + Apify cost. **Requires `enhance:trigger` scope.**
+**Credits**: 1-2 per profile + processing cost. **Requires `enhance:trigger` scope.**
 
 ### Bulk enhancement from source (dry run first!)
 
@@ -117,15 +121,17 @@ curl -s -X POST https://www.celavii.com/api/v1/enhance/bulk \
   }'
 ```
 
-| Field                   | Type    | Required | Description                                                 |
-| ----------------------- | ------- | -------- | ----------------------------------------------------------- |
-| `source.type`           | string  | yes      | `followers`, `following`, `both`, or `search`               |
-| `source.target`         | string  | yes\*    | Username or ig:ID (\*required for network sources)          |
-| `source.filters`        | object  | no       | Filter criteria (see below)                                 |
-| `source.limit`          | integer | no       | Max profiles (default 500; network cap 50K, search cap 500) |
-| `mode`                  | string  | no       | `basic` (default) or `enhanced`                             |
-| `dry_run`               | boolean | no       | If `true`, returns cost estimate without executing          |
-| `skip_already_enhanced` | boolean | no       | Skip profiles already enhanced (default `false`)            |
+| Field                   | Type    | Required | Description                                                                            |
+| ----------------------- | ------- | -------- | -------------------------------------------------------------------------------------- |
+| `source.type`           | string  | yes      | `followers`, `following`, `both`, or `search`                                          |
+| `source.target`         | string  | yes\*    | Username or ig:ID (\*required for network sources)                                     |
+| `source.filters`        | object  | no       | Filter criteria (see below)                                                            |
+| `source.limit`          | integer | no       | Max profiles (default 500; network cap 50K, search cap 500)                            |
+| `mode`                  | string  | no       | `basic` (default) or `enhanced`                                                        |
+| `dry_run`               | boolean | no       | If `true`, returns cost estimate without executing                                     |
+| `skip_already_enhanced` | boolean | no       | Skip profiles already enhanced (default `false`)                                       |
+| `auto_confirm`          | boolean | no       | If `true`, immediately confirms the job (skips manual confirmation)                    |
+| `authorize_overage`     | boolean | no       | If `true`, authorize overage charges if credits insufficient (requires `auto_confirm`) |
 
 **Network filters** (`followers`/`following`/`both`): `min_followers`, `max_followers`, `verified_only`
 **Search filters** (`search`): `query`, `niche`, `location`, `gender`, `has_contact`, `min_followers`, `max_followers`
@@ -133,6 +139,19 @@ curl -s -X POST https://www.celavii.com/api/v1/enhance/bulk \
 **Processing**: Async — jobs are queued and processed in batches of 300 profiles (~5 min/batch). Response includes `estimated_processing_time` and `status_url` to poll progress.
 
 **Credits**: 1-2 per profile + processing cost. **Requires `enhance:trigger` scope.**
+
+### Confirm a pending enhancement job
+
+Only needed if `auto_confirm` was NOT set when creating the job.
+
+```bash
+curl -s -X POST https://www.celavii.com/api/v1/enhance/<job_id>/confirm \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ "authorize_overage": false }'
+```
+
+**Credits**: 0. **Requires `enhance:trigger` scope.**
 
 ### Check enhancement job status
 
