@@ -73,11 +73,11 @@ uv run {baseDir}/scripts/generate_podcast.py -f ./report.md -u "https://blog.com
 
 ### TTS provider
 
-| Parameter  | Default | Description                                                                  |
-| ---------- | ------- | ---------------------------------------------------------------------------- |
-| `--tts`    | `edge`  | TTS provider: `edge` (free), `openai`, `elevenlabs`, `gemini`, `geminimulti` |
-| `--voice1` | auto    | Voice for host 1 (questioner)                                                |
-| `--voice2` | auto    | Voice for host 2 (answerer)                                                  |
+| Parameter  | Default | Description                                                                             |
+| ---------- | ------- | --------------------------------------------------------------------------------------- |
+| `--tts`    | `edge`  | TTS provider: `edge` (free), `minimax`, `openai`, `elevenlabs`, `gemini`, `geminimulti` |
+| `--voice1` | auto    | Voice for host 1 (questioner)                                                           |
+| `--voice2` | auto    | Voice for host 2 (answerer)                                                             |
 
 ### LLM
 
@@ -95,12 +95,13 @@ uv run {baseDir}/scripts/generate_podcast.py -f ./report.md -u "https://blog.com
 
 ## TTS providers comparison
 
-| Provider      | Cost           | Quality   | API Key              | Best for                       |
-| ------------- | -------------- | --------- | -------------------- | ------------------------------ |
-| `edge`        | **Free**       | Good      | None                 | Daily digests, quick summaries |
-| `openai`      | ~$15/1M chars  | Great     | `OPENAI_API_KEY`     | Professional quality           |
-| `elevenlabs`  | ~$180/1M chars | Excellent | `ELEVENLABS_API_KEY` | Premium voice customization    |
-| `geminimulti` | Varies         | Excellent | `GEMINI_API_KEY`     | English, natural multi-speaker |
+| Provider      | Cost           | Quality   | API Key               | Best for                                 |
+| ------------- | -------------- | --------- | --------------------- | ---------------------------------------- |
+| `edge`        | **Free**       | Good      | None                  | Daily digests, quick summaries           |
+| `openai`      | ~$15/1M chars  | Great     | `OPENAI_API_KEY`      | Professional quality                     |
+| `elevenlabs`  | ~$180/1M chars | Excellent | `ELEVENLABS_API_KEY`  | Premium voice customization              |
+| `minimax`     | ~$0.01/episode | Excellent | `REPLICATE_API_TOKEN` | Studio-grade, 300+ voices, 40+ languages |
+| `geminimulti` | Varies         | Excellent | `GEMINI_API_KEY`      | English, natural multi-speaker           |
 
 ## Examples
 
@@ -129,6 +130,17 @@ uv run {baseDir}/scripts/generate_podcast.py \
   --filename "./media/generated/drafts/2026-02-09-weekly-recap.mp3"
 ```
 
+### MiniMax voices (studio-grade, recommended)
+
+```bash
+uv run {baseDir}/scripts/generate_podcast.py \
+  -f ~/org/shared/memory/2026-02-09.md \
+  --tts minimax \
+  --voice1 English_expressive_narrator --voice2 English_female_narrator \
+  --name "Daily Intel" \
+  --filename "./media/generated/drafts/2026-02-09-daily-intel.mp3"
+```
+
 ### Premium quality with OpenAI voices
 
 ```bash
@@ -142,6 +154,7 @@ uv run {baseDir}/scripts/generate_podcast.py \
 ## API keys
 
 - `GEMINI_API_KEY` — **Required** for script generation (already configured)
+- `REPLICATE_API_TOKEN` — Only if using `--tts minimax` (already configured)
 - `OPENAI_API_KEY` — Only if using `--tts openai`
 - `ELEVENLABS_API_KEY` — Only if using `--tts elevenlabs`
 - Edge TTS (`--tts edge`) requires **no API key** at all

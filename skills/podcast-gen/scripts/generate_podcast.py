@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11,<3.14"
-# dependencies = ["podcastfy", "playwright", "audioop-lts"]
+# dependencies = ["podcastfy", "playwright", "audioop-lts", "replicate", "pydub", "httpx"]
 # ///
 """Generate a podcast-style audio conversation from text, files, or URLs using Podcastfy.
 
@@ -12,8 +12,10 @@ Default: Gemini Flash for script generation + Edge TTS for voices (zero extra co
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -34,10 +36,11 @@ def build_conversation_config(args):
     if args.creativity is not None:
         config["creativity"] = args.creativity
 
-    # TTS model selection
-    config["text_to_speech"] = {"model": args.tts}
+    # For minimax, we handle TTS externally — set edge as placeholder for Podcastfy config
+    tts_model = "edge" if args.tts == "minimax" else args.tts
+    config["text_to_speech"] = {"model": tts_model}
 
-    if args.tts == "edge":
+    if args.tts == "edge" or args.tts == "minimax":
         config["text_to_speech"]["default_voices"] = {
             "question": args.voice1 or "en-US-JennyNeural",
             "answer": args.voice2 or "en-US-EricNeural",
@@ -100,6 +103,108 @@ def resolve_inputs(args):
     return urls, raw_text
 
 
+def parse_transcript_segments(transcript_text):
+    """Parse <Person1> and <Person2> segments from Podcastfy transcript."""
+    segments = []
+    # Match <Person1>...</Person1> and <Person2>...</Person2> tags
+    pattern = re.compile(r'<(Person[12])>\s*(.*?)\s*</\1>', re.DOTALL)
+    for match in pattern.finditer(transcript_text):
+        speaker = match.group(1)
+        text = match.group(2).strip()
+        if text:
+            segments.append((speaker, text))
+    return segments
+
+
+def minimax_tts_segment(text, voice, api_token, model="speech-02-hd", timeout=120, max_retries=5):
+    """Generate audio for a single text segment using MiniMax via Replicate."""
+    import replicate
+    import httpx
+
+    for attempt in range(max_retries):
+        try:
+            prediction = replicate.predictions.create(
+                model="minimax/speech-02-hd" if model == "speech-02-hd" else "minimax/speech-02-turbo",
+                input={
+                    "text": text,
+                    "voice_id": voice,
+                },
+            )
+            break
+        except Exception as e:
+            if "429" in str(e) or "throttled" in str(e).lower():
+                wait = 10 * (attempt + 1)
+                print(f"    Rate limited, waiting {wait}s (attempt {attempt+1}/{max_retries})...")
+                time.sleep(wait)
+                continue
+            raise
+    else:
+        raise RuntimeError(f"MiniMax TTS: rate limited after {max_retries} retries")
+
+    # Poll for completion
+    start = time.time()
+    while prediction.status not in ("succeeded", "failed", "canceled"):
+        if time.time() - start > timeout:
+            raise TimeoutError(f"MiniMax TTS timed out after {timeout}s")
+        time.sleep(2)
+        prediction.reload()
+
+    if prediction.status != "succeeded":
+        raise RuntimeError(f"MiniMax TTS failed: {prediction.error}")
+
+    # Download audio
+    output_url = prediction.output
+    if isinstance(output_url, list):
+        output_url = output_url[0]
+
+    resp = httpx.get(output_url, timeout=60)
+    resp.raise_for_status()
+    return resp.content
+
+
+def generate_with_minimax(transcript_text, output_path, voice1, voice2, api_token, model="speech-02-hd"):
+    """Voice a Podcastfy transcript using MiniMax TTS and concatenate segments."""
+    from pydub import AudioSegment
+
+    segments = parse_transcript_segments(transcript_text)
+    if not segments:
+        raise ValueError("No <Person1>/<Person2> segments found in transcript")
+
+    print(f"  Voicing {len(segments)} dialogue segments with MiniMax...")
+    tmp_dir = Path(tempfile.mkdtemp(prefix="podcast-minimax-"))
+    audio_parts = []
+
+    for i, (speaker, text) in enumerate(segments):
+        voice = voice1 if speaker == "Person1" else voice2
+        print(f"  [{i+1}/{len(segments)}] {speaker} ({len(text)} chars)")
+        # Pace requests to stay within Replicate rate limits (6 req/min)
+        if i > 0:
+            time.sleep(11)
+        try:
+            audio_data = minimax_tts_segment(text, voice, api_token, model=model)
+            seg_path = tmp_dir / f"seg_{i:04d}.mp3"
+            seg_path.write_bytes(audio_data)
+            audio_seg = AudioSegment.from_file(str(seg_path))
+            # Add a small pause between speakers
+            audio_parts.append(audio_seg)
+            audio_parts.append(AudioSegment.silent(duration=400))  # 400ms pause
+        except Exception as e:
+            print(f"  WARNING: Segment {i+1} failed: {e}", file=sys.stderr)
+            continue
+
+    if not audio_parts:
+        raise RuntimeError("No audio segments were generated")
+
+    # Concatenate all segments
+    combined = audio_parts[0]
+    for part in audio_parts[1:]:
+        combined += part
+
+    # Export
+    combined.export(str(output_path), format="mp3", bitrate="128k")
+    return output_path
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate a podcast-style audio conversation from text, files, or URLs."
@@ -145,8 +250,8 @@ def main():
     # TTS
     parser.add_argument(
         "--tts", type=str, default="edge",
-        choices=["edge", "openai", "elevenlabs", "gemini", "geminimulti"],
-        help="TTS provider (default: edge — free, no API key)"
+        choices=["edge", "openai", "elevenlabs", "gemini", "geminimulti", "minimax"],
+        help="TTS provider (default: edge — free, no API key; minimax for MiniMax Speech 2.6 HD)"
     )
     parser.add_argument("--voice1", type=str, help="Voice for host 1 (questioner)")
     parser.add_argument("--voice2", type=str, help="Voice for host 2 (answerer)")
@@ -215,6 +320,10 @@ def main():
         print("ERROR: ELEVENLABS_API_KEY not set. Required for ElevenLabs TTS.", file=sys.stderr)
         print("TIP: Use --tts edge for free TTS (no API key needed).", file=sys.stderr)
         sys.exit(1)
+    if args.tts == "minimax" and not os.environ.get("REPLICATE_API_TOKEN"):
+        print("ERROR: REPLICATE_API_TOKEN not set. Required for MiniMax TTS.", file=sys.stderr)
+        print("TIP: Use --tts edge for free TTS (no API key needed).", file=sys.stderr)
+        sys.exit(1)
 
     urls, raw_text = resolve_inputs(args)
 
@@ -241,13 +350,19 @@ def main():
 
     try:
         from podcastfy.client import generate_podcast
+        import shutil
+
+        # For minimax mode: generate transcript only, then voice with MiniMax
+        use_minimax = args.tts == "minimax"
 
         # Build kwargs
         kwargs = {
             "conversation_config": conversation_config,
-            "tts_model": args.tts,
+            "tts_model": "edge",  # placeholder for minimax; actual tts for others
             "llm_model_name": args.llm_model,
         }
+        if not use_minimax:
+            kwargs["tts_model"] = args.tts
 
         if urls:
             kwargs["urls"] = urls
@@ -256,12 +371,12 @@ def main():
             # Podcastfy accepts raw text via topic or transcript
             kwargs["topic"] = raw_text
 
-        if args.transcript_only:
+        if args.transcript_only or use_minimax:
             kwargs["transcript_only"] = True
 
         audio_file = generate_podcast(**kwargs)
 
-        if args.transcript_only:
+        if args.transcript_only and not use_minimax:
             print(f"\nTranscript generated.")
             if args.save_transcript and audio_file:
                 Path(args.save_transcript).parent.mkdir(parents=True, exist_ok=True)
@@ -271,28 +386,59 @@ def main():
                 print(audio_file)
             sys.exit(0)
 
-        if not audio_file or not Path(audio_file).exists():
-            print("ERROR: Podcastfy did not produce an audio file.", file=sys.stderr)
-            sys.exit(1)
+        if use_minimax:
+            # audio_file is a file path in transcript_only mode; read the content
+            transcript_path = audio_file
+            if not transcript_path or not Path(transcript_path).exists():
+                # Fallback: check Podcastfy's default transcript dir
+                transcript_dir = Path("./data/transcripts")
+                if transcript_dir.exists():
+                    transcripts = sorted(transcript_dir.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True)
+                    if transcripts:
+                        transcript_path = str(transcripts[0])
+            if not transcript_path or not Path(transcript_path).exists():
+                print("ERROR: No transcript generated.", file=sys.stderr)
+                sys.exit(1)
 
-        # Move to desired output path
-        import shutil
-        shutil.move(audio_file, str(full_path))
+            transcript_text = Path(transcript_path).read_text(encoding="utf-8")
+
+            # Save transcript if requested
+            if args.save_transcript:
+                Path(args.save_transcript).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(transcript_path, args.save_transcript)
+                print(f"Transcript saved: {args.save_transcript}")
+
+            # Voice with MiniMax
+            voice1 = args.voice1 or "English_expressive_narrator"
+            voice2 = args.voice2 or "English_female_narrator"
+            api_token = os.environ.get("REPLICATE_API_TOKEN", "")
+            print(f"  Voice 1 (host): {voice1}")
+            print(f"  Voice 2 (co-host): {voice2}")
+
+            generate_with_minimax(
+                transcript_text, full_path, voice1, voice2, api_token
+            )
+        else:
+            if not audio_file or not Path(audio_file).exists():
+                print("ERROR: Podcastfy did not produce an audio file.", file=sys.stderr)
+                sys.exit(1)
+
+            # Move to desired output path
+            shutil.move(audio_file, str(full_path))
+
+            # Save transcript if requested
+            if args.save_transcript:
+                transcript_dir = Path("./data/transcripts")
+                if transcript_dir.exists():
+                    transcripts = sorted(transcript_dir.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True)
+                    if transcripts:
+                        Path(args.save_transcript).parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(str(transcripts[0]), args.save_transcript)
+                        print(f"Transcript saved: {args.save_transcript}")
 
         # File size
         size_mb = full_path.stat().st_size / (1024 * 1024)
         print(f"\nPodcast saved: {full_path} ({size_mb:.1f} MB)")
-
-        # Save transcript if requested
-        if args.save_transcript:
-            # Check for transcript in podcastfy's default location
-            transcript_dir = Path("./data/transcripts")
-            if transcript_dir.exists():
-                transcripts = sorted(transcript_dir.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True)
-                if transcripts:
-                    Path(args.save_transcript).parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(str(transcripts[0]), args.save_transcript)
-                    print(f"Transcript saved: {args.save_transcript}")
 
         # MEDIA: token for OpenClaw chat delivery
         print(f"MEDIA: {args.filename}")
