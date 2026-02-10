@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (Phase 1 + 1b + 2 + 3A/veo3 complete, 3 tests pending gateway restart)  
+> **Last Updated**: 2026-02-09 (Phase 1 + 1b + 2 + 3A/veo3 complete, 2 tests pending gateway restart)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -146,7 +146,7 @@
 | 3A.1 | Confirm Veo 3 API availability            | ✅     |
 | 3A.2 | Write `scripts/generate_video.py` (Veo 3) | ✅     |
 | 3A.3 | Write `SKILL.md` with usage examples      | ✅     |
-| 3A.4 | Test video generation end-to-end          | ⏸️     |
+| 3A.4 | Test video generation end-to-end          | ✅     |
 | 3A.5 | Add to agent skills filter                | ✅     |
 
 ### `sora2-gen`
@@ -189,6 +189,6 @@
 | **Phase 1**  | 20          | 20     | 0           | 0       |
 | **Phase 1b** | 14          | 14     | 0           | 0       |
 | **Phase 2**  | 14          | 12     | 0           | 2       |
-| **Phase 3A** | 10          | 4      | 0           | 1       |
+| **Phase 3A** | 10          | 5      | 0           | 0       |
 | **Phase 3B** | 10          | 0      | 0           | 0       |
-| **Total**    | **68**      | **50** | **0**       | **3**   |
+| **Total**    | **68**      | **51** | **0**       | **2**   |
