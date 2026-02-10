@@ -259,6 +259,11 @@ def main():
         "--ending", type=str, default="Thanks for listening!",
         help="Ending message for the podcast"
     )
+    parser.add_argument(
+        "--minimax-model", type=str, default="speech-02-turbo",
+        choices=["speech-02-hd", "speech-02-turbo"],
+        help="MiniMax model variant (default: speech-02-turbo for fast; speech-02-hd for studio)"
+    )
 
     # LLM
     parser.add_argument(
@@ -409,14 +414,16 @@ def main():
                 print(f"Transcript saved: {args.save_transcript}")
 
             # Voice with MiniMax
-            voice1 = args.voice1 or "English_expressive_narrator"
+            voice1 = args.voice1 or "English_ManWithDeepVoice"
             voice2 = args.voice2 or "Wise_Woman"
             api_token = os.environ.get("REPLICATE_API_TOKEN", "")
+            mm_model = args.minimax_model
             print(f"  Voice 1 (host): {voice1}")
             print(f"  Voice 2 (co-host): {voice2}")
+            print(f"  Model: {mm_model}")
 
             generate_with_minimax(
-                transcript_text, full_path, voice1, voice2, api_token
+                transcript_text, full_path, voice1, voice2, api_token, model=mm_model
             )
         else:
             if not audio_file or not Path(audio_file).exists():

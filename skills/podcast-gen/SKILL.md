@@ -136,7 +136,7 @@ uv run {baseDir}/scripts/generate_podcast.py \
 uv run {baseDir}/scripts/generate_podcast.py \
   -f ~/org/shared/memory/2026-02-09.md \
   --tts minimax \
-  --voice1 English_expressive_narrator --voice2 Wise_Woman \
+  --voice1 English_ManWithDeepVoice --voice2 Wise_Woman \
   --name "Daily Intel" \
   --filename "./media/generated/drafts/2026-02-09-daily-intel.mp3"
 ```
