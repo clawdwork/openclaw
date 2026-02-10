@@ -140,11 +140,17 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Build config
+    # Note: allow_all is not supported for image-to-video; auto-downgrade
+    person_gen = args.person
+    if args.input_image and person_gen == "allow_all":
+        person_gen = "allow_adult"
+        print("  Note: personGeneration auto-set to allow_adult (required for image input)")
+
     config_kwargs = {
         "aspect_ratio": args.aspect,
         "resolution": args.resolution,
         "duration_seconds": int(args.duration),
-        "person_generation": args.person,
+        "person_generation": person_gen,
     }
     if args.negative_prompt:
         config_kwargs["negative_prompt"] = args.negative_prompt
