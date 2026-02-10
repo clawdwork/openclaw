@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (Phase 1 complete)  
+> **Last Updated**: 2026-02-09 (Phase 1 + 1b complete)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -78,20 +78,20 @@
 
 | #     | File                 | Section                        | Update                                                                           | Status |
 | ----- | -------------------- | ------------------------------ | -------------------------------------------------------------------------------- | ------ |
-| 1b.1  | `agents.md`          | § Task Routing                 | Add `├── Media content task? ──▶ Spawn Media Content Agent (Pro)`                | ⬜     |
-| 1b.2  | `agents.md`          | § Domain Sub-Agent Definitions | Add row: Media Content, media-content, Pro, Ephemeral                            | ⬜     |
-| 1b.3  | `agents.md`          | § When to Use Sub-Agents       | Add rows: Image gen, Video prompting, Mood board, Product shot, Character design | ⬜     |
-| 1b.4  | `agents.md`          | § Multi-Coordinator diagram    | Add `media-content` to shared domain agents list                                 | ⬜     |
-| 1b.5  | `README.md`          | § Overview diagram             | Change `8 Specialists` → `9 Specialists`                                         | ⬜     |
-| 1b.6  | `README.md`          | § Domain Sub-Agent Models      | Add row: Media Content, Pro, 5 skills, 6 commands                                | ⬜     |
-| 1b.7  | `skills.md`          | § Domain Skills table          | Add `Media Content` category with 5 skills                                       | ⬜     |
-| 1b.8  | `skills.md`          | § Voice & Media                | Add video generation capability (future)                                         | ⬜     |
-| 1b.9  | `skills.md`          | Access Matrix                  | Update managed skill counts                                                      | ⬜     |
-| 1b.10 | `VALUES.md`          | § Agent Counts                 | Domain: 8→9, total: 13→14                                                        | ⬜     |
-| 1b.11 | `VALUES.md`          | § Skill Counts                 | Managed dirs: 20→21, SKILL.md files: 57→62                                       | ⬜     |
-| 1b.12 | `CHANGELOG.md`       | (append)                       | New domain agent + 5 knowledge skills entry                                      | ⬜     |
-| 1b.13 | TOOLS.md (workspace) | File Routing                   | Add media-content save paths                                                     | ⬜     |
-| 1b.14 | —                    | Verification                   | Run `scripts/arch-verify.sh` — confirm no drift                                  | ⬜     |
+| 1b.1  | `agents.md`          | § Task Routing                 | Add `├── Media content task? ──▶ Spawn Media Content Agent (Pro)`                | ✅     |
+| 1b.2  | `agents.md`          | § Domain Sub-Agent Definitions | Add row: Media Content, media-content, Pro, Ephemeral                            | ✅     |
+| 1b.3  | `agents.md`          | § When to Use Sub-Agents       | Add rows: Image gen, Video prompting, Mood board, Product shot, Character design | ✅     |
+| 1b.4  | `agents.md`          | § Multi-Coordinator diagram    | Add `media-content` to shared domain agents list                                 | ✅     |
+| 1b.5  | `README.md`          | § Overview diagram             | Change `8 Specialists` → `9 Specialists`                                         | ✅     |
+| 1b.6  | `README.md`          | § Domain Sub-Agent Models      | Add row: Media Content, Pro, 5 skills, 6 commands                                | ✅     |
+| 1b.7  | `skills.md`          | § Domain Skills table          | Add `Media Content` category with 5 skills                                       | ✅     |
+| 1b.8  | `skills.md`          | § Voice & Media                | Add video generation capability (future)                                         | ✅     |
+| 1b.9  | `skills.md`          | Access Matrix                  | Update managed skill counts                                                      | ✅     |
+| 1b.10 | `VALUES.md`          | § Agent Counts                 | Domain: 8→9, total: 13→14                                                        | ✅     |
+| 1b.11 | `VALUES.md`          | § Skill Counts                 | Managed dirs: 20→21, SKILL.md files: 57→62                                       | ✅     |
+| 1b.12 | `CHANGELOG.md`       | (append)                       | New domain agent + 5 knowledge skills entry                                      | ✅     |
+| 1b.13 | TOOLS.md (workspace) | File Routing                   | Add media-content save paths                                                     | ✅     |
+| 1b.14 | —                    | Verification                   | Run `scripts/arch-verify.sh` — confirm no drift                                  | ✅     |
 
 ---
 
@@ -187,8 +187,8 @@
 | Phase        | Total Steps | Done   | In Progress | Blocked |
 | ------------ | ----------- | ------ | ----------- | ------- |
 | **Phase 1**  | 20          | 20     | 0           | 0       |
-| **Phase 1b** | 14          | 0      | 0           | 0       |
+| **Phase 1b** | 14          | 14     | 0           | 0       |
 | **Phase 2**  | 14          | 0      | 0           | 0       |
 | **Phase 3A** | 10          | 0      | 0           | 0       |
 | **Phase 3B** | 10          | 0      | 0           | 0       |
-| **Total**    | **68**      | **20** | **0**       | **0**   |
+| **Total**    | **68**      | **34** | **0**       | **0**   |

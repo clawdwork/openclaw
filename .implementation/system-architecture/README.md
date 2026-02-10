@@ -52,7 +52,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │      │                       │                       │                      │
 │      ▼                       ▼                       ▼                      │
 │  ┌──────────────────────────────────────────────────────────────────┐      │
-│  │              DOMAIN SUB-AGENTS (8 Specialists)                    │      │
+│  │              DOMAIN SUB-AGENTS (9 Specialists)                    │      │
 │  │                                                                   │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │  Marketing   │ │    Sales     │ │   Product    │  (Flash)     │      │
@@ -66,6 +66,10 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  │    Legal     │ │   Finance    │ │    Data      │  (Sonnet)    │      │
 │  │  │  6 skills    │ │  6 skills    │ │  7 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
+│  │  ┌──────────────┐                                                │      │
+│  │  │Media Content │                                   (Pro)        │      │
+│  │  │  5 skills    │                                                │      │
+│  │  └──────────────┘                                                │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 │  Flash also spawns these directly (domain agents CANNOT spawn):             │
@@ -116,6 +120,7 @@ This architecture is split into focused modules. Each file is self-contained.
 | **Legal**             | Sonnet | Precision, risk           | 6 skills, 1+ commands |
 | **Finance**           | Sonnet | Accuracy, compliance      | 6 skills, 5 commands  |
 | **Data**              | Sonnet | SQL, code generation      | 7 skills, varies      |
+| **Media Content**     | Pro    | Prompt crafting, visuals  | 5 skills, 6 commands  |
 
 ### Model Selection Logic (Fallback Chain)
 

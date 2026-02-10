@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 20 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 21 skills (managed: domain categories + celavii + custom)
 repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
@@ -52,7 +52,7 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ---
 
-## Domain Skills (50 Skills across 13 Categories)
+## Domain Skills (55 Skills across 14 Categories)
 
 | Domain                 | Count | Skills                                                                                                                                          | Model  |
 | ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
@@ -64,6 +64,7 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 | **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                              | Sonnet |
 | **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                    | Sonnet |
 | **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis | Sonnet |
+| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                  | Pro    |
 
 ---
 
@@ -101,10 +102,10 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 | Artifact                        | Categories                                                                                                                        |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Commands** (action templates) | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search                                   |
+| **Commands** (action templates) | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search, media-content                    |
 | **MCP configs** (`.mcp.json`)   | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search                                   |
 | **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`) |
-| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest                                                |
+| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files)          |
 
 ---
 
@@ -112,10 +113,10 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 20 managed + 60 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 21 managed + 60 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 20 managed + 60 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 20 managed + 60 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 21 managed + 60 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 21 managed + 60 bundled                       |
 
 ---
 
@@ -142,11 +143,12 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ### Voice & Media
 
-| Capability       | Primary          | Fallback            |
-| ---------------- | ---------------- | ------------------- |
-| Speech-to-text   | Whisper (local)  | —                   |
-| Text-to-speech   | ElevenLabs (sag) | sherpa-onnx (local) |
-| Image generation | Gemini 3 Pro     | —                   |
+| Capability       | Primary          | Fallback              |
+| ---------------- | ---------------- | --------------------- |
+| Speech-to-text   | Whisper (local)  | —                     |
+| Text-to-speech   | ElevenLabs (sag) | sherpa-onnx (local)   |
+| Image generation | Gemini 3 Pro     | —                     |
+| Video prompting  | Veo 3 / Sora 2   | — (future exec skill) |
 
 ### Memory & Context
 

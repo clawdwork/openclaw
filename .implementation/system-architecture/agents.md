@@ -29,6 +29,10 @@ Flash (coordinator) receives user message
         │
         ├── Search task? ──▶ Spawn Enterprise Search Agent (Flash)
         │
+        ├── Media content task? ──▶ Spawn Media Content Agent (Pro)
+        │   (image, video, mood board, product shot, character design,
+        │    commercial ad, visual asset, brand identity visual)
+        │
         ├── Everyday coding? ──▶ Spawn Dev Coder (Flash)
         │
         ├── Complex/prod code? ──▶ Spawn Prod Coder (Sonnet)
@@ -76,21 +80,22 @@ Flash (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent             | ID           | Model      | Role Summary                                                    | Session Type   |
-| ----------------- | ------------ | ---------- | --------------------------------------------------------------- | -------------- |
-| **Coordinator**   | `main`       | Flash      | User conversations, routing, web search, synthesis              | Main session   |
-| Marketing         | `marketing`  | Flash      | SEO, content, campaigns, brand voice, analytics, Celavii CIP    | Ephemeral      |
-| Sales             | `sales`      | Flash      | Account research, outreach, pipeline, call summaries            | Ephemeral      |
-| Product           | `product`    | Flash      | Specs, roadmaps, competitive analysis, user stories             | Ephemeral      |
-| Support           | `support`    | Flash      | Ticket triage, KB management, escalation                        | Ephemeral      |
-| Enterprise Search | `search`     | Flash      | Query decomposition, multi-source synthesis                     | **Persistent** |
-| Legal             | `legal`      | Sonnet     | Contracts, compliance, risk assessment                          | Ephemeral      |
-| Finance           | `finance`    | Sonnet     | Budgets, forecasting, reconciliation                            | Ephemeral      |
-| Data              | `data`       | Sonnet     | SQL, visualization, ETL, data quality                           | Ephemeral      |
-| **Dev Coder**     | `dev-coder`  | Flash      | Everyday coding, automations, scripts, simple deploys, CI/CD    | Ephemeral      |
-| **Prod Coder**    | `prod-coder` | Sonnet 4.5 | Complex integrations, APIs, backends, prod-critical refactors   | Ephemeral      |
-| **Planner**       | `planner`    | Opus 4.6   | Architecture review, validation, expert advisor (USE SPARINGLY) | Ephemeral      |
-| **Grunt**         | `grunt`      | Haiku      | File ops, tests, cleanup, bulk operations, scaffolding          | Ephemeral      |
+| Agent             | ID              | Model      | Role Summary                                                    | Session Type   |
+| ----------------- | --------------- | ---------- | --------------------------------------------------------------- | -------------- |
+| **Coordinator**   | `main`          | Flash      | User conversations, routing, web search, synthesis              | Main session   |
+| Marketing         | `marketing`     | Flash      | SEO, content, campaigns, brand voice, analytics, Celavii CIP    | Ephemeral      |
+| Sales             | `sales`         | Flash      | Account research, outreach, pipeline, call summaries            | Ephemeral      |
+| Product           | `product`       | Flash      | Specs, roadmaps, competitive analysis, user stories             | Ephemeral      |
+| Support           | `support`       | Flash      | Ticket triage, KB management, escalation                        | Ephemeral      |
+| Enterprise Search | `search`        | Flash      | Query decomposition, multi-source synthesis                     | **Persistent** |
+| Legal             | `legal`         | Sonnet     | Contracts, compliance, risk assessment                          | Ephemeral      |
+| Finance           | `finance`       | Sonnet     | Budgets, forecasting, reconciliation                            | Ephemeral      |
+| Data              | `data`          | Sonnet     | SQL, visualization, ETL, data quality                           | Ephemeral      |
+| Media Content     | `media-content` | Pro        | Image/video/audio prompt crafting, visual assets                | Ephemeral      |
+| **Dev Coder**     | `dev-coder`     | Flash      | Everyday coding, automations, scripts, simple deploys, CI/CD    | Ephemeral      |
+| **Prod Coder**    | `prod-coder`    | Sonnet 4.5 | Complex integrations, APIs, backends, prod-critical refactors   | Ephemeral      |
+| **Planner**       | `planner`       | Opus 4.6   | Architecture review, validation, expert advisor (USE SPARINGLY) | Ephemeral      |
+| **Grunt**         | `grunt`         | Haiku      | File ops, tests, cleanup, bulk operations, scaffolding          | Ephemeral      |
 
 ---
 
@@ -218,6 +223,11 @@ Flash (coordinator):
 | Code implementation   | ✅ Yes         | Sonnet (coder)            |
 | Architecture planning | ✅ Yes         | Opus (planner)            |
 | File ops / grunt work | ✅ Yes         | Haiku                     |
+| Image generation      | ✅ Yes         | Media Content (Pro)       |
+| Video prompting       | ✅ Yes         | Media Content (Pro)       |
+| Mood board / brand ID | ✅ Yes         | Media Content (Pro)       |
+| Product shot          | ✅ Yes         | Media Content (Pro)       |
+| Character design      | ✅ Yes         | Media Content (Pro)       |
 | Web search            | ❌ No          | Flash handles directly    |
 | Simple conversation   | ❌ No          | Flash handles directly    |
 
@@ -250,7 +260,7 @@ Multiple coordinators can coexist — each is a full agent in `agents.list` with
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │           SHARED DOMAIN AGENTS (agents.list)              │   │
 │  │   marketing, sales, legal, finance, data, product,        │   │
-│  │   support, search                                         │   │
+│  │   support, search, media-content                          │   │
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```

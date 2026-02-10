@@ -141,7 +141,7 @@ VALUES_FILE="$ARCH_DIR/VALUES.md"
 if [ -f "$VALUES_FILE" ]; then
   VALUES_PORT=$(grep 'Gateway port' "$VALUES_FILE" 2>/dev/null \
     | head -1 | awk -F'|' '{print $3}' | tr -d ' ' || echo "not found")
-  VALUES_SKILLS=$(grep 'Skill count (managed)' "$VALUES_FILE" 2>/dev/null \
+  VALUES_SKILLS=$(grep 'managed top-level dirs' "$VALUES_FILE" 2>/dev/null \
     | head -1 | awk -F'|' '{print $3}' | tr -d ' ' || echo "not found")
 
   if [ "$VALUES_PORT" = "$ACTUAL_PORT" ]; then

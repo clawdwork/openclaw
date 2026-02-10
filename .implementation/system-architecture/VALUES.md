@@ -20,8 +20,8 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 20    | skills.md (×4)                    | 2026-02-09    |
-| Skill count (managed SKILL.md files) | 57    | (nested inside domain categories) | 2026-02-09    |
+| Skill count (managed top-level dirs) | 21    | skills.md (×4)                    | 2026-02-09    |
+| Skill count (managed SKILL.md files) | 62    | (nested inside domain categories) | 2026-02-09    |
 | Skill count (bundled repo dirs)      | 60    | skills.md, README.md              | 2026-02-09    |
 | Skill count (celavii)                | 7     | skills.md                         | 2026-02-09    |
 | Skill count (custom)                 | 5     | skills.md                         | 2026-02-07    |
@@ -30,8 +30,8 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                    | Value | Files That Reference It | Last Verified |
 | -------------------------------------- | ----- | ----------------------- | ------------- |
-| **Agent count (domain)**               | 8     | README.md, agents.md    | 2026-02-07    |
-| **Agent count (total in agents.list)** | 13    | agents.md               | 2026-02-07    |
+| **Agent count (domain)**               | 9     | README.md, agents.md    | 2026-02-09    |
+| **Agent count (total in agents.list)** | 14    | agents.md               | 2026-02-09    |
 
 ## Paths
 
