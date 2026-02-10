@@ -1,7 +1,7 @@
 # Media Content Agent — Implementation Tracker
 
 > **Tracks**: [PROPOSAL.md](PROPOSAL.md)  
-> **Last Updated**: 2026-02-09 (All phases implemented, 3 tests pending: 2 gateway restart, 1 voice clone audio sample)  
+> **Last Updated**: 2026-02-09 (All phases implemented, gateway restarted. 2 tests pending: 1 e2e chat, 1 voice clone)  
 > **Legend**: ⬜ Not started · 🔲 In progress · ✅ Done · ⏸️ Blocked
 
 ---
@@ -131,7 +131,7 @@
 | ---- | ----------------------------------------------------------------------------------------------- | ------ |
 | 2.12 | Update TOOLS.md with media file routing rules                                                   | ✅     |
 | 2.13 | Update AGENTS.md with media-content routing entry                                               | ✅     |
-| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute → save | ⏸️     |
+| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute → save | ⬜     |
 
 ---
 
@@ -188,7 +188,7 @@
 | ------------ | ----------- | ------ | ----------- | ------- |
 | **Phase 1**  | 20          | 20     | 0           | 0       |
 | **Phase 1b** | 14          | 14     | 0           | 0       |
-| **Phase 2**  | 14          | 12     | 0           | 2       |
+| **Phase 2**  | 14          | 13     | 0           | 1       |
 | **Phase 3A** | 10          | 10     | 0           | 0       |
 | **Phase 3B** | 10          | 9      | 0           | 1       |
-| **Total**    | **68**      | **65** | **0**       | **3**   |
+| **Total**    | **68**      | **66** | **0**       | **2**   |
