@@ -1,6 +1,6 @@
 ---
 name: celavii-profiles
-description: "Get detailed creator intelligence from the Celavii API. Look up full profiles, AI-analyzed affinities, recent posts, network data, followers/following lists, social links, and contact info."
+description: "Get detailed creator intelligence from the Celavii API. Look up full profiles, bulk profile lookup, AI-analyzed affinities, recent posts, network data, followers/following lists, social links, and contact info."
 metadata:
   {
     "openclaw":
@@ -34,7 +34,28 @@ All profile endpoints accept three formats:
 | @handle     | `@leomessi`    | With @ prefix (stripped automatically) |
 | Internal ID | `ig:427553890` | Internal `ig:` prefixed numeric ID     |
 
-## Endpoints (all 0 credits)
+## Endpoints
+
+### Bulk profile lookup
+
+Fetch up to 100 profiles in a single request with optional field selection.
+
+```bash
+curl -s -X POST https://www.celavii.com/api/v1/profiles/bulk \
+  -H "Authorization: Bearer $CELAVII_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "profiles": ["leomessi", "@selenagomez", "ig:427553890"],
+    "fields": ["basic", "affinities", "contact"]
+  }'
+```
+
+| Field      | Type     | Required | Description                                                                                       |
+| ---------- | -------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `profiles` | string[] | yes      | Usernames, @handles, or ig:IDs (max 100)                                                          |
+| `fields`   | string[] | no       | Fields to include: `basic` (default), `affinities`, `contact` (requires `profiles:contact` scope) |
+
+**Credits**: 1. **Scope**: `profiles:read`
 
 ### Get full profile
 
@@ -129,7 +150,8 @@ Do NOT assume empty affinities or missing demographics means the profile lacks t
 
 ## Notes
 
-- All profile endpoints cost 0 credits — use freely for research
+- Most profile endpoints cost 0 credits — use freely for research
+- Bulk lookup (`POST /profiles/bulk`) costs 1 credit per request (up to 100 profiles)
 - Use `celavii-discover` to find creators first, then drill down here
 - Network data (followers/following lists) requires prior scrape — check `/network` first
 - Contact info requires the `profiles:contact` scope on the API key
