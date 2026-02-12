@@ -9,6 +9,8 @@
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
 ~/agent-workspace/skills/     ← 28 skills (managed: domain categories + celavii + custom)
+~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
+{workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
@@ -16,12 +18,42 @@ All agents read skills from `~/.openclaw/skills/` (managed dir), which symlinks 
 
 ### Loading Precedence
 
-Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first match wins):
+Skills are loaded by `src/agents/skills/workspace.ts` from six sources (last match wins):
 
-1. **Extra directories** (`config.skills.load.extraDirs`) — highest priority
+1. **Extra directories** (`config.skills.load.extraDirs`) — lowest priority
 2. **Bundled skills** (built into OpenClaw binary)
 3. **Managed skills** (`~/.openclaw/skills/`) — global shared dir
-4. **Workspace skills** (`{workspaceDir}/skills/`) — per-agent local
+4. **Personal `.agents/skills/`** (`~/.agents/skills/`) — user-wide overrides _(new in v2026.2.12)_
+5. **Project `.agents/skills/`** (`{workspaceDir}/.agents/skills/`) — per-project overrides _(new in v2026.2.12)_
+6. **Workspace skills** (`{workspaceDir}/skills/`) — per-agent local (highest priority)
+
+### Per-Project Skill Customization
+
+The `.agents/skills/` directories (added in v2026.2.12) enable skill overrides without touching shared managed skills:
+
+```
+# Override quality-critic rubric for a specific client project:
+~/org/shared/projects/max-kick/.agents/skills/quality-critic/SKILL.md
+
+# Personal admin-wide skill tweaks (applies to all workspaces):
+~/.agents/skills/quality-critic/SKILL.md
+```
+
+**Use cases**:
+
+- **Client-specific review criteria**: Override `quality-critic` SKILL.md per project to enforce stricter brand compliance for specific clients
+- **Project-specific data schemas**: Override `data/sql-queries` with project-specific table definitions
+- **A/B testing skill prompts**: Test a new `content-creation` skill version in one project without affecting others
+- **Member workspace customization**: Each member's workspace can have `.agents/skills/` overrides for their domain specialization
+
+**Precedence example** (quality-critic skill):
+
+```
+managed: ~/.openclaw/skills/quality-critic/SKILL.md        ← default rubric
+personal: ~/.agents/skills/quality-critic/SKILL.md         ← admin tweaks (wins over managed)
+project: ~/projects/max-kick/.agents/skills/quality-critic/ ← client-specific (wins over personal)
+workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspace (wins over all)
+```
 
 ---
 
