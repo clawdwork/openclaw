@@ -28,6 +28,11 @@ import {
   handleStopCommand,
   handleUsageCommand,
 } from "./commands-session.js";
+import {
+  handleHeartbeatCommand,
+  handleResumeCommand,
+  handleShutdownCommand,
+} from "./commands-shutdown.js";
 import { handleSubagentsCommand } from "./commands-subagents.js";
 import { handleTtsCommands } from "./commands-tts.js";
 import type {
@@ -63,6 +68,9 @@ export async function handleCommands(params: HandleCommandsParams): Promise<Comm
       handleConfigCommand,
       handleDebugCommand,
       handleModelsCommand,
+      handleShutdownCommand,
+      handleResumeCommand,
+      handleHeartbeatCommand,
       handleStopCommand,
       handleCompactCommand,
       handleAbortTrigger,

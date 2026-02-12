@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClaw — Commission Agents in Docker Containers</title>
+    <style>
+      :root {
+        --blue: #0066ff;
+        --blue-light: #00d4ff;
+        --indigo: #6366f1;
+        --emerald: #10b981;
+        --orange: #f97316;
+        --pink: #ec4899;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --slate: #1e293b;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: linear-gradient(to bottom, var(--gray-50), white);
+        color: var(--gray-900);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.5rem;
+      }
+      .header h1 span {
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .header p {
+        color: var(--gray-500);
+        font-size: 1rem;
+        font-weight: 500;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-top: 0.75rem;
+      }
+
+      /* Gateway Container */
+      .gateway {
+        background: linear-gradient(135deg, var(--slate), #0f172a);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .gateway::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(0, 102, 255, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .gateway-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .gateway-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+      }
+      .gateway-title {
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      .gateway-subtitle {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      .gateway-badge {
+        margin-left: auto;
+        padding: 0.25rem 0.75rem;
+        background: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 9999px;
+        color: var(--emerald);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .gateway-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--emerald);
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        animation: pulse 2s infinite;
+        margin-right: 0.25rem;
+        display: inline-block;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      /* Agent Grid */
+      .agents-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Agent Card */
+      .agent-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .agent-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+      .agent-card.admin {
+        border-top: 3px solid var(--blue);
+      }
+      .agent-card.member {
+        border-top: 3px solid var(--indigo);
+      }
+      .agent-card.guest {
+        border-top: 3px solid var(--orange);
+      }
+      .agent-card.service {
+        border-top: 3px solid var(--emerald);
+      }
+
+      .agent-role {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .role-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      .admin .role-icon {
+        background: rgba(0, 102, 255, 0.2);
+      }
+      .member .role-icon {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      .guest .role-icon {
+        background: rgba(249, 115, 22, 0.2);
+      }
+      .service .role-icon {
+        background: rgba(16, 185, 129, 0.2);
+      }
+
+      .role-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: white;
+      }
+      .role-id {
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.4);
+        font-weight: 600;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .sandbox-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.75rem;
+      }
+      .sandbox-off {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
+      .sandbox-on {
+        background: rgba(16, 185, 129, 0.15);
+        color: #6ee7b7;
+      }
+
+      .agent-props {
+        list-style: none;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1.8;
+      }
+      .agent-props li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.35rem;
+      }
+      .agent-props .label {
+        color: rgba(255, 255, 255, 0.35);
+        font-weight: 600;
+        min-width: 60px;
+        flex-shrink: 0;
+      }
+      .agent-props .value {
+        color: rgba(255, 255, 255, 0.7);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        word-break: break-all;
+      }
+
+      /* Docker Section */
+      .docker-section {
+        margin-top: 2.5rem;
+      }
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .section-title .icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+      }
+
+      /* Docker Container Diagram */
+      .docker-container-diagram {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .docker-box {
+        background: white;
+        border: 2px solid var(--gray-200);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      .docker-box:hover {
+        border-color: var(--blue);
+        box-shadow: 0 8px 24px rgba(0, 102, 255, 0.1);
+      }
+      .docker-box-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .docker-box-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+      .docker-box-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .docker-box-tag {
+        margin-left: auto;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* Layers inside docker box */
+      .layer {
+        background: var(--gray-50);
+        border: 1px solid var(--gray-200);
+        border-radius: 0.5rem;
+        padding: 0.6rem 0.75rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--gray-700);
+        transition: all 0.2s ease;
+      }
+      .layer:hover {
+        background: white;
+        border-color: var(--blue);
+      }
+      .layer:last-child {
+        margin-bottom: 0;
+      }
+      .layer-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        flex-shrink: 0;
+      }
+      .layer-label {
+        font-weight: 600;
+        color: var(--gray-600);
+        min-width: 80px;
+      }
+      .layer-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--gray-500);
+      }
+
+      /* Security Box */
+      .security-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+      .security-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .security-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        border-color: var(--blue);
+      }
+      .security-card .sec-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.1rem;
+      }
+      .security-card h4 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      .security-card p {
+        font-size: 0.68rem;
+        color: var(--gray-500);
+        line-height: 1.5;
+      }
+
+      /* Flow Diagram */
+      .flow-section {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .flow-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .flow-steps {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        position: relative;
+      }
+      .flow-step {
+        flex: 1;
+        text-align: center;
+        padding: 1rem 0.5rem;
+        position: relative;
+      }
+      .flow-step::after {
+        content: "→";
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: var(--gray-300);
+        font-weight: 700;
+      }
+      .flow-step:last-child::after {
+        display: none;
+      }
+      .step-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: white;
+      }
+      .step-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.25rem;
+      }
+      .step-desc {
+        font-size: 0.65rem;
+        color: var(--gray-500);
+        line-height: 1.5;
+      }
+
+      /* Access Matrix */
+      .matrix-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+      .matrix-table th {
+        background: var(--gray-50);
+        padding: 0.75rem 1rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--gray-500);
+        text-align: left;
+        border-bottom: 2px solid var(--gray-200);
+      }
+      .matrix-table td {
+        padding: 0.6rem 1rem;
+        font-size: 0.75rem;
+        border-bottom: 1px solid var(--gray-100);
+        color: var(--gray-700);
+      }
+      .matrix-table tr:last-child td {
+        border-bottom: none;
+      }
+      .matrix-table tr:hover td {
+        background: rgba(0, 102, 255, 0.02);
+      }
+      .matrix-table .resource {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        color: var(--gray-600);
+        font-weight: 600;
+      }
+      .check {
+        color: var(--emerald);
+        font-weight: 700;
+      }
+      .cross {
+        color: var(--red);
+        font-weight: 700;
+      }
+      .lock {
+        color: var(--orange);
+        font-weight: 700;
+      }
+
+      /* Scope Cards */
+      .scope-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .scope-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+      }
+      .scope-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+      .scope-card h4 {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .scope-card p {
+        font-size: 0.72rem;
+        color: var(--gray-500);
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+      }
+      .scope-code {
+        background: var(--gray-50);
+        border: 1px solid var(--gray-200);
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.62rem;
+        color: var(--gray-600);
+        overflow-x: auto;
+      }
+
+      /* Legend */
+      .legend {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--gray-600);
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+      }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        padding: 2rem 0 1rem;
+        color: var(--gray-400);
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+
+      @media (max-width: 1024px) {
+        .agents-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .docker-container-diagram {
+          grid-template-columns: 1fr;
+        }
+        .security-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .scope-grid {
+          grid-template-columns: 1fr;
+        }
+        .flow-steps {
+          flex-direction: column;
+        }
+        .flow-step::after {
+          display: none;
+        }
+      }
+      @media (max-width: 640px) {
+        .agents-grid {
+          grid-template-columns: 1fr;
+        }
+        body {
+          padding: 1rem;
+        }
+      }
+
+      /* Print */
+      @media print {
+        @page {
+          size: 11in 17in;
+          margin: 0.5in;
+        }
+        body {
+          background: white;
+          padding: 0;
+        }
+        .agent-card:hover,
+        .docker-box:hover,
+        .security-card:hover,
+        .scope-card:hover {
+          transform: none;
+          box-shadow: none;
+        }
+        html,
+        body {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>Commission Agents in <span>Docker Containers</span></h1>
+        <p>OpenClaw Multi-Agent Sandbox Architecture</p>
+        <div class="badge">System Architecture Diagram &middot; v1.0 &middot; Feb 2026</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--blue)"></div>
+          Admin (Unsandboxed)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--indigo)"></div>
+          Member (Sandboxed)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--orange)"></div>
+          Guest (Sandboxed)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: var(--emerald)"></div>
+          Service (Sandboxed)
+        </div>
+      </div>
+
+      <!-- GATEWAY -->
+      <div class="gateway">
+        <div class="gateway-header">
+          <div class="gateway-icon">&#9881;</div>
+          <div>
+            <div class="gateway-title">OpenClaw Gateway</div>
+            <div class="gateway-subtitle">
+              Port 19400 &middot; Session Router &middot; Config Resolver
+            </div>
+          </div>
+          <div class="gateway-badge"><span class="gateway-dot"></span> Running</div>
+        </div>
+
+        <!-- Agent Cards -->
+        <div class="agents-grid">
+          <!-- Admin -->
+          <div class="agent-card admin">
+            <div class="agent-role">
+              <div class="role-icon">&#128274;</div>
+              <div>
+                <div class="role-name">Admin</div>
+                <div class="role-id">admin-001</div>
+              </div>
+            </div>
+            <div class="sandbox-status sandbox-off">&#10005; Sandbox OFF</div>
+            <ul class="agent-props">
+              <li><span class="label">Model</span><span class="value">gemini-3-flash</span></li>
+              <li>
+                <span class="label">Session</span><span class="value">agent:admin-001:main</span>
+              </li>
+              <li>
+                <span class="label">Workspace</span
+                ><span class="value">~/org/workspaces/admin-001/</span>
+              </li>
+              <li>
+                <span class="label">Shared</span><span class="value">Direct rw (no mount)</span>
+              </li>
+              <li>
+                <span class="label">Config</span><span class="value">Direct rw (~/.openclaw/)</span>
+              </li>
+              <li><span class="label">Spawn</span><span class="value">All domain agents</span></li>
+              <li><span class="label">Tools</span><span class="value">allow: ["*"]</span></li>
+            </ul>
+          </div>
+
+          <!-- Member -->
+          <div class="agent-card member">
+            <div class="agent-role">
+              <div class="role-icon">&#128100;</div>
+              <div>
+                <div class="role-name">Member</div>
+                <div class="role-id">member-001</div>
+              </div>
+            </div>
+            <div class="sandbox-status sandbox-on">&#9679; Sandbox ALL</div>
+            <ul class="agent-props">
+              <li><span class="label">Model</span><span class="value">gemini-3-flash</span></li>
+              <li>
+                <span class="label">Session</span><span class="value">agent:member-001:main</span>
+              </li>
+              <li>
+                <span class="label">Docker</span><span class="value">openclaw-sbx-member-001</span>
+              </li>
+              <li>
+                <span class="label">Workspace</span><span class="value">/workspace (rw)</span>
+              </li>
+              <li>
+                <span class="label">Shared</span
+                ><span class="value">~/org/shared → /shared (rw)</span>
+              </li>
+              <li><span class="label">Network</span><span class="value">bridge</span></li>
+              <li>
+                <span class="label">Spawn</span
+                ><span class="value">marketing, sales, dev-coder</span>
+              </li>
+              <li>
+                <span class="label">Tools</span><span class="value">deny: [cron, gateway]</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Guest -->
+          <div class="agent-card guest">
+            <div class="agent-role">
+              <div class="role-icon">&#128101;</div>
+              <div>
+                <div class="role-name">Guest</div>
+                <div class="role-id">guest-001</div>
+              </div>
+            </div>
+            <div class="sandbox-status sandbox-on">&#9679; Sandbox ALL</div>
+            <ul class="agent-props">
+              <li><span class="label">Model</span><span class="value">gemini-3-flash</span></li>
+              <li>
+                <span class="label">Session</span><span class="value">agent:guest-001:main</span>
+              </li>
+              <li>
+                <span class="label">Docker</span><span class="value">openclaw-sbx-guest-001</span>
+              </li>
+              <li>
+                <span class="label">Workspace</span><span class="value">/workspace (rw)</span>
+              </li>
+              <li>
+                <span class="label">Shared</span
+                ><span class="value">~/org/shared → /shared (ro)</span>
+              </li>
+              <li><span class="label">Network</span><span class="value">none</span></li>
+              <li><span class="label">Spawn</span><span class="value">None (restricted)</span></li>
+              <li>
+                <span class="label">Tools</span
+                ><span class="value">allow: [read, exec, sessions_list]</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Service -->
+          <div class="agent-card service">
+            <div class="agent-role">
+              <div class="role-icon">&#9881;</div>
+              <div>
+                <div class="role-name">Service</div>
+                <div class="role-id">service-001</div>
+              </div>
+            </div>
+            <div class="sandbox-status sandbox-on">&#9679; Sandbox ALL</div>
+            <ul class="agent-props">
+              <li>
+                <span class="label">Model</span><span class="value">configured per task</span>
+              </li>
+              <li>
+                <span class="label">Session</span><span class="value">agent:service-001:main</span>
+              </li>
+              <li>
+                <span class="label">Docker</span><span class="value">openclaw-sbx-service-001</span>
+              </li>
+              <li>
+                <span class="label">Workspace</span><span class="value">/workspace (rw)</span>
+              </li>
+              <li>
+                <span class="label">Shared</span
+                ><span class="value">~/org/shared → /shared (rw)</span>
+              </li>
+              <li><span class="label">Network</span><span class="value">none</span></li>
+              <li><span class="label">Spawn</span><span class="value">None</span></li>
+              <li>
+                <span class="label">Tools</span
+                ><span class="value">allow: [read, exec, write]</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docker Container Anatomy -->
+      <div class="docker-section">
+        <div class="section-title">
+          <div class="icon" style="background: linear-gradient(135deg, #e0f2fe, #dbeafe)">
+            &#128230;
+          </div>
+          Docker Container Anatomy
+        </div>
+
+        <div class="docker-container-diagram">
+          <!-- Sandbox Container -->
+          <div class="docker-box">
+            <div class="docker-box-header">
+              <div
+                class="docker-box-icon"
+                style="background: linear-gradient(135deg, #dbeafe, #c7d2fe)"
+              >
+                &#128230;
+              </div>
+              <div>
+                <div class="docker-box-title">Sandbox Container</div>
+                <div style="font-size: 0.65rem; color: var(--gray-400); font-family: monospace">
+                  openclaw-sbx-{scope-slug}
+                </div>
+              </div>
+              <div
+                class="docker-box-tag"
+                style="background: rgba(99, 102, 241, 0.1); color: var(--indigo)"
+              >
+                Primary
+              </div>
+            </div>
+
+            <div class="layer">
+              <div class="layer-icon" style="background: #dbeafe; color: var(--blue)">
+                &#127912;
+              </div>
+              <span class="layer-label">Image</span>
+              <span class="layer-value">openclaw-sandbox:bookworm-slim</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #d1fae5; color: var(--emerald)">
+                &#128100;
+              </div>
+              <span class="layer-label">User</span>
+              <span class="layer-value">sandbox (non-root, UID 1000)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #fef3c7; color: var(--orange)">
+                &#128193;
+              </div>
+              <span class="layer-label">Workdir</span>
+              <span class="layer-value">/workspace (bind: agent workspace)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #fce7f3; color: var(--pink)">
+                &#128193;
+              </div>
+              <span class="layer-label">Agent Mount</span>
+              <span class="layer-value">/agent (bind: ~/agent-workspace)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #ede9fe; color: var(--purple)">
+                &#128193;
+              </div>
+              <span class="layer-label">Shared</span>
+              <span class="layer-value">/shared (bind: ~/org/shared, rw or ro)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #e0f2fe; color: var(--blue)">
+                &#128190;
+              </div>
+              <span class="layer-label">tmpfs</span>
+              <span class="layer-value">/tmp, /var/tmp, /run</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #f3f4f6; color: var(--gray-500)">
+                &#128295;
+              </div>
+              <span class="layer-label">Tools</span>
+              <span class="layer-value">bash, git, curl, jq, python3, ripgrep</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #fee2e2; color: var(--red)">&#9940;</div>
+              <span class="layer-label">Cmd</span>
+              <span class="layer-value">sleep infinity (kept alive)</span>
+            </div>
+          </div>
+
+          <!-- Browser Container -->
+          <div class="docker-box">
+            <div class="docker-box-header">
+              <div
+                class="docker-box-icon"
+                style="background: linear-gradient(135deg, #fce7f3, #ede9fe)"
+              >
+                &#127760;
+              </div>
+              <div>
+                <div class="docker-box-title">Browser Sandbox</div>
+                <div style="font-size: 0.65rem; color: var(--gray-400); font-family: monospace">
+                  openclaw-sbx-browser-{slug}
+                </div>
+              </div>
+              <div
+                class="docker-box-tag"
+                style="background: rgba(168, 85, 247, 0.1); color: var(--purple)"
+              >
+                Optional
+              </div>
+            </div>
+
+            <div class="layer">
+              <div class="layer-icon" style="background: #ede9fe; color: var(--purple)">
+                &#127912;
+              </div>
+              <span class="layer-label">Image</span>
+              <span class="layer-value">openclaw-sandbox-browser:bookworm-slim</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #dbeafe; color: var(--blue)">
+                &#128279;
+              </div>
+              <span class="layer-label">CDP Port</span>
+              <span class="layer-value">9222 (Chrome DevTools Protocol)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #d1fae5; color: var(--emerald)">
+                &#128187;
+              </div>
+              <span class="layer-label">VNC Port</span>
+              <span class="layer-value">5900 (Remote Desktop)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #fef3c7; color: var(--orange)">
+                &#127760;
+              </div>
+              <span class="layer-label">noVNC Port</span>
+              <span class="layer-value">6080 (Web-based VNC viewer)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #f3f4f6; color: var(--gray-500)">
+                &#9881;
+              </div>
+              <span class="layer-label">Auto-Start</span>
+              <span class="layer-value">true (12s timeout)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #fce7f3; color: var(--pink)">
+                &#128065;
+              </div>
+              <span class="layer-label">Headless</span>
+              <span class="layer-value">false (VNC viewable)</span>
+            </div>
+            <div class="layer">
+              <div class="layer-icon" style="background: #dbeafe; color: var(--blue)">
+                &#128274;
+              </div>
+              <span class="layer-label">Host Ctrl</span>
+              <span class="layer-value">false (isolated by default)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Hardening -->
+      <div class="docker-section">
+        <div class="section-title">
+          <div class="icon" style="background: linear-gradient(135deg, #fee2e2, #fecaca)">
+            &#128737;
+          </div>
+          Security Hardening
+        </div>
+
+        <div class="security-grid">
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #dbeafe, #c7d2fe)">
+              &#128274;
+            </div>
+            <h4>Read-Only Root</h4>
+            <p>
+              Root filesystem is read-only. Writes only to tmpfs (/tmp, /var/tmp, /run) and bind
+              mounts.
+            </p>
+          </div>
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #fee2e2, #fecaca)">
+              &#9940;
+            </div>
+            <h4>Cap Drop ALL</h4>
+            <p>
+              All Linux capabilities dropped. No privilege escalation via --security-opt
+              no-new-privileges.
+            </p>
+          </div>
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a)">
+              &#128101;
+            </div>
+            <h4>Non-Root User</h4>
+            <p>Runs as "sandbox" user (UID 1000). Never runs as root inside the container.</p>
+          </div>
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0)">
+              &#128279;
+            </div>
+            <h4>Network Isolation</h4>
+            <p>Default: network=none. Members get bridge for API access. Guests get no network.</p>
+          </div>
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe)">
+              &#128295;
+            </div>
+            <h4>Tool Policy</h4>
+            <p>Per-agent allow/deny lists. Guests blocked from write, edit, cron, gateway tools.</p>
+          </div>
+          <div class="security-card">
+            <div class="sec-icon" style="background: linear-gradient(135deg, #fce7f3, #fbcfe8)">
+              &#128337;
+            </div>
+            <h4>Auto-Prune</h4>
+            <p>
+              Idle containers pruned after 24h. Max age 7 days. Config hash mismatch triggers
+              rebuild.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container Lifecycle -->
+      <div class="flow-section">
+        <div class="flow-title">
+          <div
+            class="icon"
+            style="
+              background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+              width: 28px;
+              height: 28px;
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            &#128260;
+          </div>
+          Container Lifecycle
+        </div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--blue)">1</div>
+            <div class="step-title">Session Start</div>
+            <div class="step-desc">
+              Gateway receives message,<br />resolves agent ID &amp; sandbox config
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--indigo)">2</div>
+            <div class="step-title">Config Hash</div>
+            <div class="step-desc">Compute config hash from<br />docker + workspace settings</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--purple)">3</div>
+            <div class="step-title">Container Check</div>
+            <div class="step-desc">
+              Existing container? Check state,<br />hash match, hot/cold status
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--pink)">4</div>
+            <div class="step-title">Create / Reuse</div>
+            <div class="step-desc">
+              Create new (hash mismatch + cold)<br />or start existing container
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--orange)">5</div>
+            <div class="step-title">Skill Sync</div>
+            <div class="step-desc">Sync skills from agent workspace<br />to sandbox workspace</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--emerald)">6</div>
+            <div class="step-title">Execute</div>
+            <div class="step-desc">docker exec commands<br />inside sandbox container</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-number" style="background: var(--slate)">7</div>
+            <div class="step-title">Registry Update</div>
+            <div class="step-desc">Update containers.json<br />with lastUsedAtMs + hash</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sandbox Scopes -->
+      <div class="docker-section">
+        <div class="section-title">
+          <div class="icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe)">
+            &#127919;
+          </div>
+          Sandbox Scopes
+        </div>
+
+        <div class="scope-grid">
+          <div class="scope-card">
+            <h4>&#128100; Session Scope</h4>
+            <p>
+              One container per conversation session. Maximum isolation — each chat gets its own
+              sandbox.
+            </p>
+            <div class="scope-code">
+              Container: openclaw-sbx-{session-slug}<br />
+              Destroyed: after session archive (60min idle)
+            </div>
+          </div>
+          <div class="scope-card">
+            <h4>&#128101; Agent Scope</h4>
+            <p>
+              One container per agent ID. All sessions for the same agent share a container.
+              <strong>Default for members/guests.</strong>
+            </p>
+            <div class="scope-code">
+              Container: openclaw-sbx-{agent-id}<br />
+              Persistent: survives across sessions
+            </div>
+          </div>
+          <div class="scope-card">
+            <h4>&#127760; Shared Scope</h4>
+            <p>
+              One container for all agents. Useful for service bots with shared workspace. Lowest
+              isolation.
+            </p>
+            <div class="scope-code">
+              Container: openclaw-sbx-shared<br />
+              Shared: all sessions see same filesystem
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access Matrix -->
+      <div class="docker-section">
+        <div class="section-title">
+          <div class="icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a)">
+            &#128209;
+          </div>
+          Access Matrix
+        </div>
+
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Resource</th>
+              <th>Admin</th>
+              <th>Member</th>
+              <th>Guest</th>
+              <th>Service</th>
+              <th>Enforcement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="resource">~/org/workspaces/{own}/</td>
+              <td class="check">&#10003; rw</td>
+              <td class="check">&#10003; rw (sandbox root)</td>
+              <td class="check">&#10003; rw (sandbox root)</td>
+              <td class="check">&#10003; rw (sandbox root)</td>
+              <td>Workspace config</td>
+            </tr>
+            <tr>
+              <td class="resource">~/org/workspaces/{other}/</td>
+              <td class="check">&#10003; rw (unsandboxed)</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td>Sandbox isolation</td>
+            </tr>
+            <tr>
+              <td class="resource">~/org/shared/</td>
+              <td class="check">&#10003; rw (direct)</td>
+              <td class="check">&#10003; rw (bind mount)</td>
+              <td class="lock">&#128274; ro (bind mount)</td>
+              <td class="check">&#10003; rw (bind mount)</td>
+              <td>Docker binds</td>
+            </tr>
+            <tr>
+              <td class="resource">~/org/config/</td>
+              <td class="check">&#10003; rw (direct)</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td>Never mounted</td>
+            </tr>
+            <tr>
+              <td class="resource">~/.openclaw/openclaw.json</td>
+              <td class="check">&#10003; rw</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td>Sandbox isolation</td>
+            </tr>
+            <tr>
+              <td class="resource">~/.openclaw/skills/</td>
+              <td class="check">&#10003; auto-loaded</td>
+              <td class="check">&#10003; auto-loaded</td>
+              <td class="check">&#10003; auto-loaded</td>
+              <td class="check">&#10003; auto-loaded</td>
+              <td>OpenClaw native</td>
+            </tr>
+            <tr>
+              <td class="resource">~/.openclaw/.env (secrets)</td>
+              <td class="check">&#10003; direct</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td class="cross">&#10005; invisible</td>
+              <td>Sandbox isolation</td>
+            </tr>
+            <tr>
+              <td class="resource">Docker network</td>
+              <td>N/A (host)</td>
+              <td class="check">&#10003; bridge</td>
+              <td class="cross">&#10005; none</td>
+              <td class="cross">&#10005; none</td>
+              <td>Docker --network</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        OpenClaw System Architecture &middot; Docker Sandbox Isolation &middot; Generated Feb 2026
+      </div>
+    </div>
+  </body>
+</html>

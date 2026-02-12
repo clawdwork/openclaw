@@ -732,6 +732,71 @@ describe("Cron issue regressions", () => {
     }
   });
 
+  it("auto-disables job after maxRuns successful executions", async () => {
+    const store = await makeStorePath();
+    const enqueueSystemEvent = vi.fn();
+    const nowBase = Date.parse("2026-02-06T10:05:00.000Z");
+    let now = nowBase;
+
+    const state = createCronServiceState({
+      cronEnabled: true,
+      storePath: store.storePath,
+      log: noopLogger,
+      nowMs: () => now,
+      enqueueSystemEvent,
+      requestHeartbeatNow: vi.fn(),
+      runIsolatedAgentJob: vi.fn(async () => {
+        now += 100;
+        return { status: "ok" as const, summary: "done" };
+      }),
+    });
+
+    // Seed a recurring job with maxRuns=2
+    const dueAt = nowBase + 1000;
+    const job: CronJob = {
+      id: "maxruns-test",
+      name: "bounded poll",
+      enabled: true,
+      maxRuns: 2,
+      createdAtMs: nowBase,
+      updatedAtMs: nowBase,
+      schedule: { kind: "every", everyMs: 2000, anchorMs: dueAt },
+      sessionTarget: "isolated",
+      wakeMode: "now",
+      payload: { kind: "agentTurn", message: "poll" },
+      delivery: { mode: "none" },
+      state: { nextRunAtMs: dueAt },
+    };
+    await fs.writeFile(
+      store.storePath,
+      JSON.stringify({ version: 1, jobs: [job] }, null, 2),
+      "utf-8",
+    );
+
+    // Run 1: should execute and stay enabled
+    now = dueAt;
+    await onTimer(state);
+    const afterRun1 = state.store!.jobs.find((j) => j.id === "maxruns-test")!;
+    expect(afterRun1.state.runCount).toBe(1);
+    expect(afterRun1.enabled).toBe(true);
+    expect(afterRun1.state.nextRunAtMs).toBeDefined();
+
+    // Run 2: should execute and auto-disable (maxRuns reached)
+    now = afterRun1.state.nextRunAtMs!;
+    await onTimer(state);
+    const afterRun2 = state.store!.jobs.find((j) => j.id === "maxruns-test")!;
+    expect(afterRun2.state.runCount).toBe(2);
+    expect(afterRun2.enabled).toBe(false);
+    expect(afterRun2.state.nextRunAtMs).toBeUndefined();
+
+    // Verify system event notification was sent
+    expect(enqueueSystemEvent).toHaveBeenCalledWith(
+      expect.stringContaining("bounded poll"),
+      expect.objectContaining({}),
+    );
+    await store.cleanup();
+  });
+
   it("records per-job start time and duration for batched due jobs", async () => {
     const store = await makeStorePath();
     const dueAt = Date.parse("2026-02-06T10:05:01.000Z");

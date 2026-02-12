@@ -406,6 +406,37 @@ function buildChatCommands(): ChatCommandDefinition[] {
       argsMenu: "auto",
     }),
     defineChatCommand({
+      key: "shutdown",
+      nativeName: "shutdown",
+      description: "Pause heartbeat notifications.",
+      textAlias: "/shutdown",
+      category: "session",
+    }),
+    defineChatCommand({
+      key: "resume",
+      nativeName: "resume",
+      description: "Resume heartbeat notifications.",
+      textAlias: "/resume",
+      category: "session",
+    }),
+    defineChatCommand({
+      key: "heartbeat",
+      nativeName: "heartbeat",
+      description: "Toggle heartbeat on/off.",
+      textAlias: "/heartbeat",
+      category: "session",
+      acceptsArgs: true,
+      args: [
+        {
+          name: "state",
+          description: "on or off",
+          type: "string",
+          choices: ["on", "off"],
+        },
+      ],
+      argsMenu: "auto",
+    }),
+    defineChatCommand({
       key: "stop",
       nativeName: "stop",
       description: "Stop the current run.",

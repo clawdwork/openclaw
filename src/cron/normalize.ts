@@ -330,6 +330,24 @@ export function normalizeCronJobInput(
     }
   }
 
+  if ("maxRuns" in base) {
+    const v = base.maxRuns;
+    if (v === null || v === undefined) {
+      delete next.maxRuns;
+    } else if (typeof v === "number" && Number.isFinite(v) && v >= 1) {
+      next.maxRuns = Math.floor(v);
+    } else if (typeof v === "string") {
+      const parsed = Number.parseInt(v, 10);
+      if (Number.isFinite(parsed) && parsed >= 1) {
+        next.maxRuns = parsed;
+      } else {
+        delete next.maxRuns;
+      }
+    } else {
+      delete next.maxRuns;
+    }
+  }
+
   if ("sessionTarget" in base) {
     const normalized = normalizeSessionTarget(base.sessionTarget);
     if (normalized) {

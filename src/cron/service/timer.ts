@@ -84,10 +84,38 @@ function applyJobResult(
     job.state.consecutiveErrors = 0;
   }
 
+  // Track successful run count for maxRuns auto-disable.
+  if (result.status === "ok") {
+    job.state.runCount = (job.state.runCount ?? 0) + 1;
+  }
+
+  // Auto-disable when maxRuns threshold is reached.
+  const maxRunsReached =
+    typeof job.maxRuns === "number" && job.maxRuns > 0 && (job.state.runCount ?? 0) >= job.maxRuns;
+
+  if (maxRunsReached && job.enabled) {
+    job.enabled = false;
+    job.state.nextRunAtMs = undefined;
+    state.deps.log.info(
+      {
+        jobId: job.id,
+        jobName: job.name,
+        maxRuns: job.maxRuns,
+        runCount: job.state.runCount,
+      },
+      "cron: job auto-disabled after reaching maxRuns",
+    );
+    // Notify via system event so the user sees a completion message.
+    state.deps.enqueueSystemEvent(
+      `✅ Cron job "${job.name}" completed after ${job.state.runCount} run(s) and has been auto-disabled.`,
+      { agentId: job.agentId },
+    );
+  }
+
   const shouldDelete =
     job.schedule.kind === "at" && job.deleteAfterRun === true && result.status === "ok";
 
-  if (!shouldDelete) {
+  if (!shouldDelete && !maxRunsReached) {
     if (job.schedule.kind === "at") {
       // One-shot jobs are always disabled after ANY terminal status
       // (ok, error, or skipped). This prevents tight-loop rescheduling
