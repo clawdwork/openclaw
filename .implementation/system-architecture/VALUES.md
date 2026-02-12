@@ -20,8 +20,8 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 27    | skills.md (×4)                    | 2026-02-10    |
-| Skill count (managed SKILL.md files) | 67    | (nested inside domain categories) | 2026-02-10    |
+| Skill count (managed top-level dirs) | 28    | skills.md (×4)                    | 2026-02-12    |
+| Skill count (managed SKILL.md files) | 68    | (nested inside domain categories) | 2026-02-12    |
 | Skill count (bundled repo dirs)      | 60    | skills.md, README.md              | 2026-02-09    |
 | Skill count (celavii)                | 7     | skills.md                         | 2026-02-09    |
 | Skill count (custom)                 | 5     | skills.md                         | 2026-02-07    |
@@ -30,8 +30,22 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                    | Value | Files That Reference It | Last Verified |
 | -------------------------------------- | ----- | ----------------------- | ------------- |
-| **Agent count (domain)**               | 9     | README.md, agents.md    | 2026-02-09    |
-| **Agent count (total in agents.list)** | 14    | agents.md               | 2026-02-09    |
+| **Agent count (domain)**               | 10    | README.md, agents.md    | 2026-02-12    |
+| **Agent count (total in agents.list)** | 15    | agents.md               | 2026-02-12    |
+
+## Provider Distribution
+
+| Key                               | Value         | Files That Reference It     | Last Verified |
+| --------------------------------- | ------------- | --------------------------- | ------------- |
+| **Google Flash agents (primary)** | 8             | agents.md, README.md        | 2026-02-12    |
+| **Google Pro agents (primary)**   | 4             | agents.md, README.md        | 2026-02-12    |
+| **OpenAI GPT-5.2 agents**         | 2             | agents.md (critic, planner) | 2026-02-12    |
+| **OpenAI 5.2-Codex agents**       | 1             | agents.md (prod-coder)      | 2026-02-12    |
+| **Anthropic agents (primary)**    | 0             | agents.md (fallback only)   | 2026-02-12    |
+| **Haiku status**                  | deprecated    | agents.md, README.md        | 2026-02-12    |
+| **Sonnet/Opus status**            | fallback only | agents.md, README.md        | 2026-02-12    |
+| **Global thinkingDefault**        | medium        | agents.md, openclaw.json    | 2026-02-12    |
+| **Global subagents.thinking**     | low           | agents.md, openclaw.json    | 2026-02-12    |
 
 ## Paths
 

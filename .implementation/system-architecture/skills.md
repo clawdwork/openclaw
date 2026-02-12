@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 27 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 28 skills (managed: domain categories + celavii + custom)
 repo skills/                  ← 60 skills (bundled with OpenClaw binary)
 ```
 
@@ -52,19 +52,20 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ---
 
-## Domain Skills (55 Skills across 14 Categories)
+## Domain Skills (56 Skills across 15 Categories)
 
-| Domain                 | Count | Skills                                                                                                                                          | Model  |
-| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                     | Flash  |
-| **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                          | Flash  |
-| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                            | Flash  |
-| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                           | Flash  |
-| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                         | Flash  |
-| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                              | Sonnet |
-| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                    | Sonnet |
-| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis | Sonnet |
-| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                  | Pro    |
+| Domain                 | Count | Skills                                                                                                                                          | Model   |
+| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                     | Flash   |
+| **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                          | Flash   |
+| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                            | Flash   |
+| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                           | Flash   |
+| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                         | Flash   |
+| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                              | Pro     |
+| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                    | Pro     |
+| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis | Pro     |
+| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                  | Pro     |
+| **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                          | GPT-5.2 |
 
 ---
 
@@ -100,12 +101,12 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ## Skills with Extra Artifacts
 
-| Artifact                        | Categories                                                                                                                        |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Commands** (action templates) | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search, media-content                    |
-| **MCP configs** (`.mcp.json`)   | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search                                   |
-| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`) |
-| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files)          |
+| Artifact                        | Categories                                                                                                                               |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Commands** (action templates) | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search, media-content                           |
+| **MCP configs** (`.mcp.json`)   | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search                                          |
+| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`)        |
+| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files), quality-critic |
 
 ---
 
@@ -113,10 +114,10 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 27 managed + 60 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 28 managed + 60 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 27 managed + 60 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 27 managed + 60 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 28 managed + 60 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 28 managed + 60 bundled                       |
 
 ---
 

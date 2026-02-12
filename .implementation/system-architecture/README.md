@@ -52,7 +52,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │      │                       │                       │                      │
 │      ▼                       ▼                       ▼                      │
 │  ┌──────────────────────────────────────────────────────────────────┐      │
-│  │              DOMAIN SUB-AGENTS (9 Specialists)                    │      │
+│  │              DOMAIN SUB-AGENTS (10 Specialists)                   │      │
 │  │                                                                   │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │  Marketing   │ │    Sales     │ │   Product    │  (Flash)     │      │
@@ -63,29 +63,30 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  │  5 skills    │ │  3 skills†   │           † persistent        │      │
 │  │  └──────────────┘ └──────────────┘             memory             │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
-│  │  │    Legal     │ │   Finance    │ │    Data      │  (Sonnet)    │      │
+│  │  │    Legal     │ │   Finance    │ │    Data      │  (Pro)       │      │
 │  │  │  6 skills    │ │  6 skills    │ │  7 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
-│  │  ┌──────────────┐                                                │      │
-│  │  │Media Content │                                   (Pro)        │      │
-│  │  │  5 skills    │                                                │      │
-│  │  └──────────────┘                                                │      │
+│  │  ┌──────────────┐ ┌──────────────┐                               │      │
+│  │  │Media Content │ │Quality Critic│                  (Pro + GPT-5.2)│      │
+│  │  │  5 skills    │ │  1 skill 🔍  │   feedback loop (xhigh)      │      │
+│  │  └──────────────┘ └──────────────┘                               │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 │  Flash also spawns these directly (domain agents CANNOT spawn):             │
-│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐                 │
-│  │  OPUS 4.6     │   │  SONNET 4.5   │   │    HAIKU      │                 │
-│  │  (planner)    │   │   (coder)     │   │  (grunt work) │                 │
-│  │               │   │               │   │               │                 │
-│  │ Architecture  │   │ Code impl.    │   │ File ops      │                 │
-│  │ Strategy      │   │ Debugging     │   │ Tool exec     │                 │
-│  │ Deep reason.  │   │ Deployments   │   │ Organization  │                 │
-│  └───────────────┘   └───────────────┘   └───────────────┘                 │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐   │
+│  │  GPT-5.2      │   │  5.2-CODEX    │   │  FLASH        │   │
+│  │  (planner)    │   │  (prod-coder) │   │  (grunt work) │   │
+│  │  xhigh        │   │  xhigh       │   │  thinking:off │   │
+│  │               │   │               │   │               │   │
+│  │ Architecture  │   │ Code impl.    │   │ File ops      │   │
+│  │ Deep reason.  │   │ Refactors     │   │ Organization  │   │
+│  └───────────────┘   └───────────────┘   └───────────────┘   │
+│  Anthropic: 0 primary agents (fallback only)                                │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │                         HEARTBEAT SERVICE                            │   │
 │  │                                                                      │   │
-│  │  Model: anthropic/claude-haiku-4-5                                  │   │
+│  │  Model: google/gemini-2.5-flash                                     │   │
 │  │  Interval: Every 30 minutes                                         │   │
 │  │  Task: Check HEARTBEAT.md for pending actions                       │   │
 │  │  Cost: ~$0.50/month                                                 │   │
@@ -98,29 +99,31 @@ This architecture is split into focused modules. Each file is self-contained.
 
 ## Model Hierarchy
 
-| Role                | Model                           | Alias  | Cost/1M Tokens    | Use Case                                        |
-| ------------------- | ------------------------------- | ------ | ----------------- | ----------------------------------------------- |
-| **Coordinator**     | `google/gemini-3-flash-preview` | Flash  | $0.50 in / $3 out | Conversation, routing, web search, coordination |
-| **Dev Coder**       | `google/gemini-3-flash-preview` | Flash  | $0.50 in / $3 out | Everyday coding, scripts, simple deploys, CI/CD |
-| **Prod Coder**      | `anthropic/claude-sonnet-4-5`   | Sonnet | $3 in / $15 out   | Complex integrations, APIs, prod-critical code  |
-| **Planner**         | `anthropic/claude-opus-4-6`     | Opus   | $5 in / $25 out   | Architecture, strategy, deep reasoning          |
-| **Tool Executor**   | `anthropic/claude-haiku-4-5`    | Haiku  | $1 in / $5 out    | File ops, tool chains, organization             |
-| **Alt. Reasoning**  | `google/gemini-3-pro-preview`   | Pro    | $2 in / $12 out   | Quality fallback                                |
-| **OpenAI Fallback** | `openai/gpt-5-mini`             | Mini   | ~                 | OpenAI fallback                                 |
+| Role               | Model                            | Alias     | Cost/1M Tokens     | Use Case                                               |
+| ------------------ | -------------------------------- | --------- | ------------------ | ------------------------------------------------------ |
+| **Coordinator**    | `google/gemini-3-flash-preview`  | Flash     | $0.50 in / $3 out  | Conversation, routing, web search, coordination        |
+| **Dev Coder**      | `google/gemini-3-flash-preview`  | Flash     | $0.50 in / $3 out  | Everyday coding, scripts, simple deploys, CI/CD        |
+| **Prod Coder**     | `openai/gpt-5.2-codex`           | 5.2-Codex | $1.75 in / $14 out | Complex integrations, APIs, prod-critical code (xhigh) |
+| **Planner**        | `openai/gpt-5.2`                 | 5.2       | $1.75 in / $14 out | Architecture, strategy, SOTA reasoning (xhigh)         |
+| **Precision**      | `google/gemini-3-pro-preview`    | Pro       | $2 in / $12 out    | Legal, finance, data, media content (1M ctx)           |
+| **Quality Critic** | `openai/gpt-5.2`                 | 5.2       | $1.75 in / $14 out | Review creative outputs (xhigh reasoning)              |
+| ~~Tool Executor~~  | ~~`anthropic/claude-haiku-4-5`~~ | ~~Haiku~~ | ~~deprecated~~     | Replaced by Flash with thinking off                    |
+| **Fallback Chain** | Pro → GPT-5 Mini → GPT-5.1       | —         | varies             | Multi-provider resilience                              |
 
 ### Domain Sub-Agent Models
 
-| Domain Agent          | Model  | Why                       | Skills                |
-| --------------------- | ------ | ------------------------- | --------------------- |
-| **Marketing**         | Flash  | Speed, volume, web search | 6 + 7 Celavii skills  |
-| **Sales**             | Flash  | Research, outreach        | 6 skills, 3 commands  |
-| **Product**           | Flash  | Specs, roadmaps           | 6 skills, 6 commands  |
-| **Support**           | Flash  | Triage, responses         | 5 skills, 5 commands  |
-| **Enterprise Search** | Flash  | Native Google grounding   | 3 skills, 2 commands  |
-| **Legal**             | Sonnet | Precision, risk           | 6 skills, 1+ commands |
-| **Finance**           | Sonnet | Accuracy, compliance      | 6 skills, 5 commands  |
-| **Data**              | Sonnet | SQL, code generation      | 7 skills, varies      |
-| **Media Content**     | Pro    | Prompt crafting, visuals  | 5 skills, 6 commands  |
+| Domain Agent          | Model   | Why                       | Skills                |
+| --------------------- | ------- | ------------------------- | --------------------- |
+| **Marketing**         | Flash   | Speed, volume, web search | 6 + 7 Celavii skills  |
+| **Sales**             | Flash   | Research, outreach        | 6 skills, 3 commands  |
+| **Product**           | Flash   | Specs, roadmaps           | 6 skills, 6 commands  |
+| **Support**           | Flash   | Triage, responses         | 5 skills, 5 commands  |
+| **Enterprise Search** | Flash   | Native Google grounding   | 3 skills, 2 commands  |
+| **Legal**             | Pro     | Precision, risk           | 6 skills, 1+ commands |
+| **Finance**           | Pro     | Accuracy, compliance      | 6 skills, 5 commands  |
+| **Data**              | Pro     | SQL, code generation      | 7 skills, varies      |
+| **Media Content**     | Pro     | Prompt crafting, visuals  | 5 skills, 6 commands  |
+| **Quality Critic**    | GPT-5.2 | SOTA review (xhigh)       | 1 skill (agnostic)    |
 
 ### Model Selection Logic (Fallback Chain)
 
@@ -134,17 +137,17 @@ Main Session Request
         │ Fail (rate limit, error)
         ▼
 ┌─────────────────────┐
-│  Try Sonnet 4.5    │ ──── Success ────▶ Use Sonnet
-└─────────────────────┘
-        │ Fail
-        ▼
-┌─────────────────────┐
 │  Try Gemini Pro    │ ──── Success ────▶ Use Pro
 └─────────────────────┘
         │ Fail
         ▼
 ┌─────────────────────┐
-│  Try GPT-5 Mini    │ ──── Success ────▶ Use GPT-5
+│  Try GPT-5 Mini    │ ──── Success ────▶ Use GPT-5 Mini
+└─────────────────────┘
+        │ Fail
+        ▼
+┌─────────────────────┐
+│  Try GPT-5.1       │ ──── Success ────▶ Use GPT-5.1
 └─────────────────────┘
 ```
 
@@ -177,14 +180,11 @@ REQUEST 2-N (Cache Hit, within 5 min)
 ```json
 {
   "models": {
-    "anthropic/claude-opus-4-6": {
-      "params": { "cacheRetention": "long" } // Extended TTL
-    },
-    "anthropic/claude-sonnet-4-5": {
-      "params": { "cacheRetention": "long" } // Extended TTL
-    },
-    "anthropic/claude-haiku-4-5": {}, // No cache (already cheap)
-    "google/gemini-3-flash-preview": {} // Coordinator (Google caching)
+    "google/gemini-3-flash-preview": {}, // Coordinator (Google caching)
+    "google/gemini-3-pro-preview": {}, // Precision domains (Google caching)
+    "openai/gpt-5.2": {}, // Quality-critical (OpenAI caching — 90% off)
+    "openai/gpt-5.2-codex": {}, // Prod coding (OpenAI caching — 90% off)
+    "openai/gpt-5-mini": {} // Fallback
   }
 }
 ```
@@ -211,7 +211,7 @@ REQUEST 2-N (Cache Hit, within 5 min)
 {
   "heartbeat": {
     "every": "30m",
-    "model": "anthropic/claude-haiku-4-5",
+    "model": "google/gemini-2.5-flash",
     "target": "none",
     "prompt": "Check HEARTBEAT.md for tasks. If empty or no action needed, reply HEARTBEAT_OK."
   }
@@ -225,7 +225,7 @@ Every 30 Minutes
         │
         ▼
 ┌───────────────────────────────────────┐
-│  Haiku reads HEARTBEAT.md             │
+│  Flash reads HEARTBEAT.md             │
 └───────────────────────────────────────┘
         │
         ├──── File empty ──────▶ Reply "HEARTBEAT_OK"
@@ -235,6 +235,16 @@ Every 30 Minutes
                                         ▼
                                 Report to target (if configured)
 ```
+
+### Heartbeat Control Commands
+
+| Command          | Action                                        |
+| ---------------- | --------------------------------------------- |
+| `/shutdown`      | Pause heartbeat notifications until `/resume` |
+| `/heartbeat on`  | Enable heartbeat                              |
+| `/heartbeat off` | Disable heartbeat                             |
+| `/heartbeat`     | Show current heartbeat status                 |
+| `/resume`        | Re-enable heartbeat after `/shutdown`         |
 
 ### HEARTBEAT.md Template
 
@@ -264,6 +274,21 @@ Every 30 Minutes
 | **Sessions** | sessions_spawn, sessions_send, session_status |
 | **Gateway**  | gateway, agents_list, cron                    |
 
+### Cron Job Auto-Disable (`maxRuns`)
+
+Task-scoped cron jobs can set `maxRuns` to auto-disable after N successful executions.
+When the threshold is reached, the system disables the job and sends a notification:
+_"✅ Cron job X completed after N run(s) and has been auto-disabled."_
+
+```json
+{
+  "name": "Poll Scrape Jobs",
+  "maxRuns": 10,
+  "schedule": { "kind": "every", "everyMs": 1800000 },
+  "payload": { "kind": "agentTurn", "message": "Check job status..." }
+}
+```
+
 ---
 
 ## Installed CLIs
@@ -288,9 +313,9 @@ Every 30 Minutes
 
 ```
 /model              # List available
-/model Opus         # Switch to Opus
-/model Sonnet       # Switch to Sonnet
-/model Haiku        # Switch to Haiku
+/model 5.2          # Switch to GPT-5.2
+/model Flash        # Switch to Flash
+/model Pro          # Switch to Pro
 ```
 
 ### Restart Gateway
