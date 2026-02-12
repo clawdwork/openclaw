@@ -265,7 +265,7 @@ Flash (coordinator)
 | Property           | Value                                                   |
 | ------------------ | ------------------------------------------------------- |
 | **Agent ID**       | `quality-critic`                                        |
-| **Model**          | Gemini 3 Pro (~$0.016/critique)                         |
+| **Model**          | GPT-5.2 (xhigh, ~$0.045/critique)                       |
 | **Max iterations** | 2 refinement passes (3 evaluations total)               |
 | **Skill**          | `skills/quality-critic/SKILL.md`                        |
 | **Applies to**     | Proposals, images, decks, data viz, any creative output |

@@ -163,8 +163,8 @@ Skills are loaded by `src/agents/skills/workspace.ts` from four sources (first m
 
 ### Automation
 
-| Feature          | Config                   |
-| ---------------- | ------------------------ |
-| Heartbeat        | Every 30 minutes (Haiku) |
-| Cron jobs        | Via `cron` tool          |
-| Background tasks | Via `sessions_spawn`     |
+| Feature          | Config                              |
+| ---------------- | ----------------------------------- |
+| Heartbeat        | Every 30 minutes (Gemini 2.5 Flash) |
+| Cron jobs        | Via `cron` tool                     |
+| Background tasks | Via `sessions_spawn`                |

@@ -14,7 +14,7 @@ When updating architecture docs, check this file first. If a value here is stale
 | Gateway port    | 19400                  | README.md, channels.md  | 2026-02-09    |
 | WebSocket URL   | ws://127.0.0.1:19400   | README.md, channels.md  | 2026-02-09    |
 | WebChat URL     | http://127.0.0.1:19400 | README.md               | 2026-02-09    |
-| Gateway version | 2026.2.3               | README.md               | 2026-02-09    |
+| Gateway version | 2026.2.12              | README.md               | 2026-02-12    |
 
 ## Skill Counts
 

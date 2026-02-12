@@ -1,8 +1,8 @@
 # OpenClaw System Architecture
 
 > **Admin Reference Document**  
-> Last Updated: 2026-02-07  
-> Gateway Version: 2026.2.3
+> Last Updated: 2026-02-12  
+> Gateway Version: 2026.2.12
 
 ---
 
@@ -382,5 +382,5 @@ session_status
 ---
 
 **Document maintained by**: Admin  
-**Gateway**: OpenClaw 2026.2.3  
+**Gateway**: OpenClaw 2026.2.12  
 **Location**: `.implementation/system-architecture/`
