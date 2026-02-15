@@ -90,7 +90,7 @@ The gateway resolves per-agent config: model, skills filter, workspace, identity
 | Sales             | `sales`          | Flash     | low      | Account research, outreach, pipeline, call summaries              | Ephemeral      |
 | Product           | `product`        | Flash     | low      | Specs, roadmaps, competitive analysis, user stories               | Ephemeral      |
 | Support           | `support`        | Flash     | low      | Ticket triage, KB management, escalation                          | Ephemeral      |
-| Enterprise Search | `search`         | Flash     | low      | Query decomposition, multi-source synthesis                       | **Persistent** |
+| Enterprise Search | `search`         | Flash     | medium   | Query decomposition, multi-source synthesis                       | **Persistent** |
 | Legal             | `legal`          | Pro       | medium   | Contracts, compliance, risk assessment                            | Ephemeral      |
 | Finance           | `finance`        | Pro       | medium   | Budgets, forecasting, reconciliation                              | Ephemeral      |
 | Data              | `data`           | Pro       | medium   | SQL, visualization, ETL, data quality                             | Ephemeral      |
