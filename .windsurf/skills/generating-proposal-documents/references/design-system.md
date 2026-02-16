@@ -51,35 +51,73 @@
 
 ## Typography
 
-### Font Sizes (Print-Optimized)
+### Font Sizes — Print Documents (8.5×11)
+
+Print documents have TWO distinct zones with very different size needs:
+
+**Cover Page (full-bleed, 1 page only):**
 
 ```
-Hero Title:     text-xl (20px)
-Section Title:  text-sm font-bold (14px)
-Body Text:      text-xs (12px)
-Small Text:     text-[10px]
-Tiny Text:      text-[9px]
+Giant Title:    text-[3.5rem]–text-[5.5rem] font-black tracking-tighter leading-[0.85]–[0.9]
+Subtitle:       text-sm–text-lg font-medium
+Category Label: text-[9px]–text-[10px] font-black uppercase tracking-[0.3em]
+Stat Values:    text-2xl–text-3xl font-black
+Stat Labels:    text-[8px] font-bold uppercase tracking-widest
 ```
+
+**Content Pages (data-dense, multi-section):**
+
+```
+Section Title:  text-[16px]–text-[17px] font-bold tracking-tight
+Subsection:     text-[8px] font-black uppercase tracking-widest
+Body Text:      text-[8px]–text-[10px] font-medium
+Table Text:     text-[7px]–text-[9px]
+Micro Labels:   text-[6px]–text-[7px] font-bold
+KPI Values:     text-sm–text-base font-black
+KPI Labels:     text-[7px]–text-[8px] font-bold
+```
+
+> **CRITICAL**: Content pages must use text-[7px]–text-[10px] to achieve proper data density.
+> If you're using text-sm or larger for body text on content pages, your page will overflow.
 
 ### Font Weights
 
 ```
-Bold:    font-bold (700)
-Semibold: font-semibold (600)
-Medium:  font-medium (500)
-Normal:  font-normal (400)
+font-black (900)    - Hero titles, stat values, section headers, emphasis
+font-bold (700)     - Subheaders, card titles, table highlights
+font-semibold (600) - Labels, secondary values
+font-medium (500)   - Body text, descriptions
 ```
 
 ## Spacing
 
-### Print Document Spacing
+### Print Document Spacing (CRITICAL)
+
+Print documents must use **tight spacing** to achieve data density. Web-style spacing (gap-4+, p-6+, mb-8+) will cause page overflow.
 
 ```
-Page Padding:   0.35in (padding: '0.35in')
-Section Gap:    gap-2 or gap-3
-Card Padding:   p-2 or p-3
-Inner Gap:      gap-1 or gap-1.5
+Page Padding:       0.4in–0.5in (in print CSS)
+Section Gap:        gap-2 or gap-3 (NEVER gap-4+ between major sections)
+Section Margin:     mb-3 (NEVER mb-6+ on content pages)
+Card Padding:       p-3 or p-4 (NEVER p-6+ on content pages)
+Inner Gap:          gap-1.5 or gap-2
+Grid Gap:           gap-2 or gap-3
+Two-Column Gap:     gap-3
+Table Cell Padding: py-1.5 px-2
 ```
+
+### Page Budget (8.5×11 with 0.5in padding)
+
+Each content page has ~9 inches (648px at 72dpi) of usable vertical space:
+
+- Header: ~30px
+- Section header: ~40px
+- Footer: ~30px
+- **Available for content: ~548px**
+
+Plan your sections to fit within this budget. If a page has 3 sections, each gets ~180px max.
+
+> **Rule of thumb**: If you can't fit 3–4 distinct visual sections per content page, your spacing is too generous.
 
 ## Border Radius
 
@@ -442,3 +480,92 @@ className = "hover:-translate-x-1 transition-all";
 // Vertical accent bar
 <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-pink-500 rounded-full" />
 ```
+
+---
+
+## Visual Rhythm (CRITICAL for Multi-Page Documents)
+
+The #1 reason proposals look amateur is **monotone visual density** — every section looks the same. Professional proposals alternate between light and dark sections to create rhythm and hierarchy.
+
+### The Alternation Pattern
+
+Every content page should alternate between at least 2 of these 3 section types:
+
+| Type       | Background                                              | Text Colors                                      | Use For                                     |
+| ---------- | ------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------- |
+| **Light**  | `bg-white` or `bg-gray-50` + `border border-gray-200`   | `text-gray-900` / `text-gray-600`                | Data tables, stats grids, form-like content |
+| **Dark**   | `bg-gray-900`                                           | `text-white` / `text-gray-400` / `text-cyan-400` | Featured data, hero stats, timelines        |
+| **Accent** | `bg-emerald-50/60` or `bg-cyan-50/60` + matching border | `text-gray-900` / `text-emerald-600`             | Benefits lists, commitments, CTAs           |
+
+### Example Page Composition (3–4 sections per page)
+
+```
+Page 2: Market Intelligence
+├── [Light]  Two-column grid: Affinity chart + Network stats
+├── [Dark]   Featured creators table (3-col grid on dark bg)
+└── [Light]  Competitive comparison table
+
+Page 3: Activation Plan
+├── [Light]  Two-column: Store distribution + Creator tiers
+├── [Dark]   3-phase timeline with colored top borders
+└── [Light]  Affinity-to-activation matrix (4-col grid)
+
+Page 4: The Deal
+├── [Accent] Two-column: "What You Get" (green) + "What We Commit" (blue)
+├── [Light]  KPI benchmarks (5-col grid)
+├── [Light]  Two-column: Compliance + Deal terms
+└── [Dark]   CTA block with contact info
+```
+
+### Why This Works
+
+- **Dark sections** draw the eye to your most important data (featured creators, timelines)
+- **Accent sections** signal value/benefits (green = what they get, blue = what you commit)
+- **Light sections** provide breathing room and are best for dense tables/grids
+- **Alternation prevents visual fatigue** — the reader's eye resets at each transition
+
+### Anti-Patterns (DO NOT DO)
+
+```
+❌ All white cards with gray borders (monotone — looks like a spreadsheet)
+❌ All dark sections (oppressive — hard to read)
+❌ Random accent colors with no semantic meaning
+❌ Same padding/spacing on every section (no hierarchy)
+```
+
+---
+
+## Brand Adaptation Guide
+
+When creating proposals for brands OTHER than Celavii, map their palette to the pattern slots:
+
+### Slot Mapping
+
+| Pattern Slot     | Celavii Default                  | How to Adapt                                                           |
+| ---------------- | -------------------------------- | ---------------------------------------------------------------------- |
+| Primary accent   | `bg-blue-600` / `text-blue-600`  | Map to brand's primary color (e.g., `bg-cyan-500` for KICK)            |
+| Dark sections    | `bg-gray-900`                    | Keep `bg-gray-900` (universal dark) — accent with brand color for text |
+| Success/positive | `text-emerald-600`               | Keep green — it's universally understood                               |
+| Gradient text    | `from-blue-500 to-cyan-500`      | Map to brand gradient                                                  |
+| Accent bg        | `bg-blue-50` / `border-blue-100` | Map to brand's light tint (e.g., `bg-cyan-50`)                         |
+| Logo placeholder | Blue gradient square             | Brand's actual colors + initial letter                                 |
+
+### Example: Adapting for KICK (black/cyan brand)
+
+```tsx
+// Celavii pattern:
+<div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+  <div className="text-2xl font-black text-blue-700">$865K</div>
+</div>
+
+// Adapted for KICK:
+<div className="bg-cyan-50 rounded-2xl p-4 border border-cyan-100">
+  <div className="text-2xl font-black text-cyan-700">$865K</div>
+</div>
+
+// Dark section accent text:
+// Celavii: text-blue-400
+// KICK: text-cyan-400
+```
+
+> **Rule**: Keep the structural patterns identical — only swap color tokens. Never redesign the layout for a different brand.

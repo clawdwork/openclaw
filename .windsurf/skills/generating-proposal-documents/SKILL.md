@@ -308,16 +308,57 @@ Follow the priority order from "Brand Integration" section above:
 3. Check `@brand-identity` skill
 4. Ask user for manual input
 
-### Step 3: Select Layout Pattern
+### Step 3: Plan Page Composition (CRITICAL — Do This Before Writing Code)
+
+**Before writing any code**, plan the visual composition of each page. This is the step most agents skip, and it's why proposals look bad.
+
+For each page, write a composition plan like this:
+
+```
+Page 1 (Cover): hideHeaderFooter=true
+  - Logo + recipient block (top)
+  - Gradient divider
+  - Giant title (text-[3.5rem]+)
+  - 4-col stat grid
+  - Dark hero bar (key message)
+  - Footer with data source + date
+
+Page 2 (Market Intelligence):
+  [Light]  2-col grid: Affinity chart (left) + Network stats (right)    ~40% of page
+  [Dark]   Featured creators (3-col grid on dark bg)                     ~30% of page
+  [Light]  Competitive table with highlight row                          ~30% of page
+
+Page 3 (Activation Plan):
+  [Light]  2-col: Store distribution (left) + Creator tiers (right)     ~40% of page
+  [Dark]   3-phase timeline                                              ~30% of page
+  [Light]  4-col activation matrix                                       ~30% of page
+
+Page 4 (The Deal):
+  [Accent] 2-col: Benefits (green) + Commitments (blue)                 ~35% of page
+  [Light]  5-col KPI benchmarks                                          ~20% of page
+  [Light]  2-col: Compliance + Terms                                     ~20% of page
+  [Dark]   CTA block                                                     ~25% of page
+```
+
+**Rules for page composition:**
+
+- Each content page MUST have 3–4 sections (never 1–2)
+- Allocate % of page height to each section (must sum to ~100%)
+- Alternate [Light] and [Dark] sections for visual rhythm
+- Use [Accent] for benefits/value sections only
+- 2-column grids are the default — single-column is only for full-width dark sections
+
+### Step 4: Select Layout Pattern
 
 Match content type to layout:
 
-| Content Type      | Layout       | Grid                |
-| ----------------- | ------------ | ------------------- |
-| Executive summary | Hero + 2-col | `grid-cols-2 gap-4` |
-| Financials/Charts | Chart-heavy  | `grid-cols-2 gap-2` |
-| Comparison tables | 3-col cards  | `grid-cols-3 gap-3` |
-| Timeline/Roadmap  | Full-width   | `col-span-full`     |
+| Content Type      | Layout       | Grid                                       |
+| ----------------- | ------------ | ------------------------------------------ |
+| Executive summary | Hero + 2-col | `grid-cols-2 gap-3`                        |
+| Financials/Charts | Chart-heavy  | `grid-cols-2 gap-2`                        |
+| Comparison tables | 3-col cards  | `grid-cols-3 gap-2`                        |
+| Timeline/Roadmap  | Full-width   | `col-span-full`                            |
+| KPI row           | 4–5 items    | `grid-cols-4 gap-2` or `grid-cols-5 gap-2` |
 
 For multi-page documents, use PageWrapper pattern:
 
@@ -327,16 +368,22 @@ For multi-page documents, use PageWrapper pattern:
 </PageWrapper>
 ```
 
-### Step 4: Apply Design System
+### Step 5: Apply Design System + Brand Adaptation
 
 Use loaded brand data for:
 
 - Color palette (BRAND.colors.primary, secondary, accent)
 - Typography (BRAND.typography.fontFamilies)
-- Spacing (BRAND.spacing.borderRadius)
 - Logo (BRAND.logo)
 
-### Step 5: Generate Component
+**If brand is NOT Celavii**, follow the Brand Adaptation Guide in `references/design-system.md`:
+
+- Map brand primary color to all `blue-*` pattern slots
+- Keep `bg-gray-900` for dark sections (universal)
+- Keep `text-emerald-*` for success/positive states (universal)
+- Only swap color tokens — never redesign the structural layout
+
+### Step 6: Generate Component
 
 Create a React component following patterns in `examples/`:
 
@@ -344,8 +391,11 @@ Create a React component following patterns in `examples/`:
 2. Use **static HTML/CSS** for all visualizations (no Recharts for print docs)
 3. Apply print CSS for proper page breaks
 4. Use fixed dimensions (8.5in × 11in) for print reliability
+5. Use **tight spacing**: `gap-2`/`gap-3`, `mb-3`, `p-3`/`p-4` on content pages
+6. Use **print-scale typography**: `text-[7px]`–`text-[10px]` for content pages
+7. Alternate **light/dark/accent sections** for visual rhythm (see `references/design-system.md`)
 
-### Step 6: Add Print Styles
+### Step 7: Add Print Styles
 
 Include print-specific CSS:
 
@@ -560,6 +610,47 @@ const SectionHeader = ({
 - ALWAYS use static HTML/CSS for charts in print documents
 - ALWAYS use Lucide-react for icons (not other icon libraries)
 - ALWAYS offer Firecrawl brand extraction if `.styles/` doesn't exist
+
+## Print Density Checklist (MANDATORY — Run Before Completing Any Print Document)
+
+Before marking a print document as complete, verify ALL of the following:
+
+### Spacing Rules
+
+- [ ] Content pages use `gap-2` or `gap-3` between sections (NEVER `gap-4`+)
+- [ ] Section margins use `mb-3` (NEVER `mb-6`+ on content pages)
+- [ ] Card padding uses `p-3` or `p-4` (NEVER `p-6`+ on content pages)
+- [ ] Cover page is the ONLY page with generous spacing
+
+### Typography Rules
+
+- [ ] Cover title uses `text-[3.5rem]`+ (NOT `text-xl`)
+- [ ] Content page body text uses `text-[7px]`–`text-[10px]` (NOT `text-sm`+)
+- [ ] Section titles use `text-[16px]`–`text-[17px]` (NOT `text-xl`+)
+- [ ] Subsection labels use `text-[7px]`–`text-[8px]` font-black uppercase tracking-widest
+- [ ] Table text uses `text-[7px]`–`text-[9px]`
+
+### Visual Rhythm Rules
+
+- [ ] Each content page has 3–4 distinct visual sections
+- [ ] At least one dark section (`bg-gray-900`) per content page
+- [ ] Light and dark sections alternate (never 3+ of the same type in a row)
+- [ ] At least one accent-colored section on the deal/benefits page
+
+### Data Density Rules
+
+- [ ] Every page uses 2-column or multi-column grids (no single-column content pages)
+- [ ] Tables have proper row styling with hover hints and highlight rows
+- [ ] KPI values are visually prominent (larger font, brand color)
+- [ ] Static charts use calculated widths/heights (not hardcoded px)
+
+### Page Budget Rules
+
+- [ ] No page has content that would overflow 11 inches at print
+- [ ] Cover page fits entirely without scrolling
+- [ ] Footer is pinned to bottom with `mt-auto`
+
+> **If any checkbox fails, fix it before shipping.** The most common failure mode is web-style spacing on print documents.
 
 ## Error Handling
 

@@ -64,7 +64,7 @@
 ### 2-Column Equal
 
 ```tsx
-<div className="grid grid-cols-2 gap-4">
+<div className="grid grid-cols-2 gap-3">
   <div>{/* Left */}</div>
   <div>{/* Right */}</div>
 </div>
@@ -73,7 +73,7 @@
 ### 2-Column Wide Left (2:1)
 
 ```tsx
-<div className="grid grid-cols-[2fr_1fr] gap-4">
+<div className="grid grid-cols-[2fr_1fr] gap-3">
   <div>{/* Main content */}</div>
   <div>{/* Sidebar */}</div>
 </div>
@@ -182,6 +182,65 @@
   page-break-inside: avoid;
 }
 ```
+
+## Page Composition Planning (CRITICAL)
+
+Before writing any page, plan its visual composition. This is what separates professional proposals from amateur ones.
+
+### Content Page Template (3–4 sections per page)
+
+Every content page should follow this structure:
+
+```
+[Header — mb-5, pb-3, text-[7px]]
+[SectionHeader — mb-5, text-[17px]]
+
+[Section 1: Light or Accent]     ~35–40% of available height
+  - 2-col grid (gap-3), cards with p-3/p-4
+
+[Section 2: Dark (bg-gray-900)]  ~25–30% of available height
+  - Featured data, timeline, or highlight grid
+
+[Section 3: Light]               ~25–30% of available height
+  - Table, matrix, or comparison data
+
+[Footer — mt-auto, pt-4, text-[7px]]
+```
+
+### Section Type Reference
+
+| Type               | Background                                                   | When to Use                          |
+| ------------------ | ------------------------------------------------------------ | ------------------------------------ |
+| **Light**          | `bg-white rounded-2xl border border-gray-200 p-4 shadow-sm`  | Data grids, tables, stat cards       |
+| **Dark**           | `bg-gray-900 rounded-2xl p-4`                                | Featured data, timelines, hero stats |
+| **Accent (Green)** | `bg-emerald-50/60 rounded-2xl p-4 border border-emerald-100` | Benefits, value props                |
+| **Accent (Blue)**  | `bg-blue-50/60 rounded-2xl p-4 border border-blue-100`       | Commitments, deliverables            |
+
+### Spacing Between Sections
+
+```
+mb-3  — between all sections on content pages (NEVER mb-6+)
+gap-3 — between grid columns
+gap-2 — between grid items within a section
+```
+
+### Anti-Pattern: The Spreadsheet Page
+
+```
+❌ BAD: All white cards, same padding, no dark sections
+   [White card] mb-6
+   [White card] mb-6
+   [White card] mb-6
+   → Looks like a spreadsheet, wastes space, no hierarchy
+
+✅ GOOD: Alternating light/dark with tight spacing
+   [Light 2-col grid] mb-3
+   [Dark featured section] mb-3
+   [Light table] mb-3
+   → Creates rhythm, maximizes density, guides the eye
+```
+
+---
 
 ## Cover Page Pattern (Production)
 

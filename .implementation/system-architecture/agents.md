@@ -83,23 +83,24 @@ Flash (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent             | ID               | Model     | Thinking | Role Summary                                                      | Session Type   |
-| ----------------- | ---------------- | --------- | -------- | ----------------------------------------------------------------- | -------------- |
-| **Coordinator**   | `main`           | Flash     | medium   | User conversations, routing, web search, synthesis                | Main session   |
-| Marketing         | `marketing`      | Flash     | low      | SEO, content, campaigns, brand voice, analytics, Celavii CIP      | Ephemeral      |
-| Sales             | `sales`          | Flash     | low      | Account research, outreach, pipeline, call summaries              | Ephemeral      |
-| Product           | `product`        | Flash     | low      | Specs, roadmaps, competitive analysis, user stories               | Ephemeral      |
-| Support           | `support`        | Flash     | low      | Ticket triage, KB management, escalation                          | Ephemeral      |
-| Enterprise Search | `search`         | Flash     | medium   | Query decomposition, multi-source synthesis                       | **Persistent** |
-| Legal             | `legal`          | Pro       | medium   | Contracts, compliance, risk assessment                            | Ephemeral      |
-| Finance           | `finance`        | Pro       | medium   | Budgets, forecasting, reconciliation                              | Ephemeral      |
-| Data              | `data`           | Pro       | medium   | SQL, visualization, ETL, data quality                             | Ephemeral      |
-| Media Content     | `media-content`  | Pro       | low      | Image/video/audio prompt crafting, visual assets                  | Ephemeral      |
-| Quality Critic    | `quality-critic` | GPT-5.2   | xhigh    | Reviews creative outputs against specs (proposals, images, decks) | Ephemeral      |
-| **Dev Coder**     | `dev-coder`      | Flash     | high     | Everyday coding, automations, scripts, simple deploys, CI/CD      | Ephemeral      |
-| **Prod Coder**    | `prod-coder`     | 5.2-Codex | xhigh    | Complex integrations, APIs, backends, prod-critical refactors     | Ephemeral      |
-| **Planner**       | `planner`        | GPT-5.2   | xhigh    | Architecture review, validation, expert advisor                   | Ephemeral      |
-| **Grunt**         | `grunt`          | Flash     | off      | File ops, tests, cleanup, bulk operations, scaffolding            | Ephemeral      |
+| Agent                 | ID                  | Model     | Thinking | Role Summary                                                      | Session Type   |
+| --------------------- | ------------------- | --------- | -------- | ----------------------------------------------------------------- | -------------- |
+| **Coordinator**       | `main`              | Flash     | medium   | User conversations, routing, web search, synthesis                | Main session   |
+| Marketing             | `marketing`         | Flash     | low      | SEO, content, campaigns, brand voice, analytics, Celavii CIP      | Ephemeral      |
+| Sales                 | `sales`             | Flash     | low      | Account research, outreach, pipeline, call summaries              | Ephemeral      |
+| Product               | `product`           | Flash     | low      | Specs, roadmaps, competitive analysis, user stories               | Ephemeral      |
+| Support               | `support`           | Flash     | low      | Ticket triage, KB management, escalation                          | Ephemeral      |
+| Enterprise Search     | `search`            | Flash     | medium   | Query decomposition, multi-source synthesis                       | **Persistent** |
+| Legal                 | `legal`             | Pro       | medium   | Contracts, compliance, risk assessment                            | Ephemeral      |
+| Finance               | `finance`           | Pro       | medium   | Budgets, forecasting, reconciliation                              | Ephemeral      |
+| Data                  | `data`              | Pro       | medium   | SQL, visualization, ETL, data quality                             | Ephemeral      |
+| Media Content         | `media-content`     | Pro       | low      | Image/video/audio prompt crafting, visual assets                  | Ephemeral      |
+| Quality Critic        | `quality-critic`    | GPT-5.2   | xhigh    | Reviews creative outputs against specs (proposals, images, decks) | Ephemeral      |
+| **Dev Coder**         | `dev-coder`         | Flash     | high     | Everyday coding, automations, scripts, simple deploys, CI/CD      | Ephemeral      |
+| **Prod Coder**        | `prod-coder`        | 5.2-Codex | xhigh    | Complex integrations, APIs, backends, prod-critical refactors     | Ephemeral      |
+| **Planner**           | `planner`           | GPT-5.2   | xhigh    | Architecture review, validation, expert advisor                   | Ephemeral      |
+| **Grunt**             | `grunt`             | Flash     | off      | File ops, tests, cleanup, bulk operations, scaffolding            | Ephemeral      |
+| **Workspace Auditor** | `workspace-auditor` | Pro       | high     | MWF workspace integrity audits (structural, registry, semantic)   | Ephemeral      |
 
 ---
 

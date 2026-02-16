@@ -1,13 +1,22 @@
-// Example Multi-Page Document Component
-// Print-optimized with page-based layout, consistent headers/footers, and sequential numbering
-// Based on learnings from Celavii Business Model Launch Plan
+// =============================================================================
+// Example Multi-Page Print Document — Production Quality Reference
+// =============================================================================
 //
-// NOTE: This example uses STATIC HTML/CSS visualizations instead of Recharts.
-// For 8.5x11 print documents meant for PDF distribution, static visualizations are:
-// - More reliable across PDF generators
-// - Require no client-side mounting
-// - Have zero library dependencies
-// - Render 100% consistently
+// PURPOSE: This is the primary example agents pattern-match against. It must
+// demonstrate EVERY principle that makes a proposal look professional:
+//
+//   1. TIGHT SPACING — gap-2/gap-3, mb-3, p-3/p-4 on content pages
+//   2. PRINT-SCALE TYPOGRAPHY — text-[7px]–text-[10px] for content pages
+//   3. VISUAL RHYTHM — light/dark/accent section alternation on every page
+//   4. DATA DENSITY — 3–4 distinct sections per content page
+//   5. PAGE BUDGET — each page fits within 8.5×11 with 0.5in padding
+//   6. BRAND ADAPTATION — BRAND constant with clear color mapping
+//
+// CRITICAL: Do NOT use web-style spacing (gap-4+, p-6+, mb-6+) on content
+// pages. That is the #1 reason proposals look bad.
+//
+// Static HTML/CSS charts only — no Recharts for print documents.
+// =============================================================================
 
 "use client";
 
@@ -18,26 +27,33 @@ import {
   Target,
   CheckCircle,
   ArrowRight,
-  Calendar,
+  MapPin,
   Zap,
   BarChart3,
-  PieChart as PieChartIcon,
+  Shield,
+  Store,
   Printer,
   FileText,
+  ChevronRight,
+  Star,
+  Clock,
 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 
-// ===== BRAND CONSTANTS (Load from .styles/[company]/brand.json) =====
+// ===== BRAND CONSTANTS =====
+// Load from .styles/[company]/brand.json in production.
+// When adapting for a different brand:
+//   - Swap primary/accent colors below
+//   - Keep bg-gray-900 for dark sections (universal)
+//   - Keep text-emerald-* for success states (universal)
+//   - Only change color tokens, never redesign layout structure
 
 const BRAND = {
-  name: "Acme Corporation",
-  tagline: "Strategic Growth Initiative 2025",
-  logo: "/logo.png", // Replace with actual logo path or full URL
-  heroBg: "/hero-background.webp", // Optional: Background image for cover page
+  name: "Partner Co.",
+  tagline: "Market Expansion Brief",
   colors: {
-    primary: "#0066FF",
-    secondary: "#6366F1",
-    accent: "#10B981",
+    primary: "#0066FF", // Maps to: bg-blue-*, text-blue-*, border-blue-*
+    secondary: "#6366F1", // Maps to: bg-indigo-*, text-indigo-*
+    accent: "#10B981", // Maps to: bg-emerald-*, text-emerald-*
     destructive: "#EF4444",
     orange: "#F97316",
     pink: "#EC4899",
@@ -45,85 +61,44 @@ const BRAND = {
     dark: "#1E293B",
     muted: "#F4F4F5",
   },
-  gradients: {
-    primary: "linear-gradient(135deg, #0066FF 0%, #00D4FF 100%)",
-    hero: "linear-gradient(135deg, #F97316 0%, #EC4899 50%, #A855F7 100%)",
-    dark: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)",
-  },
 };
 
-// ===== DATA DEFINITIONS =====
+// ===== VALIDATED DATA =====
+// In production, populate from MCP APIs, databases, or user-provided specs.
+// Use realistic, domain-specific data — never generic placeholders.
 
-const revenueData = [
-  { month: "Jan", revenue: 45000, target: 40000 },
-  { month: "Feb", revenue: 52000, target: 45000 },
-  { month: "Mar", revenue: 61000, target: 50000 },
-  { month: "Apr", revenue: 58000, target: 55000 },
-  { month: "May", revenue: 72000, target: 60000 },
-  { month: "Jun", revenue: 85000, target: 65000 },
+const MARKET_DATA = [
+  { name: "Enterprise", lift: "18.2×", pct: 100, color: "bg-blue-500" },
+  { name: "Mid-Market", lift: "9.7×", pct: 53, color: "bg-indigo-500" },
+  { name: "SMB", lift: "6.4×", pct: 35, color: "bg-orange-500" },
+  { name: "Startup", lift: "4.1×", pct: 23, color: "bg-emerald-500" },
+  { name: "Agency", lift: "2.8×", pct: 15, color: "bg-pink-500" },
 ];
 
-const marketShareData = [
-  { name: "Our Product", value: 35, color: "#3b82f6" },
-  { name: "Competitor A", value: 25, color: "#6366f1" },
-  { name: "Competitor B", value: 20, color: "#8b5cf6" },
-  { name: "Others", value: 20, color: "#d1d5db" },
+const KEY_ACCOUNTS = [
+  { name: "Acme Corp", handle: "acme_co", metric: "2.4M", rate: "3.2%", segment: "Enterprise" },
+  { name: "NovaTech", handle: "novatech", metric: "1.8M", rate: "4.1%", segment: "Mid-Market" },
+  { name: "Pinnacle", handle: "pinnacle_io", metric: "890K", rate: "5.5%", segment: "Enterprise" },
+  { name: "Zenith", handle: "zenith_hq", metric: "650K", rate: "2.8%", segment: "SMB" },
+  { name: "Apex Digital", handle: "apex_dig", metric: "420K", rate: "6.1%", segment: "Agency" },
+  { name: "SkyBridge", handle: "skybridge", metric: "310K", rate: "3.9%", segment: "Startup" },
 ];
 
-const milestones = [
-  {
-    quarter: "Q1 2025",
-    title: "Launch Phase",
-    items: ["Initial rollout", "Team training", "Baseline metrics"],
-  },
-  {
-    quarter: "Q2 2025",
-    title: "Growth Phase",
-    items: ["Expand coverage", "Optimize processes", "First review"],
-  },
-  {
-    quarter: "Q3 2025",
-    title: "Scale Phase",
-    items: ["Full deployment", "Advanced features", "ROI assessment"],
-  },
-  {
-    quarter: "Q4 2025",
-    title: "Optimization",
-    items: ["Continuous improvement", "Year-end review", "Plan Year 2"],
-  },
-];
-
-const kpiCards = [
-  {
-    label: "Revenue Growth",
-    value: "+45%",
-    icon: TrendingUp,
-    color: "text-green-600",
-    bg: "bg-green-50",
-  },
-  { label: "New Customers", value: "1,250", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-  {
-    label: "Cost Savings",
-    value: "$2.4M",
-    icon: DollarSign,
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-  {
-    label: "Target Hit Rate",
-    value: "94%",
-    icon: Target,
-    color: "text-orange-600",
-    bg: "bg-orange-50",
-  },
+const COMPETITORS = [
+  { brand: "Our Product", price: "$49/mo", margin: "72%", nps: "68", fit: 5 },
+  { brand: "Competitor A", price: "$89/mo", margin: "55%", nps: "42", fit: 2 },
+  { brand: "Competitor B", price: "$79/mo", margin: "60%", nps: "51", fit: 3 },
+  { brand: "Legacy Tool", price: "$120/mo", margin: "45%", nps: "28", fit: 1 },
 ];
 
 // ===== REUSABLE COMPONENTS =====
+// Note TIGHT spacing: mb-5 headers, pt-3/pb-3 footers, p-3/p-4 cards
+// These values are calibrated for 8.5x11 print density.
 
 const PageWrapper = ({
   children,
   pageNumber,
-  totalPages = 5,
+  totalPages = 4,
   hideHeaderFooter = false,
 }: {
   children: React.ReactNode;
@@ -132,31 +107,32 @@ const PageWrapper = ({
   hideHeaderFooter?: boolean;
 }) => (
   <div className="report-page bg-white relative overflow-hidden">
-    {/* Page background accents */}
-    <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full blur-3xl opacity-20 -mr-32 -mt-32" />
-    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-50 rounded-full blur-3xl opacity-20 -ml-32 -mb-32" />
+    {/* Subtle background accents */}
+    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-20 -mr-32 -mt-32" />
+    <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-20 -ml-24 -mb-24" />
 
     <div className="flex flex-col h-full relative z-10">
+      {/* Header — TIGHT: mb-5, pb-3, text-[7px] */}
       {!hideHeaderFooter && (
-        <div className="mb-6 flex justify-between items-center text-[8px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-4">
+        <div className="mb-5 flex justify-between items-center text-[7px] font-bold text-gray-400 uppercase tracking-[0.15em] border-b border-gray-100 pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg flex items-center justify-center overflow-hidden bg-white border border-gray-100 shadow-sm">
-              <span className="text-xs font-bold text-blue-600">A</span>
+            <div className="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
+              <span className="text-[10px] font-black text-white">P</span>
             </div>
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-              {BRAND.name}
-            </span>{" "}
-            | {BRAND.tagline}
+            <span className="text-gray-500">{BRAND.name}</span>
+            <span className="text-gray-300">|</span>
+            <span>{BRAND.tagline}</span>
           </div>
-          <div>Confidential Proposal v1.0</div>
+          <div>Confidential — 2026</div>
         </div>
       )}
 
       {children}
 
+      {/* Footer — TIGHT: pt-4, text-[7px] */}
       {!hideHeaderFooter && (
-        <div className="mt-auto pt-6 flex justify-between items-center text-[8px] font-bold text-gray-400 uppercase tracking-widest border-t border-gray-100 print:border-gray-200">
-          <div>© 2025 {BRAND.name}</div>
+        <div className="mt-auto pt-4 flex justify-between items-center text-[7px] font-bold text-gray-400 uppercase tracking-[0.15em] border-t border-gray-100">
+          <div>© 2026 {BRAND.name}</div>
           <div className="bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
             Page {pageNumber} of {totalPages}
           </div>
@@ -166,50 +142,65 @@ const PageWrapper = ({
   </div>
 );
 
+// SectionHeader — TIGHT: mb-5, text-[17px], icon p-2 w-4
 const SectionHeader = ({
   title,
+  subtitle,
   icon: Icon,
   color = BRAND.colors.primary,
 }: {
   title: string;
+  subtitle?: string;
   icon?: any;
   color?: string;
 }) => (
-  <div className="flex items-center gap-3 mb-6">
-    {Icon && (
+  <div className="mb-5">
+    <div className="flex items-center gap-3 mb-1">
+      {Icon && (
+        <div
+          className="p-2 rounded-xl shadow-sm"
+          style={{ backgroundColor: `${color}15`, boxShadow: `0 4px 12px ${color}20` }}
+        >
+          <Icon className="w-4 h-4" style={{ color }} />
+        </div>
+      )}
+      <h2 className="text-[17px] font-bold tracking-tight text-gray-900">{title}</h2>
+    </div>
+    {subtitle && <p className="text-[10px] text-gray-500 font-medium ml-[44px]">{subtitle}</p>}
+  </div>
+);
+
+// FitDots — visual rating indicator for tables
+const FitDots = ({ count, max = 5 }: { count: number; max?: number }) => (
+  <div className="flex gap-0.5">
+    {Array.from({ length: max }).map((_, i) => (
       <div
-        className="p-2.5 rounded-2xl shadow-sm"
-        style={{ backgroundColor: `${color}15`, boxShadow: `0 4px 12px ${color}20` }}
-      >
-        <Icon className="w-5 h-5" style={{ color: color }} />
-      </div>
-    )}
-    <h2 className="text-xl font-bold tracking-tight text-gray-900">{title}</h2>
+        key={i}
+        className={`w-[7px] h-[7px] rounded-sm ${i < count ? "bg-blue-500" : "bg-gray-200"}`}
+      />
+    ))}
   </div>
 );
 
 // ===== MAIN COMPONENT =====
 
 export default function MultiPageProposal() {
-  // No useState/useEffect needed for static visualizations
-  // This makes the component simpler and more reliable for print
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* ===== CONTROL BAR (Screen Only) - Production Pattern ===== */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-gray-50">
+      {/* ===== CONTROL BAR (Screen Only) ===== */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 print:hidden shadow-sm">
         <div className="max-w-[8.5in] mx-auto px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-all cursor-pointer hover:-translate-x-1">
+            <div className="flex items-center gap-2 text-gray-500">
               <FileText className="w-4 h-4" />
               <span className="text-sm font-semibold tracking-tight">Documents</span>
             </div>
             <div className="h-4 w-[1px] bg-gray-200" />
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-xs">A</span>
+              <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center">
+                <span className="text-white font-bold text-xs">P</span>
               </div>
-              <span className="text-sm font-bold tracking-tight">Multi-Page Proposal</span>
+              <span className="text-sm font-bold tracking-tight">Partnership Proposal</span>
             </div>
           </div>
           <button
@@ -217,380 +208,697 @@ export default function MultiPageProposal() {
             className="flex items-center gap-2 px-6 py-2 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-lg shadow-gray-900/20 active:scale-95"
           >
             <Printer className="w-4 h-4" />
-            Download PDF Report
+            Download PDF
           </button>
         </div>
       </header>
 
-      {/* ===== MAIN CONTENT ===== */}
+      {/* ===== PAGES ===== */}
       <main className="report-container">
-        {/* ===== PAGE 1: COVER PAGE (Production Pattern) ===== */}
-        <PageWrapper pageNumber={1} totalPages={5} hideHeaderFooter={true}>
-          <div className="h-full flex flex-col justify-center relative -m-[0.5in] p-[0.5in]">
-            {/* Background Image Layer (Optional) */}
-            {BRAND.heroBg && (
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-white via-white/40 to-white" />
-              </div>
-            )}
+        {/* ==================== PAGE 1: COVER ==================== */}
+        {/* Cover uses generous spacing — it's the ONLY page that should */}
+        <PageWrapper pageNumber={1} totalPages={4} hideHeaderFooter>
+          <div className="h-full flex flex-col relative -m-[0.5in] p-[0.5in]">
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50 rounded-full blur-3xl opacity-30 -mr-48 -mt-48" />
+            </div>
 
-            <div className="space-y-12 relative z-10">
-              {/* Logo + Company Name */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl shadow-blue-600/20">
-                  <span className="text-white font-black text-3xl">A</span>
+            <div className="space-y-10 relative z-10">
+              {/* Logo + Recipient */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-600/20">
+                    <span className="text-white font-black text-2xl">P</span>
+                  </div>
+                  <div>
+                    <div className="text-xl font-black tracking-tighter text-gray-900 uppercase">
+                      {BRAND.name}
+                    </div>
+                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+                      {BRAND.tagline}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-black tracking-tighter text-gray-900 uppercase">
-                    {BRAND.name}
+                <div className="text-right">
+                  <div className="text-[8px] font-black text-gray-300 uppercase tracking-widest">
+                    Prepared For
                   </div>
-                  <div className="text-xs font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent uppercase tracking-widest">
-                    {BRAND.tagline}
-                  </div>
+                  <div className="text-lg font-black text-gray-900 mt-0.5">Client Name</div>
+                  <div className="text-xs text-gray-500 font-medium">Decision Team</div>
                 </div>
               </div>
 
               {/* Gradient Divider */}
-              <div className="h-[3px] w-24 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.3)]" />
+              <div
+                className="h-[3px] w-28 rounded-full"
+                style={{
+                  background: `linear-gradient(90deg, ${BRAND.colors.primary}, ${BRAND.colors.dark})`,
+                }}
+              />
 
-              {/* Giant Title */}
-              <div className="space-y-4">
-                <div className="text-sm font-black text-gray-400 uppercase tracking-[0.3em]">
-                  Proposal & Strategy
+              {/* Giant Title — text-[3.5rem] minimum for covers */}
+              <div className="space-y-2">
+                <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                  Market Intelligence Brief
                 </div>
-                <div className="text-[4rem] font-black tracking-tighter leading-[0.9]">
-                  <div className="text-gray-900">Partnership</div>
-                  <div className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-                    Proposal
+                <div className="text-[3.5rem] font-black tracking-tighter leading-[0.88]">
+                  <div className="text-gray-900">Market</div>
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">
+                    Expansion
                   </div>
+                  <div className="text-gray-300">Strategy</div>
                 </div>
-                <p className="text-lg text-gray-500 font-medium max-w-lg leading-relaxed pt-4">
-                  A comprehensive partnership proposal designed to accelerate growth and deliver
-                  measurable ROI.
+                <p className="text-sm text-gray-500 font-medium max-w-md leading-relaxed pt-3">
+                  Data-validated intelligence, competitive positioning, and a turnkey activation
+                  plan — backed by AI-profiled analysis across 200+ accounts.
                 </p>
               </div>
 
-              {/* Key Stats */}
-              <div className="grid grid-cols-2 gap-6 pt-8">
-                <div className="bg-blue-50 rounded-[1.5rem] p-5 border border-blue-100">
-                  <div className="text-3xl font-black text-blue-700 mb-1">$2.4M</div>
-                  <div className="text-sm text-gray-600">Projected Year 1 Value</div>
+              {/* 4-col stat grid — cover can use p-4 */}
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  {
+                    label: "Year-1 Value",
+                    value: "$2.4M",
+                    bg: "bg-blue-50",
+                    border: "border-blue-100",
+                    text: "text-blue-700",
+                  },
+                  {
+                    label: "ROI",
+                    value: "433%",
+                    bg: "bg-gray-50",
+                    border: "border-gray-200",
+                    text: "text-gray-900",
+                  },
+                  {
+                    label: "Accounts",
+                    value: "200+",
+                    bg: "bg-emerald-50",
+                    border: "border-emerald-100",
+                    text: "text-emerald-700",
+                  },
+                  {
+                    label: "Pilot Sites",
+                    value: "25",
+                    bg: "bg-indigo-50",
+                    border: "border-indigo-100",
+                    text: "text-indigo-700",
+                  },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    className={`${stat.bg} rounded-2xl p-4 border ${stat.border}`}
+                  >
+                    <div className={`text-2xl font-black ${stat.text} tracking-tight`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Dark hero bar */}
+              <div className="bg-gray-900 rounded-2xl p-5">
+                <div className="text-[10px] font-medium text-gray-400 mb-1">
+                  Why This Deal Is Different
                 </div>
-                <div className="bg-purple-50 rounded-[1.5rem] p-5 border border-purple-100">
-                  <div className="text-3xl font-black text-purple-700 mb-1">433%</div>
-                  <div className="text-sm text-gray-600">Return on Investment</div>
+                <div className="text-[15px] font-black text-white tracking-tight">
+                  We absorb 100% of activation costs, sampling, and materials.
+                </div>
+                <div className="text-xs font-semibold text-blue-400 mt-1">
+                  Zero risk to you. Pure value delivery.
                 </div>
               </div>
             </div>
 
-            {/* Footer with Metadata */}
-            <div className="mt-auto flex justify-between items-end border-t border-gray-100 pt-8 relative z-10">
-              <div className="space-y-1">
-                <div className="text-[8px] font-black text-gray-300 uppercase tracking-widest">
-                  Prepared For
+            {/* Cover Footer */}
+            <div className="mt-auto flex justify-between items-end border-t border-gray-100 pt-6 relative z-10">
+              <div className="space-y-0.5">
+                <div className="text-[7px] font-black text-gray-300 uppercase tracking-widest">
+                  Data Source
                 </div>
-                <div className="text-sm font-bold text-gray-900">{BRAND.name}</div>
+                <div className="text-xs font-bold text-gray-600">AI Intelligence Platform</div>
+                <div className="text-[8px] text-gray-400">
+                  200+ profiles · 97% coverage · Live 2026
+                </div>
               </div>
               <div className="text-right">
                 <div className="text-sm font-black text-gray-900 uppercase tracking-tight">
-                  {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                  February 2026
                 </div>
-                <div className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                  Strategic Partnership
-                </div>
-              </div>
-            </div>
-          </div>
-        </PageWrapper>
-
-        {/* ===== PAGE 2: EXECUTIVE OVERVIEW ===== */}
-        <PageWrapper pageNumber={2} totalPages={5}>
-          <SectionHeader title="Executive Overview" icon={Target} color={BRAND.colors.primary} />
-
-          {/* KPI Cards */}
-          <div className="grid grid-cols-4 gap-4 mb-8">
-            {kpiCards.map((kpi) => (
-              <div key={kpi.label} className={`${kpi.bg} rounded-xl p-4 border border-gray-100`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
-                  <span className="text-sm text-gray-600">{kpi.label}</span>
-                </div>
-                <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Value Proposition */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white">
-            <div className="grid grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-xl font-black mb-4 tracking-tight">Why This Partnership?</h3>
-                <ul className="space-y-2.5">
-                  {[
-                    "Proven track record with 50+ enterprise clients",
-                    "Flexible pricing model aligned with your growth",
-                    "Dedicated support team and 99.9% uptime SLA",
-                    "Seamless integration with existing systems",
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-blue-100">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20">
-                <div className="text-center">
-                  <div className="text-xs text-blue-200 mb-1 uppercase tracking-wider">
-                    Projected Year 1 Value
-                  </div>
-                  <div className="text-4xl font-black mb-2">$2.4M</div>
-                  <div className="text-xs text-blue-200">in cost savings and revenue growth</div>
+                <div className="text-[7px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                  Confidential
                 </div>
               </div>
             </div>
           </div>
         </PageWrapper>
 
-        {/* ===== PAGE 3: MARKET OPPORTUNITY ===== */}
-        <PageWrapper pageNumber={3} totalPages={5}>
+        {/* ==================== PAGE 2: MARKET INTELLIGENCE ==================== */}
+        {/* COMPOSITION: [Light] 2-col → [Dark] featured → [Light] table = 3 sections */}
+        <PageWrapper pageNumber={2} totalPages={4}>
           <SectionHeader
-            title="Market Opportunity"
-            icon={PieChartIcon}
-            color={BRAND.colors.purple}
+            title="Market Intelligence Snapshot"
+            subtitle="AI-validated data — real accounts, real metrics, real alignment."
+            icon={BarChart3}
+            color={BRAND.colors.primary}
           />
 
-          <div className="grid grid-cols-2 gap-6">
-            {/* Market Share - Static Visualization */}
-            <div className="bg-white rounded-[1.5rem] border border-gray-200 p-6 shadow-sm">
-              <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
-                Current Market Position
+          {/* [LIGHT] Two-column grid — gap-3, p-4 */}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            {/* Left: Market Index (static horizontal bars) */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+              <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                Market Segment Index
               </h3>
-
-              {/* Static Donut Alternative - Stacked Bar */}
-              <div className="space-y-4">
-                <div className="h-6 flex rounded-full overflow-hidden">
-                  {marketShareData.map((item) => (
-                    <div
-                      key={item.name}
-                      style={{ width: `${item.value}%`, backgroundColor: item.color }}
-                      className="first:rounded-l-full last:rounded-r-full"
-                    />
-                  ))}
-                </div>
-
-                {/* Legend List */}
-                <div className="space-y-2 pt-2">
-                  {marketShareData.map((item) => (
-                    <div key={item.name} className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
-                      <div className="flex-1 text-sm font-medium text-gray-700">{item.name}</div>
-                      <div className="text-sm font-black text-gray-900">{item.value}%</div>
+              <div className="space-y-2">
+                {MARKET_DATA.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div className="w-16 text-[9px] font-bold text-gray-600">{item.name}</div>
+                    <div className="flex-1 h-3.5 bg-gray-100 rounded overflow-hidden">
+                      <div
+                        className={`h-full ${item.color} rounded flex items-center justify-end pr-1`}
+                        style={{ width: `${item.pct}%` }}
+                      >
+                        <span className="text-[6px] font-black text-white">{item.lift}</span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
+              <p className="text-[7px] text-gray-400 italic mt-2">
+                Enterprise at 18.2× = strongest segment signal
+              </p>
             </div>
 
-            {/* Opportunity Details */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-              <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-4">
-                Growth Potential
+            {/* Right: Network stats grid */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+              <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                Network Composition
               </h3>
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Total Addressable Market", value: "$50B", growth: "+12% YoY" },
-                  { label: "Target Segment Size", value: "$8B", growth: "+18% YoY" },
-                  { label: "Achievable Market Share", value: "15%", growth: "within 3 years" },
-                  { label: "Revenue Opportunity", value: "$1.2B", growth: "cumulative" },
-                ].map((item) => (
+                  { label: "Total Accounts", value: "200+", Icon: Users },
+                  { label: "Local Presence", value: "51", Icon: MapPin },
+                  { label: "AI Profiled", value: "97%", Icon: Zap },
+                  { label: "Top Tier", value: "12", Icon: Star },
+                  { label: "Strike Team", value: "22", Icon: Target },
+                  { label: "Pipeline", value: "175", Icon: TrendingUp },
+                ].map((s) => (
                   <div
-                    key={item.label}
-                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                    key={s.label}
+                    className="flex items-center gap-2 bg-gray-50 rounded-lg p-2 border border-gray-100"
                   >
-                    <span className="text-gray-600">{item.label}</span>
-                    <div className="text-right">
-                      <div className="font-bold text-gray-900">{item.value}</div>
-                      <div className="text-xs text-green-600">{item.growth}</div>
+                    <s.Icon className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                    <div>
+                      <div className="text-sm font-black text-gray-900 leading-none">{s.value}</div>
+                      <div className="text-[7px] font-medium text-gray-500">{s.label}</div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+
+          {/* [DARK] Featured accounts — 3-col grid on dark bg */}
+          <div className="bg-gray-900 rounded-2xl p-4 mb-3">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                Featured Accounts — Verified Data
+              </h3>
+              <span className="text-[7px] font-bold text-blue-400">✓ All in CRM pipeline</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {KEY_ACCOUNTS.map((c) => (
+                <div
+                  key={c.handle}
+                  className="bg-white/[0.06] rounded-xl p-3 border border-white/[0.08]"
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <div>
+                      <div className="text-[10px] font-black text-white">{c.name}</div>
+                      <div className="text-[8px] font-semibold text-blue-400">@{c.handle}</div>
+                    </div>
+                    <div className="text-xs font-black text-white">{c.metric}</div>
+                  </div>
+                  <div className="text-[7px] text-gray-400">{c.segment}</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[7px] font-bold text-emerald-400">Rate: {c.rate}</span>
+                    <span className="text-[6px] font-bold text-blue-300 bg-blue-400/10 px-1.5 py-0.5 rounded">
+                      TOP TIER
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* [LIGHT] Competitive table */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+              Competitive Landscape
+            </h3>
+            <table className="w-full text-[9px]">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  {["Brand", "Price", "Margin", "NPS", "Fit Score"].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left py-1.5 px-2 text-[7px] font-black text-gray-400 uppercase tracking-widest"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {COMPETITORS.map((row, i) => (
+                  <tr
+                    key={row.brand}
+                    className={`border-b border-gray-100 ${i === 0 ? "bg-blue-50/50" : ""}`}
+                  >
+                    <td
+                      className={`py-1.5 px-2 font-bold ${i === 0 ? "text-blue-600" : "text-gray-700"}`}
+                    >
+                      {row.brand}
+                    </td>
+                    <td
+                      className={`py-1.5 px-2 font-bold ${i === 0 ? "text-gray-900" : "text-gray-600"}`}
+                    >
+                      {row.price}
+                    </td>
+                    <td
+                      className={`py-1.5 px-2 font-bold ${i === 0 ? "text-emerald-600" : "text-gray-600"}`}
+                    >
+                      {row.margin}
+                    </td>
+                    <td className="py-1.5 px-2 font-semibold text-gray-600">{row.nps}</td>
+                    <td className="py-1.5 px-2">
+                      <FitDots count={row.fit} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </PageWrapper>
 
-        {/* ===== PAGE 4: FINANCIAL PROJECTIONS ===== */}
-        <PageWrapper pageNumber={4} totalPages={5}>
+        {/* ==================== PAGE 3: ACTIVATION PLAN ==================== */}
+        {/* COMPOSITION: [Light] 2-col → [Dark] timeline → [Light] matrix = 3 sections */}
+        <PageWrapper pageNumber={3} totalPages={4}>
           <SectionHeader
-            title="Financial Projections"
-            icon={TrendingUp}
+            title="Activation Plan"
+            subtitle="25 pilot sites × 51 local accounts × data-driven execution."
+            icon={MapPin}
             color={BRAND.colors.accent}
           />
 
-          {/* Static Grouped Bar Chart - Revenue vs Target */}
-          <div className="bg-white rounded-[1.5rem] border border-gray-200 p-6 mb-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Revenue vs Target (6-Month Projection)
-            </h3>
-
-            {/* Static Bar Chart - No Recharts needed */}
-            <div className="h-56 flex items-end justify-around gap-2 px-4 pt-4 border-b border-gray-100">
-              {revenueData.map((item) => {
-                const maxValue = 100000;
-                const revenueHeight = (item.revenue / maxValue) * 100;
-                const targetHeight = (item.target / maxValue) * 100;
-                return (
-                  <div key={item.month} className="flex flex-col items-center gap-1 flex-1">
-                    <div className="flex gap-1 items-end h-40">
+          {/* [LIGHT] Two-column: Distribution + Tiers */}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+              <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                Pilot Distribution (25 Locations)
+              </h3>
+              <div className="space-y-2.5">
+                {[
+                  { zone: "Metro East", sites: 12, accounts: 28, pct: 100, color: "bg-blue-500" },
+                  { zone: "Metro West", sites: 8, accounts: 14, pct: 67, color: "bg-indigo-500" },
+                  { zone: "Suburban", sites: 5, accounts: 9, pct: 42, color: "bg-emerald-500" },
+                ].map((z) => (
+                  <div key={z.zone}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-[10px] font-bold text-gray-700">{z.zone}</span>
+                      <div className="flex gap-3">
+                        <span className="text-[9px] font-bold text-gray-900">{z.sites} sites</span>
+                        <span className="text-[9px] font-medium text-gray-400">
+                          {z.accounts} accounts
+                        </span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="w-6 bg-blue-500 rounded-t"
-                        style={{ height: `${revenueHeight}%` }}
-                      />
-                      <div
-                        className="w-6 bg-gray-300 rounded-t"
-                        style={{ height: `${targetHeight}%` }}
+                        className={`h-full ${z.color} rounded-full`}
+                        style={{ width: `${z.pct}%` }}
                       />
                     </div>
-                    <span className="text-[10px] font-black text-gray-500">{item.month}</span>
-                    <span className="text-[9px] font-medium text-gray-400">
-                      ${(item.revenue / 1000).toFixed(0)}K
-                    </span>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
 
-            {/* Legend */}
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded" />
-                <span className="text-xs text-gray-600">Actual Revenue</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-300 rounded" />
-                <span className="text-xs text-gray-600">Target</span>
+            <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+              <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                Account Tiers
+              </h3>
+              <div className="space-y-2">
+                {[
+                  {
+                    tier: "Enterprise",
+                    range: "1M+",
+                    count: 12,
+                    rate: "$5K/mo",
+                    color: "border-l-blue-500",
+                  },
+                  {
+                    tier: "Mid-Market",
+                    range: "500K+",
+                    count: 9,
+                    rate: "$2K/mo",
+                    color: "border-l-indigo-500",
+                  },
+                  {
+                    tier: "Growth",
+                    range: "100K–500K",
+                    count: 21,
+                    rate: "$500/mo",
+                    color: "border-l-orange-500",
+                  },
+                  {
+                    tier: "Emerging",
+                    range: "10K–100K",
+                    count: 87,
+                    rate: "Organic",
+                    color: "border-l-emerald-500",
+                  },
+                ].map((t) => (
+                  <div
+                    key={t.tier}
+                    className={`bg-gray-50 rounded-lg p-2.5 border border-gray-100 border-l-[3px] ${t.color}`}
+                  >
+                    <div className="flex justify-between items-center mb-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-black text-gray-900">{t.tier}</span>
+                        <span className="text-[7px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                          {t.range}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-black text-blue-600">{t.count}</span>
+                    </div>
+                    <div className="text-[7px] font-semibold text-gray-400">Rate: {t.rate}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Financial Summary Cards */}
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              {
-                title: "Year 1 Investment",
-                value: "$450,000",
-                subtitle: "Implementation + Training",
-              },
-              { title: "Year 1 Returns", value: "$2,400,000", subtitle: "Savings + New Revenue" },
-              { title: "ROI", value: "433%", subtitle: "Payback in 2.3 months" },
-            ].map((card) => (
-              <div
-                key={card.title}
-                className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 p-5"
-              >
-                <div className="text-sm text-gray-500 mb-1">{card.title}</div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">{card.value}</div>
-                <div className="text-xs text-gray-500">{card.subtitle}</div>
-              </div>
-            ))}
+          {/* [DARK] Timeline — 3-phase with colored top borders */}
+          <div className="bg-gray-900 rounded-2xl p-4 mb-3">
+            <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+              90-Day Pilot → Scale Roadmap
+            </h3>
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                {
+                  phase: "Phase 1: Pilot",
+                  period: "Months 1–3",
+                  target: "25 sites",
+                  items: [
+                    "Staff training",
+                    "Materials deploy",
+                    "Content launch",
+                    "Sampling events",
+                  ],
+                  color: "border-t-blue-500 text-blue-400",
+                },
+                {
+                  phase: "Phase 2: Scale",
+                  period: "Months 4–8",
+                  target: "50–100 sites",
+                  items: [
+                    "Regional expansion",
+                    "Quarterly events",
+                    "Weekly content",
+                    "Campaign optimization",
+                  ],
+                  color: "border-t-emerald-500 text-emerald-400",
+                },
+                {
+                  phase: "Phase 3: National",
+                  period: "Year 2+",
+                  target: "200+ sites",
+                  items: [
+                    "Full footprint",
+                    "Tour partnerships",
+                    "Festival activations",
+                    "National awareness",
+                  ],
+                  color: "border-t-orange-500 text-orange-400",
+                },
+              ].map((p) => (
+                <div
+                  key={p.phase}
+                  className={`bg-white/[0.04] rounded-xl p-3 border border-white/[0.06] border-t-2 ${p.color.split(" ")[0]}`}
+                >
+                  <div
+                    className={`text-[7px] font-black uppercase tracking-widest mb-1 ${p.color.split(" ")[1]}`}
+                  >
+                    {p.phase}
+                  </div>
+                  <div className="text-[10px] font-bold text-white mb-0.5">{p.period}</div>
+                  <div className="text-[8px] font-medium text-gray-400 mb-2">{p.target}</div>
+                  <div className="space-y-1">
+                    {p.items.map((item) => (
+                      <div key={item} className="flex items-center gap-1.5">
+                        <ChevronRight className={`w-2 h-2 ${p.color.split(" ")[1]}`} />
+                        <span className="text-[7px] text-gray-300">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* [LIGHT] 4-col activation matrix */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm">
+            <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+              Segment → Activation Matrix
+            </h3>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                {
+                  segment: "Enterprise",
+                  activation: "Executive sponsorship",
+                  Icon: Users,
+                  color: "text-blue-500",
+                },
+                {
+                  segment: "Mid-Market",
+                  activation: "Partner events",
+                  Icon: Store,
+                  color: "text-indigo-500",
+                },
+                {
+                  segment: "Growth",
+                  activation: "Content co-creation",
+                  Icon: TrendingUp,
+                  color: "text-orange-500",
+                },
+                {
+                  segment: "Emerging",
+                  activation: "Community building",
+                  Icon: Star,
+                  color: "text-pink-500",
+                },
+              ].map((a) => (
+                <div
+                  key={a.segment}
+                  className="bg-gray-50 rounded-xl p-3 border border-gray-100 text-center"
+                >
+                  <a.Icon className={`w-4 h-4 mx-auto mb-1.5 ${a.color}`} />
+                  <div className="text-[9px] font-black text-gray-900">{a.segment}</div>
+                  <div className="text-[7px] text-gray-500 mt-0.5">{a.activation}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </PageWrapper>
 
-        {/* ===== PAGE 5: IMPLEMENTATION & TERMS ===== */}
-        <PageWrapper pageNumber={5} totalPages={5}>
+        {/* ==================== PAGE 4: THE DEAL ==================== */}
+        {/* COMPOSITION: [Accent] 2-col → [Light] KPIs → [Light] terms → [Dark] CTA = 4 sections */}
+        <PageWrapper pageNumber={4} totalPages={4}>
           <SectionHeader
-            title="Implementation Timeline"
-            icon={Calendar}
-            color={BRAND.colors.orange}
+            title="The Partnership"
+            subtitle="Structured so you win regardless. We carry the risk — you get the value."
+            icon={DollarSign}
+            color={BRAND.colors.dark}
           />
 
-          <div className="grid grid-cols-4 gap-4 mb-10">
-            {milestones.map((milestone, index) => (
-              <div key={milestone.quarter} className="relative">
-                {/* Connector line */}
-                {index < milestones.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-blue-200 z-0" />
-                )}
-
-                <div className="bg-white rounded-xl border border-gray-200 p-5 relative z-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <div className="text-xs text-gray-500">{milestone.quarter}</div>
-                      <div className="font-semibold text-gray-900">{milestone.title}</div>
-                    </div>
+          {/* [ACCENT] Two-column: Benefits + Commitments */}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-emerald-50/60 rounded-2xl p-4 border border-emerald-100">
+              <h3 className="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-3">
+                What You Get (Free)
+              </h3>
+              <div className="space-y-1.5">
+                {[
+                  { text: "Premium pricing — 45% below market", bold: true },
+                  { text: "72% gross margin on every unit", bold: true },
+                  { text: "200+ accounts driving demand — $0 cost to you", bold: false },
+                  { text: "Full materials, training kits, sampling", bold: false },
+                  { text: "Zero markdown risk — we cover obsolescence", bold: false },
+                  { text: "This brief — yours to keep regardless", bold: false },
+                ].map((b, i) => (
+                  <div key={i} className="flex items-start gap-1.5">
+                    <CheckCircle className="w-2.5 h-2.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                    <span
+                      className={`text-[8px] ${b.bold ? "font-bold text-gray-900" : "font-medium text-gray-600"}`}
+                    >
+                      {b.text}
+                    </span>
                   </div>
-                  <ul className="space-y-1.5">
-                    {milestone.items.map((item, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                        <ArrowRight className="w-3 h-3 text-blue-500" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Partnership Terms */}
-          <SectionHeader title="Partnership Terms" icon={Zap} color={BRAND.colors.primary} />
-
-          <div className="bg-white rounded-xl border-2 border-blue-200 overflow-hidden">
-            <div className="grid md:grid-cols-2">
-              {/* Our Commitments */}
-              <div className="p-6 bg-blue-50/50">
-                <h3 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  Our Commitments
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "Dedicated account manager",
-                    "24/7 technical support",
-                    "Quarterly business reviews",
-                    "Custom integration support",
-                    "99.9% uptime SLA",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-gray-700">
-                      <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Your Benefits */}
-              <div className="p-6 bg-green-50/50">
-                <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  Your Benefits
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    "No upfront costs",
-                    "Performance-based pricing",
-                    "Cancel anytime after Year 1",
-                    "Data ownership guaranteed",
-                    "Priority feature requests",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-gray-700">
-                      <div className="w-1.5 h-1.5 bg-green-600 rounded-full" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                ))}
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-center">
-              <p className="text-blue-100 mb-2">Ready to get started?</p>
-              <p className="text-xl font-bold text-white">
-                Contact us to schedule a detailed discussion
-              </p>
+            <div className="bg-blue-50/60 rounded-2xl p-4 border border-blue-100">
+              <h3 className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-3">
+                What We Commit
+              </h3>
+              <div className="space-y-1.5">
+                {[
+                  { text: "$650K–750K activation budget (Year 1) — fully funded", bold: true },
+                  { text: "$100K marketing budget for launch market", bold: true },
+                  { text: "12 months pricing commitment", bold: false },
+                  { text: "Weekly supply with 2-week buffer", bold: false },
+                  { text: "Demand surge response protocol", bold: false },
+                  { text: "Compliance, vetting, content moderation", bold: false },
+                ].map((c, i) => (
+                  <div key={i} className="flex items-start gap-1.5">
+                    <ArrowRight className="w-2.5 h-2.5 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <span
+                      className={`text-[8px] ${c.bold ? "font-bold text-gray-900" : "font-medium text-gray-600"}`}
+                    >
+                      {c.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* [LIGHT] 5-col KPI benchmarks */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm mb-3">
+            <h3 className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-3">
+              Pilot Success Metrics
+            </h3>
+            <div className="grid grid-cols-5 gap-2">
+              {[
+                {
+                  metric: "Attach Rate",
+                  target: ">18%",
+                  context: "vs. 12% avg",
+                  color: "text-blue-600",
+                },
+                {
+                  metric: "Turns",
+                  target: ">1.5×/wk",
+                  context: "vs. 0.8× typical",
+                  color: "text-emerald-600",
+                },
+                {
+                  metric: "Stockouts",
+                  target: "Zero",
+                  context: "we expedite",
+                  color: "text-indigo-600",
+                },
+                {
+                  metric: "Markdowns",
+                  target: "Zero",
+                  context: "we cover cost",
+                  color: "text-orange-600",
+                },
+                {
+                  metric: "NPS",
+                  target: ">65",
+                  context: "vs. 42 category",
+                  color: "text-pink-600",
+                },
+              ].map((kpi) => (
+                <div
+                  key={kpi.metric}
+                  className="bg-gray-50 rounded-xl p-2.5 border border-gray-100 text-center"
+                >
+                  <div className={`text-base font-black ${kpi.color}`}>{kpi.target}</div>
+                  <div className="text-[8px] font-bold text-gray-900 mt-0.5">{kpi.metric}</div>
+                  <div className="text-[7px] text-gray-400 mt-0.5">{kpi.context}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* [LIGHT] Two-column: Compliance + Terms */}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Shield className="w-3 h-3 text-gray-500" />
+                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                  Compliance
+                </span>
+              </div>
+              <div className="space-y-1">
+                {[
+                  "Industry-standard certifications",
+                  "Full audit trail and reporting",
+                  "Background checks on all partners",
+                  "48-hour approval SLA",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-gray-400 flex-shrink-0" />
+                    <span className="text-[7px] text-gray-600">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Clock className="w-3 h-3 text-gray-500" />
+                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                  Deal Terms
+                </span>
+              </div>
+              <div className="space-y-1">
+                {[
+                  "3-year commitment with Year 1 locked pricing",
+                  "Net-30 invoicing, no upfront fees",
+                  "Volume discounts at scale thresholds",
+                  "If pilot misses targets — both walk, no hard feelings",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-1.5">
+                    <div className="w-1 h-1 rounded-full bg-gray-400 flex-shrink-0" />
+                    <span className="text-[7px] text-gray-600">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* [DARK] CTA */}
+          <div className="bg-gray-900 rounded-2xl p-5 text-center">
+            <div className="text-lg font-black text-white tracking-tight mb-1.5">
+              Let&apos;s Talk
+            </div>
+            <p className="text-[10px] text-gray-400 max-w-md mx-auto mb-4">
+              This brief is yours — use it whether or not we partner. The data speaks for itself.
+            </p>
+            <div className="flex justify-center gap-8 items-center">
+              <div>
+                <div className="text-[7px] font-black text-gray-500 uppercase tracking-widest">
+                  Contact
+                </div>
+                <div className="text-xs font-bold text-white mt-0.5">partnerships@example.com</div>
+              </div>
+              <div className="w-px h-7 bg-white/10" />
+              <div>
+                <div className="text-[7px] font-black text-gray-500 uppercase tracking-widest">
+                  Website
+                </div>
+                <div className="text-xs font-bold text-blue-400 mt-0.5">example.com</div>
+              </div>
             </div>
           </div>
         </PageWrapper>
@@ -600,23 +908,14 @@ export default function MultiPageProposal() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-        /* Print Styles - Letter Size (8.5" x 11") */
         @media print {
-          @page {
-            size: letter;
-            margin: 0;
-          }
-          
+          @page { size: letter; margin: 0; }
           html, body {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             color-adjust: exact !important;
           }
-          
-          .print\\:hidden {
-            display: none !important;
-          }
-          
+          .print\\:hidden { display: none !important; }
           .report-page {
             page-break-after: always;
             page-break-inside: avoid;
@@ -626,20 +925,14 @@ export default function MultiPageProposal() {
             margin: 0;
             box-sizing: border-box;
           }
-          
-          .report-page:last-child {
-            page-break-after: auto;
-          }
+          .report-page:last-child { page-break-after: auto; }
         }
-        
-        /* Screen Styles */
         @media screen {
           .report-container {
             max-width: 8.5in;
             margin: 2rem auto;
             padding: 0 1rem;
           }
-          
           .report-page {
             width: 8.5in;
             min-height: 11in;
