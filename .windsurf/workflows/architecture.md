@@ -200,6 +200,18 @@ find -L ~/.openclaw/skills -name "SKILL.md" -type f | wc -l
 ls ~/.openclaw/skills/
 ```
 
+### Skill lookup (ALWAYS check docs first)
+
+When looking for a specific skill, **check `.system/architecture/skills.md` BEFORE searching the filesystem**. The skills.md has the authoritative index with skill names, domains, and paths.
+
+```bash
+# Search skills.md for a skill name
+grep -i "intel\|brief" .system/architecture/skills.md
+
+# Then verify the path exists
+ls ~/.openclaw/skills/marketing/intel-ingest/
+```
+
 ### Active deployments
 
 ```bash
