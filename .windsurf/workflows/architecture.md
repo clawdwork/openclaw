@@ -212,6 +212,12 @@ vercel ls --token "$VERCEL_TOKEN" 2>/dev/null | head -20
 gh repo list clawdwork --json name --jq '.[].name'
 ```
 
+### Gateway restart
+
+```bash
+openclaw gateway restart
+```
+
 ### Gateway channels
 
 ```bash
