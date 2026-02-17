@@ -14,7 +14,7 @@ This architecture is split into focused modules. Each file is self-contained.
 | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | **[README.md](README.md)** (this file)     | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
 | **[agents.md](agents.md)**                 | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
-| **[skills.md](skills.md)**                 | Skills inventory (47 managed + 65 bundled), domain table, Celavii API, loading             |
+| **[skills.md](skills.md)**                 | Skills inventory (35 managed + 65 bundled), domain table, Celavii API, loading             |
 | **[VALUES.md](VALUES.md)**                 | Single source of truth for runtime values (ports, counts, paths)                           |
 | **[org-structure.md](org-structure.md)**   | Org directory layout, workspace structure, access matrix, roles, migration path            |
 | **[deployments.md](deployments.md)**       | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
@@ -32,7 +32,7 @@ This architecture is split into focused modules. Each file is self-contained.
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           OPENCLAW GATEWAY                                  │
-│                        ws://127.0.0.1:19400                                 │
+│                        ws://127.0.0.1:49152                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
@@ -66,7 +66,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  └──────────────┘ └──────────────┘             memory             │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │     SEO      │ │    Legal     │ │   Finance    │  (Pro)       │      │
-│  │  │  13 skills   │ │  6 skills    │ │  6 skills    │              │      │
+│  │  │  14 skills   │ │  6 skills    │ │  6 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │    Data      │ │Media Content │ │  Workspace   │  (Pro)       │      │
@@ -121,7 +121,7 @@ This architecture is split into focused modules. Each file is self-contained.
 
 | Domain Agent          | Model   | Why                       | Skills                |
 | --------------------- | ------- | ------------------------- | --------------------- |
-| **Marketing**         | Flash   | Speed, volume, web search | 6 + 7 Celavii skills  |
+| **Marketing**         | Flash   | Speed, volume, web search | 6 + 10 Celavii skills |
 | **Sales**             | Flash   | Research, outreach        | 6 skills, 3 commands  |
 | **Product**           | Flash   | Specs, roadmaps           | 6 skills, 6 commands  |
 | **Support**           | Flash   | Triage, responses         | 5 skills, 5 commands  |
@@ -331,13 +331,13 @@ _"✅ Cron job X completed after N run(s) and has been auto-disabled."_
 ```bash
 kill $(pgrep -f "openclaw.*gateway")
 cd /path/to/openclaw
-nohup node dist/index.js gateway run --port 19400 &
+nohup node dist/index.js gateway run --port 49152 &
 ```
 
 ### WebChat URL
 
 ```
-http://127.0.0.1:19400/?token=<encoded_token>
+http://127.0.0.1:49152/?token=<encoded_token>
 ```
 
 ---

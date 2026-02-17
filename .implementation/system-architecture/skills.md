@@ -165,7 +165,7 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | Channel      | Status            | Config                                |
 | ------------ | ----------------- | ------------------------------------- |
 | **Telegram** | ✅ Active         | Bot: `@maxious_bot`, Allowlist policy |
-| **WebChat**  | ✅ Active         | `ws://127.0.0.1:19400`                |
+| **WebChat**  | ✅ Active         | `ws://127.0.0.1:49152`                |
 | **WhatsApp** | ✅ Plugin enabled | Requires phone setup                  |
 | **Signal**   | ✅ Plugin enabled | Requires setup                        |
 

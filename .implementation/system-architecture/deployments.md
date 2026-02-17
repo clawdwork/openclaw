@@ -4,14 +4,40 @@
 
 ---
 
+## Repository Structure
+
+### Core Repositories
+
+| Repository                       | Purpose                                     | Local Path                                           | Remotes                                                       |
+| -------------------------------- | ------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------- |
+| **openclaw/openclaw**            | Official OpenClaw binary (upstream)         | —                                                    | Official source                                               |
+| **clawdwork/openclaw**           | OpenClaw binary fork (your customizations)  | `/Users/operator/Documents/CascadeProjects/openclaw` | origin: `clawdwork/openclaw`<br>upstream: `openclaw/openclaw` |
+| **clawdwork/openclaw-workspace** | Agent workspace (skills, projects, configs) | `~/agent-workspace`                                  | origin: `clawdwork/openclaw-workspace`                        |
+
+**Separation**: OpenClaw binary source and workspace content are **separate repositories**. Pulling from `openclaw/openclaw` updates only the binary source code, not workspace files.
+
+**Workflow**:
+
+```bash
+# Update OpenClaw binary from upstream
+cd /Users/operator/Documents/CascadeProjects/openclaw
+git pull upstream main
+
+# Update workspace content
+cd ~/agent-workspace
+git pull origin main
+```
+
+---
+
 ## GitHub Account
 
-| Setting            | Value                                                                                                                                                                                                                                                                                                 |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Account**        | `clawdwork` (personal, not org)                                                                                                                                                                                                                                                                       |
-| **Type**           | Personal — allows Vercel Hobby plan git connections                                                                                                                                                                                                                                                   |
-| **Existing repos** | `intel-hub`, `client-celavii-seo-proposal`, `client-maxkick-seo-proposal`, `client-kick-sheetz-presentation`, `client-maxkick-war-room`, `openclaw-workspace`, `celavii-growth-plan-2026`, `sheetz-attack-plan-report`, `audio-shares`, `max-kick-seo-proposal`, `celavii-seo-proposal` (all private) |
-| **PAT**            | `org-agent-deploy` (fine-grained, Contents+Admin rw, expires 2026-12-31)                                                                                                                                                                                                                              |
+| Setting            | Value                                                                                                                                                                                                                                                                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Account**        | `clawdwork` (personal, not org)                                                                                                                                                                                                                                                                                                                     |
+| **Type**           | Personal — allows Vercel Hobby plan git connections                                                                                                                                                                                                                                                                                                 |
+| **Existing repos** | `openclaw` (fork), `openclaw-workspace`, `intel-hub`, `client-maxkick-war-room`, `max-kick-seo-report-pdf`, `client-celavii-seo-proposal`, `client-maxkick-seo-proposal`, `client-kick-sheetz-presentation`, `celavii-growth-plan-2026`, `sheetz-attack-plan-report`, `audio-shares`, `max-kick-seo-proposal`, `celavii-seo-proposal` (all private) |
+| **PAT**            | `org-agent-deploy` (fine-grained, Contents+Admin rw, expires 2026-12-31)                                                                                                                                                                                                                                                                            |
 
 ---
 

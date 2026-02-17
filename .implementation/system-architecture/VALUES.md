@@ -11,9 +11,9 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key             | Value                  | Files That Reference It | Last Verified |
 | --------------- | ---------------------- | ----------------------- | ------------- |
-| Gateway port    | 19400                  | README.md, channels.md  | 2026-02-09    |
-| WebSocket URL   | ws://127.0.0.1:19400   | README.md, channels.md  | 2026-02-09    |
-| WebChat URL     | http://127.0.0.1:19400 | README.md               | 2026-02-09    |
+| Gateway port    | 49152                  | README.md, channels.md  | 2026-02-17    |
+| WebSocket URL   | ws://127.0.0.1:49152   | README.md, channels.md  | 2026-02-17    |
+| WebChat URL     | http://127.0.0.1:49152 | README.md               | 2026-02-17    |
 | Gateway version | 2026.2.12              | README.md               | 2026-02-12    |
 
 ## Skill Counts
