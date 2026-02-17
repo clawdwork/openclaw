@@ -448,7 +448,7 @@ Each phase can be rolled back by reverting config changes. Agent profiles are ad
 - [OpenClaw Multi-Agent Docs](/concepts/multi-agent) (when available)
 - [LangGraph Agent Memory](https://docs.langchain.com/oss/python/langgraph/memory)
 - [arXiv 2512.13564 - Memory in the Age of AI Agents](https://arxiv.org/abs/2512.13564)
-- Current architecture: `.implementation/SYSTEM-ARCHITECTURE.md`
+- Current architecture: `.system/architecture/README.md`
 
 ---
 
@@ -462,4 +462,4 @@ Each phase can be rolled back by reverting config changes. Agent profiles are ad
 
 **Document maintained by:** Admin  
 **Status:** Planning  
-**Location:** `.implementation/MULTI-AGENT-ROADMAP.md`
+**Location:** `.system/architecture/MULTI-AGENT-ROADMAP.md`

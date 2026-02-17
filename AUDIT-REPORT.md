@@ -97,7 +97,7 @@ build artifacts
 Branch: main (up to date)
 Staged changes: NONE
 Untracked files:
-  - .implementation/    (documentation)
+  - .system/            (documentation)
   - .security/          (audit notes)
   - .windsurf/          (IDE config)
   - SECURITY-ASSESSMENT.md (documentation)
@@ -200,7 +200,7 @@ const token = "actual-secret-here";
 **Status:** The repository is **secure and ready for commit** with the following conditions:
 
 1. **No staged secrets** - Current working directory is clean
-2. **No untracked secrets** - Untracked files (.implementation, .security, .windsurf) are documentation only
+2. **No untracked secrets** - Untracked files (.system, .security, .windsurf) are documentation only
 3. **All hooks active** - Pre-commit protections in place
 4. **No conflicts** - No sensitive data in conflict with production
 

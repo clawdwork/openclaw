@@ -1,7 +1,7 @@
 # Celavii API — Skill Leverage Analysis
 
 > **Date**: 2026-02-09
-> **Source**: `.implementation/celavii-external-api.md`
+> **Source**: `.system/features/celvaii-api/celavii-external-api.md`
 > **Purpose**: Identify how OpenClaw agents can leverage the Celavii External API v1 to power marketing, CRM, growth, and data-refresh workflows.
 
 ---

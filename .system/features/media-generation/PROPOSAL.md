@@ -3,7 +3,7 @@
 > **Status**: Draft (validated against architecture 2026-02-09)  
 > **Author**: System Architect  
 > **Date**: 2026-02-09  
-> **Location**: `.implementation/features/media-generation/`  
+> **Location**: `.system/features/media-generation/`  
 > **Validated against**: `agents.md`, `skills.md`, `org-structure.md`, `README.md`, `VALUES.md`, `skill-creator/SKILL.md`  
 > **Tracker**: [PROPOSAL-TRACKER.md](PROPOSAL-TRACKER.md) (68 steps across 5 phases)
 

@@ -30,7 +30,7 @@ echo "=== Gateway Port ==="
 ACTUAL_PORT=$(plutil -extract EnvironmentVariables.OPENCLAW_GATEWAY_PORT raw \
   ~/Library/LaunchAgents/ai.openclaw.gateway.plist 2>/dev/null || echo "unknown")
 DOC_PORT=$(grep -oP 'ws://127\.0\.0\.1:\K\d+' \
-  .implementation/system-architecture/README.md | head -1)
+  .system/architecture/README.md | head -1)
 echo "  Actual (LaunchAgent): $ACTUAL_PORT"
 echo "  Documented (README):  $DOC_PORT"
 [ "$ACTUAL_PORT" = "$DOC_PORT" ] && echo "  ✅ Match" || echo "  ❌ MISMATCH"
@@ -38,7 +38,7 @@ echo "  Documented (README):  $DOC_PORT"
 echo ""
 echo "=== Skill Count ==="
 ACTUAL_COUNT=$(ls ~/.openclaw/skills/ 2>/dev/null | wc -l | tr -d ' ')
-DOC_COUNT=$(grep -oP '\d+ skills' .implementation/system-architecture/skills.md | head -1 | grep -oP '\d+')
+DOC_COUNT=$(grep -oP '\d+ skills' .system/architecture/skills.md | head -1 | grep -oP '\d+')
 echo "  Actual (managed dir): $ACTUAL_COUNT"
 echo "  Documented (skills.md): $DOC_COUNT"
 [ "$ACTUAL_COUNT" = "$DOC_COUNT" ] && echo "  ✅ Match" || echo "  ❌ MISMATCH"
@@ -79,7 +79,7 @@ OPENCLAW_GATEWAY_PORT=$ACTUAL_PORT openclaw channels status 2>&1 | grep -E "reac
 
 ### 2. Reduce duplication with a single-source values file
 
-Create `.implementation/system-architecture/VALUES.md` as the single source of truth for frequently-changing values. Other docs reference it instead of hardcoding.
+Create `.system/architecture/VALUES.md` as the single source of truth for frequently-changing values. Other docs reference it instead of hardcoding.
 
 ```markdown
 # System Values (Single Source of Truth)

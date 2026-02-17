@@ -81,7 +81,7 @@ git pull origin main
 | **Celavii SEO Proposal**     | `seo-proposal.vercel.app`         | `clawdwork/client-celavii-seo-proposal`     | React/Vite  |
 | **MaxKick SEO Proposal**     | `maxkick-seo-proposal.vercel.app` | `clawdwork/client-maxkick-seo-proposal`     | React/Vite  |
 | **Kick Sheetz Presentation** | `presentations-weld.vercel.app`   | `clawdwork/client-kick-sheetz-presentation` | Static HTML |
-| **MaxKick War Room**         | `deliverables-three.vercel.app`   | `clawdwork/client-maxkick-war-room`         | Static HTML |
+| **Sheetz Attack Plan Report** | `deliverables-three.vercel.app`   | `clawdwork/sheetz-attack-plan-report`       | Static HTML |
 | **Sheetz Proposal (V9)**     | `sheetz-proposal.vercel.app`      | CLI deploy (no git repo)                    | Next.js     |
 
 ### Legacy Netlify Deployments (Superseded — do not redeploy)

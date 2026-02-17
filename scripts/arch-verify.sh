@@ -3,7 +3,7 @@
 # Run before any /architecture update to detect drift.
 set -euo pipefail
 
-ARCH_DIR=".implementation/system-architecture"
+ARCH_DIR=".system/architecture"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'

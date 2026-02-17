@@ -391,4 +391,4 @@ session_status
 
 **Document maintained by**: Admin  
 **Gateway**: OpenClaw 2026.2.12  
-**Location**: `.implementation/system-architecture/`
+**Location**: `.system/architecture/`

@@ -30,12 +30,12 @@ Three-digit padding supports up to 999 per role. `admin-001` = primary admin (yo
 ├── shared/                           ← Accessible by all agents
 │   ├── projects/                     ← Collaborative work
 │   │   ├── celavii/
-│   │   └── max-kick/
+│   │   ├── max-kick/
+│   │   └── intel-hub/
 │   ├── knowledge/                    ← Cross-project intel
-│   │   ├── industry/
-│   │   ├── intel/
-│   │   ├── legal/
-│   │   └── marketing/
+│   │   ├── intel/daily/              ← Daily intelligence briefs
+│   │   ├── seo/                      ← Cross-project SEO research
+│   │   └── strategy/                 ← Cross-project strategic analysis
 │   └── templates/                    ← Shared templates
 │
 ├── workspaces/                       ← Private workspaces (one per agent)

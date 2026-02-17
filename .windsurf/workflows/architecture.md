@@ -4,14 +4,57 @@ description: Review or update the OpenClaw system architecture documentation
 
 # Architecture Workflow (/architecture)
 
-Manages the modular system architecture documentation at `.implementation/system-architecture/`.
+Manages the modular system architecture documentation at `.system/architecture/`.
+
+---
+
+## Workspace Context
+
+This system spans **two git repositories**:
+
+| Repo | Path | Purpose |
+|------|------|--------|
+| `clawdwork/openclaw` | `/Users/operator/Documents/CascadeProjects/openclaw` | OpenClaw fork — binary source, architecture docs, skills, workflows |
+| `clawdwork/openclaw-workspace` | `~/agent-workspace` | Agent workspace — projects, knowledge, SOUL.md, WORKSPACE.md, IDENTITY.md |
+
+### Workspace Structure (~/agent-workspace)
+
+```
+~/agent-workspace/
+├── SOUL.md              ← Agent identity, orchestration, task routing
+├── WORKSPACE.md         ← Canonical workspace map, project registry, file routing
+├── IDENTITY.md          ← Agent persona
+├── projects/
+│   ├── celavii/         ← Creator Intelligence Platform (Active)
+│   ├── max-kick/        ← KICK nicotine pouches (Active)
+│   └── intel-hub/       ← Daily intelligence dashboard (Active)
+├── knowledge/
+│   ├── intel/daily/     ← Cross-project daily briefs
+│   ├── seo/             ← Cross-project SEO research
+│   └── strategy/        ← Cross-project strategic analysis
+├── skills/              ← Symlinked to ~/.openclaw/skills/
+└── venv/                ← Python virtualenv for SEO scripts
+```
+
+Each project has:
+- **PROJECT.md** — File Index (agent-discoverable manifest of all research, deliverables, scripts)
+- **README.md** — Identity anchor (brand, positioning, product info)
+- **Writing Rules** — Where sub-agents save files + how to register them in the File Index
+
+### Key Workspace Files to Check During Review
+
+| File | What to verify |
+|------|---------------|
+| `~/agent-workspace/WORKSPACE.md` | Project registry matches actual `projects/` dirs, knowledge base matches actual `knowledge/` dirs, deployed sites table is current |
+| `~/agent-workspace/SOUL.md` | Task template includes 3-step DISCOVER→EXECUTE→REGISTER, routing rules reference PROJECT.md |
+| `~/agent-workspace/projects/*/PROJECT.md` | File Index tables match actual files on disk |
 
 ---
 
 ## Document Index
 
 ```
-.implementation/system-architecture/
+.system/architecture/
 ├── README.md          ← Overview, model hierarchy, quick reference
 ├── agents.md          ← Sub-agent definitions, routing, spawning, lifecycle
 ├── skills.md          ← Skills inventory (60 skills), loading mechanics
@@ -44,7 +87,7 @@ bash scripts/arch-verify.sh
    // turbo
 
 ```bash
-wc -l .implementation/system-architecture/*.md
+wc -l .system/architecture/*.md
 ```
 
 3. Run additional verification commands for areas the script doesn't cover:
@@ -54,7 +97,14 @@ wc -l .implementation/system-architecture/*.md
 echo "=== Vercel deployments ===" && vercel ls --token "$VERCEL_TOKEN" 2>/dev/null | head -20 && echo "=== GitHub repos ===" && gh repo list clawdwork --json name --jq '.[].name' 2>/dev/null
 ```
 
-4. Cross-check each document for discrepancies (use arch-verify.sh output as starting point):
+4. Check workspace structure matches architecture docs:
+   // turbo
+
+```bash
+echo "=== Active projects ===" && ls ~/agent-workspace/projects/ && echo "=== Knowledge dirs ===" && find ~/agent-workspace/knowledge -type d && echo "=== PROJECT.md files ===" && find ~/agent-workspace/projects -name "PROJECT.md" -maxdepth 2
+```
+
+5. Cross-check each document for discrepancies (use arch-verify.sh output as starting point):
    - **skills.md**: Does skill count match `find` output? Are all categories listed?
    - **deployments.md**: Do active deployments match `vercel ls`? Are all GitHub repos listed?
    - **org-structure.md**: Does workspace structure match actual directories?
@@ -64,7 +114,7 @@ echo "=== Vercel deployments ===" && vercel ls --token "$VERCEL_TOKEN" 2>/dev/nu
    - **costs.md**: Are model prices still accurate?
    - **README.md**: Does overview diagram match current agent count/models?
 
-5. Output a discrepancy checklist:
+6. Output a discrepancy checklist:
 
 ```
 ## Architecture Review Results
@@ -79,7 +129,7 @@ echo "=== Vercel deployments ===" && vercel ls --token "$VERCEL_TOKEN" 2>/dev/nu
 - [specific edits needed]
 ```
 
-6. Wait for user approval before making any changes.
+7. Wait for user approval before making any changes.
 
 ---
 
@@ -103,7 +153,9 @@ Use when: user says what changed (e.g., "added a new skill", "deployed a new sit
 | New API key added           | `security.md`, `VALUES.md`, `~/.openclaw/.env`, `src/config/io.ts`        |
 | Security/token change       | `security.md`                                                             |
 | Cost model changed          | `costs.md`                                                                |
-| Workspace structure changed | `org-structure.md`                                                        |
+| Workspace structure changed | `org-structure.md`, update Workspace Context in this workflow              |
+| Project added/removed       | `org-structure.md`, `~/agent-workspace/WORKSPACE.md` (project registry)   |
+| Workspace docs changed      | Verify `SOUL.md`, `WORKSPACE.md`, `PROJECT.md` consistency                |
 
 2. Check `VALUES.md` first — if the change affects a tracked value, update VALUES.md.
 
@@ -174,6 +226,20 @@ openclaw channels status --probe 2>/dev/null
 ls ~/agent-workspace/skills/ && echo "---" && ls ~/org/workspaces/ 2>/dev/null
 ```
 
+### Workspace projects and knowledge
+
+// turbo
+
+```bash
+echo "=== Projects ===" && ls ~/agent-workspace/projects/ && echo "=== Knowledge ===" && find ~/agent-workspace/knowledge -type f ! -name .DS_Store | sort && echo "=== Deployed Sites (from WORKSPACE.md) ===" && grep -A1 'vercel.app' ~/agent-workspace/WORKSPACE.md | head -20
+```
+
+### Workspace git status
+
+```bash
+cd ~/agent-workspace && git log --oneline -5 && echo "---" && git status --short
+```
+
 ---
 
 ## Mode: New Skill Added
@@ -224,7 +290,7 @@ Use when: a new external API key needs to be configured.
 
 ## Rules
 
-- **Never edit the frozen `.implementation/SYSTEM-ARCHITECTURE.md`** — it's preserved as a snapshot
+- **The frozen `.implementation/SYSTEM-ARCHITECTURE.md` has been deleted** — modular docs in `.system/architecture/` are the canonical source
 - **Always append to CHANGELOG.md** after any update
 - **Minimize cross-file edits** — the whole point of the split is to reduce cascading changes
 - **Use verification commands** to check actual state, don't guess

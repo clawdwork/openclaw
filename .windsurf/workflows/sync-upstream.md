@@ -103,7 +103,7 @@ git rebase upstream/main
 5. If conflicts occur:
    - Review each conflict carefully
    - **ALWAYS prefer our version** for files in:
-     - `.implementation/` (our architecture docs)
+     - `.system/` (our architecture docs)
      - `skills/celavii-*` (our custom skills)
      - `scripts/arch-verify.sh` (our maintenance tooling)
      - `.windsurf/` (our workflows)
@@ -184,9 +184,9 @@ These files contain our modifications. During sync, always preserve our version 
 
 ### Files we added (upstream won't have these):
 
-- `.implementation/features/celvaii-api/` — Celavii API analysis + skill specs
-- `.implementation/system-architecture/VALUES.md` — Runtime values
-- `.implementation/system-architecture/MAINTENANCE.md` — Maintenance proposal
+- `.system/features/celvaii-api/` — Celavii API analysis + skill specs
+- `.system/architecture/VALUES.md` — Runtime values
+- `.system/architecture/MAINTENANCE.md` — Maintenance proposal
 - `scripts/arch-verify.sh` — Architecture verification
 - `skills/celavii-*` — 7 Celavii API skills
 - `.windsurf/workflows/sync-upstream.md` — This workflow
@@ -195,7 +195,7 @@ These files contain our modifications. During sync, always preserve our version 
 
 - `src/config/io.ts` — Added CELAVII_API_KEY to SHELL_ENV_EXPECTED_KEYS
 - `src/cron/isolated-agent/run.ts` — Smart channel fallback for delivery
-- `.implementation/system-architecture/*.md` — Architecture docs (ports, skills, agents)
+- `.system/architecture/*.md` — Architecture docs (ports, skills, agents)
 - `.windsurf/workflows/architecture.md` — Enhanced with checklists
 
 ---
