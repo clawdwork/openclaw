@@ -9,8 +9,8 @@
 | Component                       | Requests/Day | Tokens/Request | Cost/Day  | Cost/Month |
 | ------------------------------- | ------------ | -------------- | --------- | ---------- |
 | Coordinator (Flash, medium)     | 100          | 5,000          | $0.18     | $5.25      |
-| Domain agents — Flash (7)       | 40           | 5,000          | $0.07     | $2.10      |
-| Domain agents — Pro (6)         | 25           | 5,000          | $0.18     | $5.25      |
+| Domain agents — Flash (5)       | 40           | 5,000          | $0.07     | $2.10      |
+| Domain agents — Pro (5)         | 25           | 5,000          | $0.18     | $5.25      |
 | Dev Coder (Flash, high)         | 15           | 10,000         | $0.05     | $1.58      |
 | Prod Coder (5.2-Codex, xhigh)   | 10           | 10,000         | $0.158    | $4.73      |
 | Planner (GPT-5.2, xhigh)        | 3            | 10,000         | $0.047    | $1.42      |

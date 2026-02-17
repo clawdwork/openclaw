@@ -93,6 +93,7 @@ Source: [OpenAI — GPT-5.1-Codex-Max](https://openai.com/index/gpt-5-1-codex-ma
 | ------------------ | ------------------------- | ------- | --------- | ------------------ | ------------- |
 | **Coordinator**    | Flash (1M)                | 1M      | medium    | GPT-5 Mini (400K)  | GPT-5.1       |
 | Marketing          | Flash (1M)                | 1M      | low       | GPT-5 Mini         | —             |
+| SEO                | Pro (1M)                  | 1M      | high      | GPT-5.2 (400K)     | Flash         |
 | Sales              | Flash (1M)                | 1M      | low       | GPT-5 Mini         | —             |
 | Product            | Flash (1M)                | 1M      | low       | GPT-5 Mini         | —             |
 | Support            | Flash (1M)                | 1M      | low       | GPT-5 Mini         | —             |
@@ -113,6 +114,7 @@ Source: [OpenAI — GPT-5.1-Codex-Max](https://openai.com/index/gpt-5-1-codex-ma
 | -------------- | ------------- | -------- | ---------- | ----------- | ---------- |
 | Coordinator    | Flash         | 100      | 5,000      | $0.175      | $5.25      |
 | Marketing      | Flash         | 8        | 5,000      | $0.014      | $0.42      |
+| SEO            | Pro           | 10       | 8,000      | $0.112      | $3.36      |
 | Sales          | Flash         | 5        | 5,000      | $0.009      | $0.27      |
 | Product        | Flash         | 5        | 5,000      | $0.009      | $0.27      |
 | Support        | Flash         | 5        | 5,000      | $0.009      | $0.27      |
@@ -127,18 +129,18 @@ Source: [OpenAI — GPT-5.1-Codex-Max](https://openai.com/index/gpt-5-1-codex-ma
 | Planner        | GPT-5.2       | 3        | 10,000     | $0.047      | $1.42      |
 | Grunt          | Flash         | 50       | 2,000      | $0.035      | $1.05      |
 | Heartbeat      | Flash         | 48       | 500        | $0.008      | $0.24      |
-|                |               |          |            | **Total**   | **$21.59** |
+|                |               |          |            | **Total**   | **$24.95** |
 
 ### Provider Distribution
 
 | Provider                 | Primary Agents | Monthly Cost  | % of Spend |
 | ------------------------ | -------------- | ------------- | ---------- |
-| **Google Flash**         | 8              | $9.89         | 46%        |
-| **Google Pro**           | 4              | $4.83         | 22%        |
+| **Google Flash**         | 8              | $9.89         | 40%        |
+| **Google Pro**           | 5              | $8.19         | 33%        |
 | **OpenAI GPT-5.2**       | 2              | $2.14         | 10%        |
 | **OpenAI GPT-5.2 Codex** | 1              | $4.73         | 22%        |
 | **Anthropic**            | 0              | $0.00         | 0%         |
-|                          | **15**         | **$21.59/mo** |            |
+|                          | **16**         | **$24.95/mo** |            |
 
 ---
 

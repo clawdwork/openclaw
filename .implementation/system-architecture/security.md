@@ -21,6 +21,12 @@ FIRECRAWL_API_KEY=fc-...
 # VOICE & MEDIA
 ELEVENLABS_API_KEY=           # ← Add your key here for sag TTS
 
+# MEDIA GENERATION
+REPLICATE_API_TOKEN=          # ← Replicate API token for model inference
+
+# SEO COMPETITIVE INTELLIGENCE
+APIFY_API_TOKEN=              # ← Apify token for Ahrefs/Semrush/SERP scrapers
+
 # CREATOR INTELLIGENCE (shared across all agents)
 CELAVII_API_KEY=              # ← cvii_live_* key from Celavii dashboard
 ```

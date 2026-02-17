@@ -8,10 +8,10 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 30 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 35 skills (managed: domain categories + celavii + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
-repo skills/                  ← 60 skills (bundled with OpenClaw binary)
+repo skills/                  ← 65 skills (bundled with OpenClaw binary)
 ```
 
 All agents read skills from `~/.openclaw/skills/` (managed dir), which symlinks to the admin workspace. Edits in the admin workspace are instantly visible to all agents.
@@ -84,21 +84,22 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 ---
 
-## Domain Skills (56 Skills across 15 Categories)
+## Domain Skills (70 Skills across 16 Categories)
 
-| Domain                 | Count | Skills                                                                                                                                          | Model   |
-| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                     | Flash   |
-| **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                          | Flash   |
-| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                            | Flash   |
-| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                           | Flash   |
-| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                         | Flash   |
-| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                              | Pro     |
-| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                    | Pro     |
-| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis | Pro     |
-| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                  | Pro     |
-| **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                          | GPT-5.2 |
-| **Workspace Auditor**  | 1     | workspace-audit (MWF structural, registry, semantic integrity checks)                                                                           | Pro     |
+| Domain                 | Count | Skills                                                                                                                                                                                                | Model   |
+| ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                                                                           | Flash   |
+| **SEO**                | 14    | seo-orchestrator, seo-audit, seo-page, seo-technical, seo-content, seo-schema, seo-images, seo-sitemap, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang, seo-report-generator | Pro     |
+| **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                                                                                | Flash   |
+| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                                                                                  | Flash   |
+| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                                                                                 | Flash   |
+| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                                                                               | Flash   |
+| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                                                                                    | Pro     |
+| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                                                                          | Pro     |
+| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis                                                       | Pro     |
+| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                                                                        | Pro     |
+| **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                                                                                | GPT-5.2 |
+| **Workspace Auditor**  | 1     | workspace-audit (MWF structural, registry, semantic integrity checks)                                                                                                                                 | Pro     |
 
 ---
 
@@ -131,17 +132,18 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | **workspace-wizard**              | (root)   | Agent provisioning wizard (admin-only)         |
 | **workspace-audit**               | (root)   | MWF workspace integrity audits                 |
 | **workspace-reconcile**           | (root)   | Autonomous fix execution from audit reports    |
+| **project-scaffold**              | (root)   | New project directory + PROJECT.md scaffolding |
 
 ---
 
 ## Skills with Extra Artifacts
 
-| Artifact                        | Categories                                                                                                                               |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Commands** (action templates) | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search, media-content                           |
-| **MCP configs** (`.mcp.json`)   | sales, marketing, product-management, customer-support, data, legal, finance, enterprise-search                                          |
-| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`)        |
-| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files), quality-critic |
+| Artifact                        | Categories                                                                                                                                                                                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Commands** (action templates) | sales, marketing, seo, product-management, customer-support, data, legal, finance, enterprise-search, media-content                                                                                                                                                           |
+| **MCP configs** (`.mcp.json`)   | sales, marketing, seo, product-management, customer-support, data, legal, finance, enterprise-search                                                                                                                                                                          |
+| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), seo/scripts (`fetch_page.py`, `parse_html.py`, `analyze_visual.py`, `run-apify-ahrefs.sh`, `run-apify-semrush-da.sh`, `run-apify-serp.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`) |
+| **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files), quality-critic, seo/seo-orchestrator (4 reference files), seo/seo-schema (`templates.json`)                                                         |
 
 ---
 
@@ -149,10 +151,10 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 30 managed + 60 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 35 managed + 65 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 30 managed + 60 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 30 managed + 60 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 35 managed + 65 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 35 managed + 65 bundled                       |
 
 ---
 

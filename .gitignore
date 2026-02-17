@@ -30,6 +30,10 @@ apps/shared/MoltbotKit/.build/
 apps/shared/OpenClawKit/.build/
 apps/shared/OpenClawKit/Package.resolved
 **/ModuleCache/
+
+# Local research / workspace data
+.research/
+.implementation/examples/
 bin/
 bin/clawdbot-mac
 bin/docs-list

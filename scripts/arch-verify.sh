@@ -76,7 +76,7 @@ echo ""
 
 # --- Celavii Skills ---
 echo "=== Celavii Skills ==="
-CELAVII_SKILLS="celavii-discover celavii-profiles celavii-campaigns celavii-crm celavii-analytics celavii-knowledge celavii-data-ops"
+CELAVII_SKILLS="celavii-discover celavii-profiles celavii-campaigns celavii-crm celavii-analytics celavii-knowledge celavii-data-ops celavii-strategy celavii-outreach celavii-reporting"
 for skill in $CELAVII_SKILLS; do
   if [ -d "$HOME/.openclaw/skills/$skill" ]; then
     ok "$skill"
@@ -93,7 +93,7 @@ ENV_FILE="$HOME/.openclaw/.env"
 if [ ! -f "$ENV_FILE" ]; then
   fail "~/.openclaw/.env not found"
 else
-  KEYS="ANTHROPIC_API_KEY OPENAI_API_KEY GEMINI_API_KEY CELAVII_API_KEY ELEVENLABS_API_KEY BRAVE_API_KEY FIRECRAWL_API_KEY REPLICATE_API_TOKEN"
+  KEYS="ANTHROPIC_API_KEY OPENAI_API_KEY GEMINI_API_KEY CELAVII_API_KEY ELEVENLABS_API_KEY BRAVE_API_KEY FIRECRAWL_API_KEY REPLICATE_API_TOKEN APIFY_API_TOKEN"
   for key in $KEYS; do
     LINE=$(grep "^${key}=" "$ENV_FILE" 2>/dev/null || echo "")
     if [ -z "$LINE" ]; then

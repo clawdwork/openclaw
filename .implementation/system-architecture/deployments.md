@@ -6,12 +6,12 @@
 
 ## GitHub Account
 
-| Setting            | Value                                                                                                                                                                       |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Account**        | `clawdwork` (personal, not org)                                                                                                                                             |
-| **Type**           | Personal — allows Vercel Hobby plan git connections                                                                                                                         |
-| **Existing repos** | `intel-hub`, `client-celavii-seo-proposal`, `client-maxkick-seo-proposal`, `client-kick-sheetz-presentation`, `client-maxkick-war-room`, `openclaw-workspace` (all private) |
-| **PAT**            | `org-agent-deploy` (fine-grained, Contents+Admin rw, expires 2026-12-31)                                                                                                    |
+| Setting            | Value                                                                                                                                                                                                                                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Account**        | `clawdwork` (personal, not org)                                                                                                                                                                                                                                                                       |
+| **Type**           | Personal — allows Vercel Hobby plan git connections                                                                                                                                                                                                                                                   |
+| **Existing repos** | `intel-hub`, `client-celavii-seo-proposal`, `client-maxkick-seo-proposal`, `client-kick-sheetz-presentation`, `client-maxkick-war-room`, `openclaw-workspace`, `celavii-growth-plan-2026`, `sheetz-attack-plan-report`, `audio-shares`, `max-kick-seo-proposal`, `celavii-seo-proposal` (all private) |
+| **PAT**            | `org-agent-deploy` (fine-grained, Contents+Admin rw, expires 2026-12-31)                                                                                                                                                                                                                              |
 
 ---
 
@@ -56,6 +56,7 @@
 | **MaxKick SEO Proposal**     | `maxkick-seo-proposal.vercel.app` | `clawdwork/client-maxkick-seo-proposal`     | React/Vite  |
 | **Kick Sheetz Presentation** | `presentations-weld.vercel.app`   | `clawdwork/client-kick-sheetz-presentation` | Static HTML |
 | **MaxKick War Room**         | `deliverables-three.vercel.app`   | `clawdwork/client-maxkick-war-room`         | Static HTML |
+| **Sheetz Proposal (V9)**     | `sheetz-proposal.vercel.app`      | CLI deploy (no git repo)                    | Next.js     |
 
 ### Legacy Netlify Deployments (Superseded — do not redeploy)
 

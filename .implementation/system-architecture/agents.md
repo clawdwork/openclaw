@@ -15,6 +15,10 @@ Flash (coordinator) receives user message
         │
         ├── Marketing task? ──▶ Spawn Marketing Agent (Flash)
         │
+        ├── SEO task? ──▶ Spawn SEO Agent (Pro, high)
+        │   (technical audit, content quality, schema, GEO,
+        │    strategic planning, programmatic SEO, hreflang)
+        │
         ├── Sales task? ──▶ Spawn Sales Agent (Flash)
         │
         ├── Legal task? ──▶ Spawn Legal Agent (Pro, medium)
@@ -83,24 +87,25 @@ Flash (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent                 | ID                  | Model     | Thinking | Role Summary                                                      | Session Type   |
-| --------------------- | ------------------- | --------- | -------- | ----------------------------------------------------------------- | -------------- |
-| **Coordinator**       | `main`              | Flash     | medium   | User conversations, routing, web search, synthesis                | Main session   |
-| Marketing             | `marketing`         | Flash     | low      | SEO, content, campaigns, brand voice, analytics, Celavii CIP      | Ephemeral      |
-| Sales                 | `sales`             | Flash     | low      | Account research, outreach, pipeline, call summaries              | Ephemeral      |
-| Product               | `product`           | Flash     | low      | Specs, roadmaps, competitive analysis, user stories               | Ephemeral      |
-| Support               | `support`           | Flash     | low      | Ticket triage, KB management, escalation                          | Ephemeral      |
-| Enterprise Search     | `search`            | Flash     | medium   | Query decomposition, multi-source synthesis                       | **Persistent** |
-| Legal                 | `legal`             | Pro       | medium   | Contracts, compliance, risk assessment                            | Ephemeral      |
-| Finance               | `finance`           | Pro       | medium   | Budgets, forecasting, reconciliation                              | Ephemeral      |
-| Data                  | `data`              | Pro       | medium   | SQL, visualization, ETL, data quality                             | Ephemeral      |
-| Media Content         | `media-content`     | Pro       | low      | Image/video/audio prompt crafting, visual assets                  | Ephemeral      |
-| Quality Critic        | `quality-critic`    | GPT-5.2   | xhigh    | Reviews creative outputs against specs (proposals, images, decks) | Ephemeral      |
-| **Dev Coder**         | `dev-coder`         | Flash     | high     | Everyday coding, automations, scripts, simple deploys, CI/CD      | Ephemeral      |
-| **Prod Coder**        | `prod-coder`        | 5.2-Codex | xhigh    | Complex integrations, APIs, backends, prod-critical refactors     | Ephemeral      |
-| **Planner**           | `planner`           | GPT-5.2   | xhigh    | Architecture review, validation, expert advisor                   | Ephemeral      |
-| **Grunt**             | `grunt`             | Flash     | off      | File ops, tests, cleanup, bulk operations, scaffolding            | Ephemeral      |
-| **Workspace Auditor** | `workspace-auditor` | Pro       | high     | MWF workspace integrity audits (structural, registry, semantic)   | Ephemeral      |
+| Agent                 | ID                  | Model     | Thinking | Role Summary                                                       | Session Type   |
+| --------------------- | ------------------- | --------- | -------- | ------------------------------------------------------------------ | -------------- |
+| **Coordinator**       | `main`              | Flash     | medium   | User conversations, routing, web search, synthesis                 | Main session   |
+| Marketing             | `marketing`         | Flash     | low      | Content, campaigns, brand voice, analytics, Celavii CIP            | Ephemeral      |
+| SEO                   | `seo`               | Pro       | high     | Technical audits, content quality, schema, GEO, strategic planning | Ephemeral      |
+| Sales                 | `sales`             | Flash     | low      | Account research, outreach, pipeline, call summaries               | Ephemeral      |
+| Product               | `product`           | Flash     | low      | Specs, roadmaps, competitive analysis, user stories                | Ephemeral      |
+| Support               | `support`           | Flash     | low      | Ticket triage, KB management, escalation                           | Ephemeral      |
+| Enterprise Search     | `search`            | Flash     | medium   | Query decomposition, multi-source synthesis                        | **Persistent** |
+| Legal                 | `legal`             | Pro       | medium   | Contracts, compliance, risk assessment                             | Ephemeral      |
+| Finance               | `finance`           | Pro       | medium   | Budgets, forecasting, reconciliation                               | Ephemeral      |
+| Data                  | `data`              | Pro       | medium   | SQL, visualization, ETL, data quality                              | Ephemeral      |
+| Media Content         | `media-content`     | Pro       | low      | Image/video/audio prompt crafting, visual assets                   | Ephemeral      |
+| Quality Critic        | `quality-critic`    | GPT-5.2   | xhigh    | Reviews creative outputs against specs (proposals, images, decks)  | Ephemeral      |
+| **Dev Coder**         | `dev-coder`         | Flash     | high     | Everyday coding, automations, scripts, simple deploys, CI/CD       | Ephemeral      |
+| **Prod Coder**        | `prod-coder`        | 5.2-Codex | xhigh    | Complex integrations, APIs, backends, prod-critical refactors      | Ephemeral      |
+| **Planner**           | `planner`           | GPT-5.2   | xhigh    | Architecture review, validation, expert advisor                    | Ephemeral      |
+| **Grunt**             | `grunt`             | Flash     | off      | File ops, tests, cleanup, bulk operations, scaffolding             | Ephemeral      |
+| **Workspace Auditor** | `workspace-auditor` | Pro       | high     | MWF workspace integrity audits (structural, registry, semantic)    | Ephemeral      |
 
 ---
 
@@ -311,6 +316,7 @@ The **main coordinator session** uses `agents.defaults.thinkingDefault` (current
 | ---------------------- | --------- | -------- | ------------------------------------------------------------ |
 | **Coordinator** (main) | Flash     | `medium` | Routing + synthesis needs reasoning                          |
 | Marketing              | Flash     | `low`    | Volume work, speed priority                                  |
+| SEO                    | Pro       | `high`   | Precision analysis — E-E-A-T scoring, schema validation, CWV |
 | Sales                  | Flash     | `low`    | Research, outreach — speed matters                           |
 | Product                | Flash     | `low`    | Specs, roadmaps — standard depth                             |
 | Support                | Flash     | `low`    | Triage, quick responses                                      |
@@ -332,7 +338,7 @@ The **main coordinator session** uses `agents.defaults.thinkingDefault` (current
 | Provider             | Role                     | Agents                                                                               | Cost/1M            |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ------------------ |
 | **Google Flash**     | Primary workhorse        | 8 agents (coordinator, marketing, sales, product, support, search, dev-coder, grunt) | $0.50 in / $3 out  |
-| **Google Pro**       | Precision + creative     | 4 agents (legal, finance, data, media-content)                                       | $2 in / $12 out    |
+| **Google Pro**       | Precision + creative     | 6 agents (seo, legal, finance, data, media-content, workspace-auditor)               | $2 in / $12 out    |
 | **OpenAI GPT-5.2**   | SOTA reasoning           | 2 agents (quality-critic, planner)                                                   | $1.75 in / $14 out |
 | **OpenAI 5.2-Codex** | SOTA coding              | 1 agent (prod-coder)                                                                 | $1.75 in / $14 out |
 | **Anthropic**        | **Removed from primary** | 0 agents (available in fallback chain only)                                          | —                  |

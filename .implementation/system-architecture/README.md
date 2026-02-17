@@ -10,18 +10,20 @@
 
 This architecture is split into focused modules. Each file is self-contained.
 
-| Document                                 | Content                                                                                    |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **[README.md](README.md)** (this file)   | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
-| **[agents.md](agents.md)**               | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
-| **[skills.md](skills.md)**               | Skills inventory (20 managed + 60 bundled), domain table, Celavii API, loading             |
-| **[VALUES.md](VALUES.md)**               | Single source of truth for runtime values (ports, counts, paths)                           |
-| **[org-structure.md](org-structure.md)** | Org directory layout, workspace structure, access matrix, roles, migration path            |
-| **[deployments.md](deployments.md)**     | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
-| **[security.md](security.md)**           | Token architecture, env siloing, credential isolation, sandbox, leakage prevention         |
-| **[channels.md](channels.md)**           | Telegram, WhatsApp, WebChat, bindings, DM policy                                           |
-| **[costs.md](costs.md)**                 | Monthly projections, per-task estimates, cost comparison                                   |
-| **[CHANGELOG.md](CHANGELOG.md)**         | Version history                                                                            |
+| Document                                   | Content                                                                                    |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **[README.md](README.md)** (this file)     | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
+| **[agents.md](agents.md)**                 | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
+| **[skills.md](skills.md)**                 | Skills inventory (47 managed + 65 bundled), domain table, Celavii API, loading             |
+| **[VALUES.md](VALUES.md)**                 | Single source of truth for runtime values (ports, counts, paths)                           |
+| **[org-structure.md](org-structure.md)**   | Org directory layout, workspace structure, access matrix, roles, migration path            |
+| **[deployments.md](deployments.md)**       | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
+| **[security.md](security.md)**             | Token architecture, env siloing, credential isolation, sandbox, leakage prevention         |
+| **[channels.md](channels.md)**             | Telegram, WhatsApp, WebChat, bindings, DM policy                                           |
+| **[costs.md](costs.md)**                   | Monthly projections, per-task estimates, cost comparison                                   |
+| **[model-strategy.md](model-strategy.md)** | Model reference, GPT-5.2 research, Option A/B comparison, thinking strategy                |
+| **[MAINTENANCE.md](MAINTENANCE.md)**       | Documentation maintenance proposal and decisions                                           |
+| **[CHANGELOG.md](CHANGELOG.md)**           | Version history                                                                            |
 
 ---
 
@@ -52,25 +54,29 @@ This architecture is split into focused modules. Each file is self-contained.
 │      │                       │                       │                      │
 │      ▼                       ▼                       ▼                      │
 │  ┌──────────────────────────────────────────────────────────────────┐      │
-│  │              DOMAIN SUB-AGENTS (11 Specialists)                   │      │
+│  │              DOMAIN SUB-AGENTS (12 Specialists)                   │      │
 │  │                                                                   │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │  Marketing   │ │    Sales     │ │   Product    │  (Flash)     │      │
-│  │  │  6 skills    │ │   6 skills   │ │  6 skills    │              │      │
+│  │  │  6 skills    │ │  6 skills    │ │  6 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐                               │      │
 │  │  │   Support    │ │   Search     │                (Flash)        │      │
 │  │  │  5 skills    │ │  3 skills†   │           † persistent        │      │
 │  │  └──────────────┘ └──────────────┘             memory             │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
-│  │  │    Legal     │ │   Finance    │ │    Data      │  (Pro)       │      │
-│  │  │  6 skills    │ │  6 skills    │ │  7 skills    │              │      │
+│  │  │     SEO      │ │    Legal     │ │   Finance    │  (Pro)       │      │
+│  │  │  13 skills   │ │  6 skills    │ │  6 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
-│  │  │Media Content │ │Quality Critic│ │  Workspace   │  (Pro+GPT-5.2)│      │
-│  │  │  5 skills    │ │  1 skill 🔍  │ │   Auditor    │              │      │
+│  │  │    Data      │ │Media Content │ │  Workspace   │  (Pro)       │      │
+│  │  │  7 skills    │ │  5 skills    │ │   Auditor    │              │      │
 │  │  └──────────────┘ └──────────────┘ │  1 skill 🏗️  │              │      │
 │  │                                     └──────────────┘              │      │
+│  │  ┌──────────────┐                                                │      │
+│  │  │Quality Critic│                                  (GPT-5.2)     │      │
+│  │  │  1 skill 🔍  │                                                │      │
+│  │  └──────────────┘                                                │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 │  Flash also spawns these directly (domain agents CANNOT spawn):             │

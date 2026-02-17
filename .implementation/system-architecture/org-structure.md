@@ -30,11 +30,7 @@ Three-digit padding supports up to 999 per role. `admin-001` = primary admin (yo
 ├── shared/                           ← Accessible by all agents
 │   ├── projects/                     ← Collaborative work
 │   │   ├── celavii/
-│   │   ├── max-kick/
-│   │   ├── kick/
-│   │   ├── maxkick-brand-identity/
-│   │   ├── seo-proposals/
-│   │   └── ORGANIZATION_SUMMARY.md
+│   │   └── max-kick/
 │   ├── knowledge/                    ← Cross-project intel
 │   │   ├── industry/
 │   │   ├── intel/
@@ -266,7 +262,7 @@ Docker `binds` control exactly which folders each agent sees. The agent literall
 │   └── sherpa-onnx-tts/                  ← Local TTS runtime + models
 │       ├── runtime/                      ← sherpa-onnx binaries
 │       └── models/                       ← Piper voice models (ONNX)
-├── skills/                               ← SYMLINK → ~/agent-workspace/skills/ (50 skills, all agents inherit)
+├── skills/                               ← SYMLINK → ~/agent-workspace/skills/ (34 managed skills, all agents inherit)
 ├── agents/                               ← Per-agent state (sessions, auth, QMD)
 │   ├── admin-001/
 │   │   ├── sessions/
@@ -287,16 +283,16 @@ Docker `binds` control exactly which folders each agent sees. The agent literall
 
 ## Project Organization Rules
 
-| Rule                        | Description                                               |
-| --------------------------- | --------------------------------------------------------- |
-| **Project-first**           | All work files live under `~/org/shared/projects/{name}/` |
-| **Domain subfolders**       | Research organized by domain: `research/{domain}/`        |
-| **Date-stamped files**      | `{topic}-{date}.md` to track evolution                    |
-| **PROJECT.md manifest**     | Every project has a status file domain agents read first  |
-| **Cross-project knowledge** | Reusable insights in `~/org/shared/knowledge/`            |
-| **Self-documenting agents** | Domain agents MUST save research before reporting back    |
-| **Private-by-default**      | Agent workspace files (SOUL.md, etc.) are never shared    |
-| **Shared-by-intent**        | Only `~/org/shared/` is mounted into sandboxed agents     |
+| Rule                        | Description                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Project-first**           | All work files live under `~/org/shared/projects/{name}/`                                         |
+| **Domain subfolders**       | Research organized by domain: `research/{domain}/`                                                |
+| **Date-stamped files**      | `{topic}-{date}.md` to track evolution                                                            |
+| **PROJECT.md manifest**     | Every project has a status file domain agents read first. Use `project-scaffold` skill to create. |
+| **Cross-project knowledge** | Reusable insights in `~/org/shared/knowledge/`                                                    |
+| **Self-documenting agents** | Domain agents MUST save research before reporting back                                            |
+| **Private-by-default**      | Agent workspace files (SOUL.md, etc.) are never shared                                            |
+| **Shared-by-intent**        | Only `~/org/shared/` is mounted into sandboxed agents                                             |
 
 ---
 

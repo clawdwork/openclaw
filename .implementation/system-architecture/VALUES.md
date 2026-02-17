@@ -20,25 +20,25 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 30    | skills.md (×4)                    | 2026-02-15    |
-| Skill count (managed SKILL.md files) | 74    | (nested inside domain categories) | 2026-02-15    |
-| Skill count (bundled repo dirs)      | 60    | skills.md, README.md              | 2026-02-09    |
-| Skill count (celavii)                | 10    | skills.md                         | 2026-02-15    |
-| Skill count (custom)                 | 5     | skills.md                         | 2026-02-07    |
+| Skill count (managed top-level dirs) | 35    | skills.md (×4)                    | 2026-02-16    |
+| Skill count (managed SKILL.md files) | 89    | (nested inside domain categories) | 2026-02-17    |
+| Skill count (bundled repo dirs)      | 65    | skills.md, README.md              | 2026-02-16    |
+| Skill count (celavii)                | 10    | skills.md                         | 2026-02-16    |
+| Skill count (custom)                 | 8     | skills.md                         | 2026-02-16    |
 
 ## Agent Counts
 
 | Key                                    | Value | Files That Reference It | Last Verified |
 | -------------------------------------- | ----- | ----------------------- | ------------- |
-| **Agent count (domain)**               | 11    | README.md, agents.md    | 2026-02-15    |
-| **Agent count (total in agents.list)** | 16    | agents.md               | 2026-02-15    |
+| **Agent count (domain)**               | 12    | README.md, agents.md    | 2026-02-16    |
+| **Agent count (total in agents.list)** | 17    | agents.md               | 2026-02-16    |
 
 ## Provider Distribution
 
 | Key                               | Value         | Files That Reference It     | Last Verified |
 | --------------------------------- | ------------- | --------------------------- | ------------- |
-| **Google Flash agents (primary)** | 8             | agents.md, README.md        | 2026-02-12    |
-| **Google Pro agents (primary)**   | 5             | agents.md, README.md        | 2026-02-15    |
+| **Google Flash agents (primary)** | 8             | agents.md, README.md        | 2026-02-16    |
+| **Google Pro agents (primary)**   | 6             | agents.md, README.md        | 2026-02-16    |
 | **OpenAI GPT-5.2 agents**         | 2             | agents.md (critic, planner) | 2026-02-12    |
 | **OpenAI 5.2-Codex agents**       | 1             | agents.md (prod-coder)      | 2026-02-12    |
 | **Anthropic agents (primary)**    | 0             | agents.md (fallback only)   | 2026-02-12    |
@@ -58,15 +58,17 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## API Keys
 
-| Key                  | Location         | Status | Last Verified |
-| -------------------- | ---------------- | ------ | ------------- |
-| `ANTHROPIC_API_KEY`  | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `OPENAI_API_KEY`     | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `GEMINI_API_KEY`     | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `CELAVII_API_KEY`    | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `ELEVENLABS_API_KEY` | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `BRAVE_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `FIRECRAWL_API_KEY`  | ~/.openclaw/.env | Set    | 2026-02-09    |
+| Key                   | Location         | Status | Last Verified |
+| --------------------- | ---------------- | ------ | ------------- |
+| `ANTHROPIC_API_KEY`   | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `OPENAI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `GEMINI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `CELAVII_API_KEY`     | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `ELEVENLABS_API_KEY`  | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `BRAVE_API_KEY`       | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `FIRECRAWL_API_KEY`   | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `REPLICATE_API_TOKEN` | ~/.openclaw/.env | Set    | 2026-02-16    |
+| `APIFY_API_TOKEN`     | ~/.openclaw/.env | Set    | 2026-02-17    |
 
 ---
 
