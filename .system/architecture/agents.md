@@ -90,7 +90,7 @@ The gateway resolves per-agent config: model, skills filter, workspace, identity
 | Agent                 | ID                  | Model     | Thinking | Role Summary                                                       | Session Type   |
 | --------------------- | ------------------- | --------- | -------- | ------------------------------------------------------------------ | -------------- |
 | **Coordinator**       | `main`              | Flash     | medium   | User conversations, routing, web search, synthesis                 | Main session   |
-| Marketing             | `marketing`         | Flash     | low      | Content, campaigns, brand voice, analytics, Celavii CIP            | Ephemeral      |
+| Marketing             | `marketing`         | Flash     | high     | Content, campaigns, brand voice, analytics, intel-ingest           | Ephemeral      |
 | SEO                   | `seo`               | Pro       | high     | Technical audits, content quality, schema, GEO, strategic planning | Ephemeral      |
 | Sales                 | `sales`             | Flash     | low      | Account research, outreach, pipeline, call summaries               | Ephemeral      |
 | Product               | `product`           | Flash     | low      | Specs, roadmaps, competitive analysis, user stories                | Ephemeral      |
