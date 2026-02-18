@@ -109,12 +109,12 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 ---
 
-## Domain Skills (71 Skills across 16 Categories)
+## Domain Skills (74 Skills across 16 Categories)
 
 | Domain                 | Count | Skills                                                                                                                                                                                                | Model   |
 | ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                                                                           | Flash   |
-| **SEO**                | 15    | seo-orchestrator, seo-audit, seo-page, seo-technical, seo-content, seo-schema, seo-images, seo-sitemap, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang, seo-report-generator, seo-product-page | Pro     |
+| **SEO**                | 18    | seo-orchestrator, seo-audit, seo-page, seo-technical, seo-content, seo-schema, seo-images, seo-sitemap, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang, seo-report-generator, seo-product-page, **seo-strategy**, **keyword-opportunities**, **competitor-seo** | Pro     |
 | **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                                                                                | Flash   |
 | **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                                                                                  | Flash   |
 | **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                                                                                 | Flash   |
@@ -167,7 +167,7 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Commands** (action templates) | sales, marketing, seo, product-management, customer-support, data, legal, finance, enterprise-search, media-content                                                                                                                                                           |
 | **MCP configs** (`.mcp.json`)   | sales, marketing, seo, product-management, customer-support, data, legal, finance, enterprise-search                                                                                                                                                                          |
-| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), seo/scripts (`run-apify-ahrefs.sh`, `run-apify-semrush-da.sh`, `run-apify-serp.sh`, `run-lighthouse.sh`, `run-broken-links.sh`, `run-accessibility.sh`, `extract-headings.sh`, `generate-schema.sh`, `generate-interlink-map.sh`, `estimate-revenue.sh`, `validate-proposal.sh`, `run-sitemap-gen.sh`, `run-unlighthouse.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`) |
+| **Scripts**                     | marketing/intel-ingest (`cron-exec.sh`), seo/scripts (`run-apify-ahrefs.sh`, `run-apify-semrush-da.sh`, `run-apify-serp.sh`, `run-apify-moz.sh`, `run-apify-ubersuggest.sh`, `run-apify-seo-ranking.sh`, `run-lighthouse.sh`, `run-broken-links.sh`, `run-accessibility.sh`, `extract-headings.sh`, `generate-schema.sh`, `generate-interlink-map.sh`, `estimate-revenue.sh`, `validate-proposal.sh`, `run-sitemap-gen.sh`, `run-unlighthouse.sh`), workspace-wizard (`provision-workspace.sh`, `add-binding.sh`, `deactivate-workspace.sh`) |
 | **References**                  | data/data-context-extractor, generating-proposal-documents, marketing/intel-ingest, media-content/\* (6 reference files), quality-critic, seo/seo-orchestrator (4 reference files), seo/seo-schema (`templates.json`)                                                         |
 
 ---

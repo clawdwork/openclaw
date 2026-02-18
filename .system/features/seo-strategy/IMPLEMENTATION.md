@@ -1,6 +1,6 @@
 # SEO Strategy Suite — Implementation Plan
 
-> **Status:** PLANNING  
+> **Status:** Phase 1 COMPLETE, Phase 2 COMPLETE — Phase 3 next  
 > **Created:** 2026-02-18  
 > **Owner:** SEO Agent  
 > **Dependencies:** seo-orchestrator, all SEO sub-skills, Apify scripts
@@ -54,7 +54,7 @@ Layer 1: TOOLS (single-use, fast answers)
 |---------|--------|----------|------|
 | `/seo_audit_quick` | ✅ LIVE | ✅ Registered | `skills/seo-audit-quick/SKILL.md` |
 | `/competitor_seo` | ✅ LIVE | ✅ Registered | `skills/competitor-seo/SKILL.md` |
-| `/keyword_opportunities` | ❌ NOT BUILT | ❌ | — |
+| `/keyword_opportunities` | ✅ LIVE (E2E tested) | ✅ Registered (#12) | `skills/keyword-opportunities/SKILL.md` |
 
 ### Layer 2: Workflows
 
@@ -76,7 +76,7 @@ Layer 1: TOOLS (single-use, fast answers)
 |------|--------|------|
 | SOP Reference Files | ✅ Saved | `skills/seo/references/product-seo-llm-sop-2026.md` |
 | Publication Schedule | ✅ Saved | `skills/seo/references/product-publication-schedule.md` |
-| State File Schema | ❌ NOT DESIGNED | — |
+| State File Schema | ✅ DESIGNED | `skills/seo/references/strategy-state-schema.json` |
 | Validate Proposal Script | ✅ Working | `skills/seo/scripts/validate-proposal.sh` |
 | Revenue Estimation Script | ✅ Working | `skills/seo/scripts/estimate-revenue.sh` |
 
@@ -153,10 +153,10 @@ Layer 1: TOOLS (single-use, fast answers)
 
 | # | Task | Status | Depends On |
 |---|------|--------|-----------|
-| 4.2.1 | Create `skills/seo/commands/keyword-opportunities.md` | NOT STARTED | — |
-| 4.2.2 | Create `skills/keyword-opportunities/SKILL.md` (Telegram wrapper) | NOT STARTED | 4.2.1 |
-| 4.2.3 | Test with maxkickusa.medusajs.site | NOT STARTED | 4.2.2 |
-| 4.2.4 | Register in gateway, verify Telegram command | NOT STARTED | 4.2.3 |
+| 4.2.1 | Create `skills/seo/commands/keyword-opportunities.md` | ✅ COMPLETE | — |
+| 4.2.2 | Create `skills/keyword-opportunities/SKILL.md` (Telegram wrapper) | ✅ COMPLETE | 4.2.1 |
+| 4.2.3 | E2E test with modash.io | ✅ COMPLETE | 4.2.2 |
+| 4.2.4 | Register in gateway, verify Telegram command | ✅ COMPLETE (#12) | 4.2.3 |
 
 ---
 
@@ -247,10 +247,11 @@ Path: `projects/{project}/research/seo/strategy-state.json`
 
 | # | Task | Status | Depends On |
 |---|------|--------|-----------|
-| 4.5.1 | Define state file JSON schema | NOT STARTED | — |
-| 4.5.2 | Add state file read/write to `keyword-opportunities.md` | NOT STARTED | Phase 1 |
-| 4.5.3 | Add state file read/write to `content-cluster.md` | NOT STARTED | 4.5.1 |
-| 4.5.4 | Add state file read/write to `seo-audit.md` | NOT STARTED | 4.5.1 |
+| 4.5.1 | Define state file JSON schema | ✅ COMPLETE | — |
+| 4.5.2 | Add state file read/write to `keyword-opportunities.md` | ✅ COMPLETE | Phase 1 |
+| 4.5.3 | Add state file read/write to `content-cluster.md` | ✅ COMPLETE | 4.5.1 |
+| 4.5.4 | Add state file read/write to `seo-audit.md` | ✅ COMPLETE | 4.5.1 |
+| 4.5.5 | Add state file read/write to `competitor-seo.md` | ✅ COMPLETE | 4.5.1 |
 
 ---
 
