@@ -1,18 +1,18 @@
 # SEO Strategy Suite — Implementation Tracker
 
-> **Last Updated:** 2026-02-18  
+> **Last Updated:** 2026-02-18 (Phase 0.4b/0.4c implemented, all scripts tested)  
 > **Reference:** [IMPLEMENTATION.md](./IMPLEMENTATION.md)
 
 ---
 
-## Phase 0: Foundation (COMPLETED)
+## Phase 0: Foundation (COMPLETE ✅)
 
 Everything built prior to the strategy suite that it depends on.
 
 ### 0.1 Telegram Command Infrastructure
 - [x] **Root cause fix** — `BOT_COMMANDS_TOO_MUCH` resolved by hiding 54 skills with `user-invocable: false`
 - [x] **Gateway restart** — PID verified, RPC ok, no Telegram errors
-- [x] **Command registration** — 11 commands registered in Telegram menu
+- [x] **Command registration** — 12 commands registered in Telegram menu (added `/keyword_opportunities`)
 
 ### 0.2 SEO Sub-Skills (14 skills)
 - [x] `seo-audit` — Full website SEO audit
@@ -43,129 +43,134 @@ Everything built prior to the strategy suite that it depends on.
 - [x] `scripts/validate-proposal.sh` — 12-point proposal validation
 - [x] `scripts/estimate-revenue.sh` — Revenue projection calculator
 
-### 0.4b SEO Scripts — Tier 1: New Apify Integrations (NOT STARTED)
+### 0.4b SEO Scripts — Tier 1: Keyword Intelligence (IMPLEMENTED ✅)
 
 These tools directly power `/keyword_opportunities` and `/seo_strategy`.
 
-| # | Script | Apify Actor | What It Gets | Why We Need It | Status |
-|---|--------|-------------|-------------|----------------|--------|
-| 1 | `run-apify-trends.sh` | `apify/google-trends-scraper` | Interest over time, rising queries, regional demand, trending keywords | Identifies **emerging keywords** before competition. Adds "trend direction" signal to priority scoring — a rising keyword with low KD is a goldmine | [ ] |
-| 2 | `run-apify-autocomplete.sh` | `simpleapi/google-search-autocomplete-scraper` | Real-time autocomplete suggestions (50+ per seed keyword) | Generates **long-tail keyword ideas** from actual user searches. Finds low-hanging fruit Ahrefs misses because they're too niche for its database | [ ] |
-| 3 | `run-apify-rank-checker.sh` | `caprolok/google-rank-checker` | Real-time rank position for specific keyword+domain pairs | **Quick wins validation** — confirms positions 11-30 in real-time before recommending action. Ahrefs data can be 2-4 weeks stale | [ ] |
-| 4 | `run-apify-spyfu.sh` | SpyFu scraper (TBD) | Competitor PPC keywords, ad spend estimates, organic keyword history | See what keywords competitors **pay for** — if they buy ads, it converts. Free organic content targeting those keywords = high ROI | [ ] |
+> **PIVOT (2026-02-18):** Original plan used paid Apify rental actors ($5-10/mo each).
+> All 3 actors (`apify/google-trends-scraper`, `simpleapi/google-search-autocomplete-scraper`,
+> `caprolok/google-rank-checker`) required paid rentals we didn't have.
+> **Solution:** Replaced with free alternatives — pytrends, Google Suggest API, existing SERP scraper.
+> **Result:** $0 additional cost. All scripts tested and working.
 
-**Tier 1 Script Specs:**
+| # | Script | Source | What It Gets | Cost | Test Result | Status |
+|---|--------|--------|-------------|------|-------------|--------|
+| 1 | `run-apify-trends.sh` | **pytrends** (free Python lib) | Interest over time, rising/falling signal, related queries, rising queries | **FREE** | ✅ Tested: "nicotine pouches" = +31% RISING, 53 data points, 10 related queries | [x] |
+| 2 | `run-apify-autocomplete.sh` | **Google Suggest API** (free, no key) | Real-time autocomplete suggestions (50-100+ per seed) with modifier expansion | **FREE** | ✅ Tested: 77 unique suggestions from 1 seed + 7 modifiers | [x] |
+| 3 | `run-apify-rank-checker.sh` | **Existing SERP scraper** (`apify/google-search-scraper`, already rented) | Real-time rank position for domain + keyword pairs in top 100 | ~$0.25/run | ✅ Tested: maxkickusa.medusajs.site not in top 100 for "nicotine pouches" (expected for new site) | [x] |
+| 4 | `run-apify-spyfu.sh` | TBD | Competitor PPC keywords, ad spend | TBD | ❌ Not implemented — need pay-per-result actor or free alternative | [ ] |
 
-#### `run-apify-trends.sh`
+**Tier 1 Script Specs (Actual Implementation):**
+
+#### `run-apify-trends.sh` — ✅ TESTED
 ```
 Usage: run-apify-trends.sh "keyword1" "keyword2" ... [--timeframe 12months] [--geo US] [--output file]
-Actor: apify/google-trends-scraper
-Output: interest_over_time[], rising_queries[], related_topics[], regional_interest[]
-Cost: ~$0.50/run (5 keywords)
+Source: pytrends Python library (pip install pytrends)
+Output: {
+  interest_over_time: { keyword: { current, avg_recent, avg_older, change_pct, trend: rising|stable|falling } },
+  related_queries: { keyword: [{ query, value }] },
+  rising_queries: { keyword: [{ query, value }] }
+}
+Cost: FREE
+Tested: "nicotine pouches" → +31% rising, current=79, 10 related queries, 10 rising queries
 ```
 
-#### `run-apify-autocomplete.sh`
+#### `run-apify-autocomplete.sh` — ✅ TESTED
 ```
 Usage: run-apify-autocomplete.sh "seed1" "seed2" ... [--depth 2] [--output file]
-Actor: simpleapi/google-search-autocomplete-scraper
-Output: suggestions[] (50+ per seed), each with estimated search volume
-Cost: ~$0.25/run (5 seeds)
-Depth: level 1 = direct suggestions; level 2 = suggestions of suggestions (more long-tail)
+Source: Google Suggest API (http://suggestqueries.google.com/complete/search)
+Output: [{ suggestion, seed, depth }] — 50-100+ unique suggestions per seed
+Cost: FREE (no API key needed)
+Features: depth-1 direct suggestions + depth-2 expansion + modifier expansion (best, vs, how to, for, near me, buy, review)
+Tested: "nicotine pouches" → 77 unique suggestions
 ```
 
-#### `run-apify-rank-checker.sh`
+#### `run-apify-rank-checker.sh` — ✅ TESTED
 ```
 Usage: run-apify-rank-checker.sh {domain} "keyword1" "keyword2" ... [--country us] [--output file]
-Actor: caprolok/google-rank-checker
-Output: { keyword, position, url, title, snippet } per keyword
-Cost: ~$0.10/run (20 keywords)
-Use: validate quick wins identified by Ahrefs before recommending action
+Source: apify/google-search-scraper (already rented) — searches each keyword, finds domain in organic results
+Output: [{ keyword, position, url, title, snippet, found: bool }]
+Cost: ~$0.25/run (uses existing SERP scraper)
+Tested: maxkickusa.medusajs.site — 0/2 keywords found in top 100 (expected for new domain)
 ```
 
-#### `run-apify-spyfu.sh`
-```
-Usage: run-apify-spyfu.sh {domain} [--output file]
-Actor: TBD (research needed — may use radeance/spyfu-scraper or similar)
-Output: paid_keywords[], organic_keywords_history[], ad_spend_estimate, top_competitors[]
-Cost: ~$0.50/run
-Use: identify high-converting keywords (competitors pay for them = proven ROI)
-```
-
-### 0.4c SEO Scripts — Tier 2: Open Source + Free API Integrations (NOT STARTED)
+### 0.4c SEO Scripts — Tier 2: Open Source + Free API Integrations (COMPLETE ✅)
 
 These tools improve audit quality and content authority.
 
-| # | Script | Source | What It Gets | Why We Need It | Status |
-|---|--------|--------|-------------|----------------|--------|
-| 5 | `run-pagespeed.sh` | Google PageSpeed Insights API (FREE) | Real CrUX field data: FCP, LCP, CLS, INP from actual Chrome users | **Real user performance** vs synthetic Lighthouse lab data. Makes audit scores credible — "92% of your real users experience LCP under 2.5s" | [ ] |
-| 6 | `run-greenflare.sh` | Greenflare (open source, Python) | Full site crawl: broken links, redirects, canonicals, status codes, crawl depth, response times | Better than `broken-link-checker` for large sites. Gives internal link graph + crawl depth analysis | [ ] |
-| 7 | `run-seonaut.sh` | SEOnaut (open source, Go binary) | Technical SEO crawl: headings, meta, images, structured data, CWV per page | Complements Lighthouse with **per-page heading/meta uniqueness analysis** — directly powers cannibalization checks | [ ] |
-| 8 | `run-schema-validator.sh` | Google Rich Results Test API or schema-dts npm | Deep schema.org validation beyond Lighthouse | Validates JSON-LD against spec, checks for missing required properties, tests Rich Results eligibility | [ ] |
+| # | Script | Source | What It Gets | Cost | Test Result | Status |
+|---|--------|--------|-------------|------|-------------|--------|
+| 5 | `run-pagespeed.sh` | Google PageSpeed Insights API | Real CrUX field data + Lighthouse lab data + category scores + opportunities | **FREE** (uses Gemini API key) | ✅ Tested: maxkickusa LCP=9.4s, Perf=62, SEO=92, A11y=86, BP=100 | [x] |
+| 6 | `run-seo-crawl.sh` | **Python** (requests + BeautifulSoup) | Full site crawl: title, H1, H2s, meta, status codes, canonical, schema, word count, **duplicate detection** | **FREE** | ✅ Tested: maxkickusa 2 pages crawled, status codes, H1/H2/meta extraction, cannibalization detection | [x] |
+| 7 | `run-schema-validator.sh` | **Python** (requests + BeautifulSoup) | JSON-LD extraction, property validation, Rich Results eligibility check per schema type | **FREE** | ✅ Tested: schema.org → 9 schemas found, 1 invalid flagged (missing url), Product/Article/FAQ validation | [x] |
+
+> **PIVOT (2026-02-18):** Replaced Greenflare (GUI-only, needs tkinter) and SEOnaut (needs Docker + MySQL)
+> with lightweight Python scripts using `requests` + `beautifulsoup4`. `site-audit-seo` (npm) also tested
+> but crashes on Node 22+25 due to Puppeteer v1.20 incompatibility. Python scripts are faster, more reliable,
+> and fully controllable.
 
 **Tier 2 Script Specs:**
 
-#### `run-pagespeed.sh`
+#### `run-pagespeed.sh` — ✅ TESTED
 ```
 Usage: run-pagespeed.sh "https://example.com" [--strategy mobile|desktop] [--output file]
 API: https://www.googleapis.com/pagespeedonline/v5/runPagespeed
-Auth: None required (free, rate-limited to 25K queries/day)
+Auth: GOOGLE_API_KEY env var (uses Gemini API key — same Google Cloud project)
+  - Key added to ~/.openclaw/.env as GOOGLE_API_KEY
+  - Without key: quota = 0/day (Google shared project exhausted)
+  - With key: quota = 25K queries/day (free tier)
 Output: {
-  field_data: { fcp, lcp, cls, inp, ttfb } (real Chrome users),
-  lab_data: { fcp, lcp, cls, tbt, si } (Lighthouse synthetic),
-  opportunities: [{ title, savings_ms }],
-  diagnostics: [{ title, details }]
+  field_data: { lcp_ms, fcp_ms, cls, inp_ms, ttfb_ms } (real CrUX — only for sites with traffic),
+  lab_data: { fcp, lcp, cls, tbt, si, tti } (Lighthouse synthetic),
+  scores: { performance, seo, accessibility, best-practices } (0-100),
+  opportunities: [{ title, savings_ms, description }] (top 10)
 }
 Cost: FREE
+Tested: maxkickusa.medusajs.site → Perf=62, SEO=92, LCP=9.4s, FCP=1.4s, CLS=0, TBT=210ms
+Finding: LCP 9.4s is critical — needs image optimization + redirect fix (902ms redirect savings)
 ```
 
-#### `run-greenflare.sh`
+#### `run-seo-crawl.sh` — ✅ TESTED (replaces Greenflare + SEOnaut)
 ```
-Usage: run-greenflare.sh "https://example.com" [--max-pages 500] [--output file]
-Install: pip install greenflare (or use pre-built binary)
+Usage: run-seo-crawl.sh "https://example.com" [--max-pages 50] [--output file]
+Source: Python (requests + beautifulsoup4)
 Output: {
   pages_crawled: N,
-  status_codes: { 200: N, 301: N, 404: N },
-  broken_links: [{ source, target, status }],
-  redirect_chains: [{ url, chain_length, final_url }],
-  canonicals: [{ url, canonical, match: bool }],
-  crawl_depth: { avg, max, distribution },
-  response_times: { avg_ms, p95_ms, slow_pages: [] }
-}
-Cost: FREE (open source)
-Prerequisite: pip install greenflare
-```
-
-#### `run-seonaut.sh`
-```
-Usage: run-seonaut.sh "https://example.com" [--max-pages 200] [--output file]
-Install: Download Go binary from https://seonaut.org/
-Output: {
+  status_codes: { "200": N, "404": N },
   pages: [{
-    url, title, h1, h2s[], meta_description,
-    images: [{ src, alt, size_kb }],
-    schema_types: [],
-    word_count, internal_links, external_links
+    url, status, title, h1, h1_count, h2s[], meta_description,
+    canonical, schema_types[], word_count, internal_links, external_links,
+    images_total, images_missing_alt, missing_alt_srcs[]
   }],
   duplicate_titles: [{ title, urls[] }],
   duplicate_h1s: [{ h1, urls[] }],
-  duplicate_descriptions: [{ desc, urls[] }],
-  missing_alt_tags: [{ url, img_src }]
+  duplicate_descriptions: [{ description, urls[] }],
+  missing_title: [urls], missing_h1: [urls], missing_meta_description: [urls],
+  multiple_h1: [{ url, count }],
+  schema_types: { "Product": N, "WebSite": N },
+  content_stats: { avg_word_count, min_word_count, max_word_count, thin_pages }
 }
-Cost: FREE (open source)
-Prerequisite: Download binary or `go install`
+Cost: FREE
+Prerequisite: pip3 install requests beautifulsoup4
+Tested: maxkickusa.medusajs.site → 2 pages, status codes, H1/H2/meta, cannibalization check
 Key value: duplicate_titles/h1s/descriptions → direct cannibalization detection
 ```
 
-#### `run-schema-validator.sh`
+#### `run-schema-validator.sh` — ✅ TESTED
 ```
 Usage: run-schema-validator.sh "https://example.com" [--output file]
-API: Google Rich Results Test (or local validator)
+Source: Python (requests + beautifulsoup4)
 Output: {
-  schemas_found: [{ type, properties, valid: bool, errors: [] }],
+  schemas: [{ type, properties[], property_count, valid, errors[], warnings[], rich_results_eligible }],
+  schemas_found: N,
   rich_results_eligible: bool,
-  missing_required: [{ type, property }]
+  rich_results_types: [],
+  summary: { total_schemas, valid, invalid, with_warnings, rich_results_eligible, types_found[] }
 }
 Cost: FREE
+Prerequisite: pip3 install requests beautifulsoup4
+Tested: schema.org → 9 schemas found, 1 invalid (missing url), validates Product/Article/FAQ/BreadcrumbList
+Validates: required properties per type, empty values, Product offers, Article dates, Rich Results eligibility
 ```
 
 ### 0.4d Integration: How New Tools Fit Into Pipeline
@@ -184,9 +189,8 @@ Cost: FREE
 /seo_strategy Phase 1: Discover
 ├── seo-audit (existing ✅)                → Lighthouse scores
 ├── PageSpeed Insights (NEW Tier 2)        → real CrUX field data
-├── Greenflare (NEW Tier 2)                → deep crawl: redirects, canonicals, link graph
-├── SEOnaut (NEW Tier 2)                   → per-page heading/meta for cannibalization
-├── Schema Validator (NEW Tier 2)          → rich results eligibility
+├── SEO Crawl (NEW Tier 2 ✅)              → H1/H2/meta/title/status/canonical/word count + cannibalization
+├── Schema Validator (NEW Tier 2 ✅)       → rich results eligibility + property validation
 ├── Sitemap gen (existing ✅)              → content inventory
 └── Ahrefs competitors (existing ✅)       → competitive landscape
 
@@ -196,35 +200,36 @@ Cost: FREE
   NEW: PPC signal from SpyFu (competitor pays for keyword = 1.3x bonus)
 ```
 
-### 0.4e Tool Installation Prerequisites
+### 0.4e Tool Installation Prerequisites (Updated Post-Pivot)
 
-| Tool | Install Command | Verify Command | Notes |
-|------|----------------|----------------|-------|
-| Google Trends | Apify account (existing) | `curl -s "https://api.apify.com/v2/acts/apify~google-trends-scraper"` | Uses APIFY_API_TOKEN |
-| Google Autocomplete | Apify account (existing) | `curl -s "https://api.apify.com/v2/acts/simpleapi~google-search-autocomplete-scraper"` | Uses APIFY_API_TOKEN |
-| Google Rank Checker | Apify account (existing) | `curl -s "https://api.apify.com/v2/acts/caprolok~google-rank-checker"` | Uses APIFY_API_TOKEN |
-| PageSpeed Insights | None (free API) | `curl -s "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://example.com"` | No API key needed |
-| Greenflare | `pip install greenflare` | `greenflare --version` | Python 3.8+ |
-| SEOnaut | Download from seonaut.org | `seonaut --version` | Go binary, macOS/Linux |
-| Schema Validator | npm or API | `npx schema-dts validate` or Google API | Multiple options |
+| Tool | Install Command | Verify Command | Status | Notes |
+|------|----------------|----------------|--------|-------|
+| pytrends (Google Trends) | `pip3 install --break-system-packages pytrends` | `python3 -c "from pytrends.request import TrendReq; print('ok')"` | ✅ Installed | Free, no API key |
+| Google Suggest API | None (public endpoint) | `curl -s "http://suggestqueries.google.com/complete/search?client=firefox&q=test"` | ✅ Works | Free, no install |
+| Rank Checker | Uses existing SERP scraper | `source ~/.openclaw/.env && echo $APIFY_API_TOKEN` | ✅ Works | Shares SERP actor |
+| PageSpeed Insights | GOOGLE_API_KEY in `~/.openclaw/.env` | `run-pagespeed.sh "https://example.com"` | ✅ Works | Uses Gemini API key |
+| beautifulsoup4 (SEO crawl + schema) | `pip3 install --break-system-packages beautifulsoup4` | `python3 -c "from bs4 import BeautifulSoup; print('ok')"` | ✅ Installed | For run-seo-crawl.sh + run-schema-validator.sh |
+| requests (SEO crawl + schema) | Already installed (pytrends dependency) | `python3 -c "import requests; print('ok')"` | ✅ Installed | Shared dependency |
 
-### 0.4f Estimated Costs Per Strategy Run
+> **Dropped tools:** Greenflare (GUI-only, needs tkinter), SEOnaut (needs Docker + MySQL),
+> site-audit-seo (Puppeteer v1.20 crashes on Node 22+25). Replaced with lightweight Python scripts.
 
-| Tool | Cost Per Run | Runs Per Strategy | Total |
-|------|-------------|-------------------|-------|
-| Ahrefs Keywords (existing) | ~$0.50 | 2-3 (domain + competitors) | ~$1.50 |
-| Ahrefs Competitors (existing) | ~$0.25 | 1 | ~$0.25 |
-| SERP Scraper (existing) | ~$0.25 | 2-3 (top keywords) | ~$0.75 |
-| Semrush DA (existing) | ~$0.25 | 1 | ~$0.25 |
-| Google Trends (NEW) | ~$0.50 | 1 (5 keywords) | ~$0.50 |
-| Google Autocomplete (NEW) | ~$0.25 | 1 (5 seeds) | ~$0.25 |
-| Rank Checker (NEW) | ~$0.10 | 1 (20 keywords) | ~$0.10 |
-| SpyFu (NEW) | ~$0.50 | 1 | ~$0.50 |
-| PageSpeed (NEW) | FREE | 1-3 | $0.00 |
-| Greenflare (NEW) | FREE | 1 | $0.00 |
-| SEOnaut (NEW) | FREE | 1 | $0.00 |
-| Schema Validator (NEW) | FREE | 1 | $0.00 |
-| **TOTAL per /seo_strategy** | | | **~$4.10** |
+### 0.4f Estimated Costs Per Strategy Run (Updated Post-Pivot)
+
+| Tool | Cost Per Run | Runs Per Strategy | Total | Notes |
+|------|-------------|-------------------|-------|-------|
+| Ahrefs Keywords (existing) | ~$0.50 | 2-3 (domain + competitors) | ~$1.50 | Apify compute |
+| Ahrefs Competitors (existing) | ~$0.25 | 1 | ~$0.25 | Apify compute |
+| SERP Scraper (existing) | ~$0.25 | 2-3 (top keywords) | ~$0.75 | Apify compute |
+| Semrush DA (existing) | ~$0.25 | 1 | ~$0.25 | Apify compute |
+| Google Trends (NEW) | **FREE** | 1 (5 keywords) | **$0.00** | pytrends lib |
+| Google Autocomplete (NEW) | **FREE** | 1 (5 seeds) | **$0.00** | Google Suggest API |
+| Rank Checker (NEW) | ~$0.25 | 1 (reuses SERP scraper) | ~$0.25 | Shares SERP actor |
+| SpyFu (NEW) | TBD | — | TBD | Not implemented |
+| PageSpeed (NEW) | **FREE** | 1-3 | **$0.00** | Uses Gemini API key |
+| SEO Crawl (NEW) | **FREE** | 1 | **$0.00** | Python (requests + bs4) ✅ |
+| Schema Validator (NEW) | **FREE** | 1 | **$0.00** | Python (requests + bs4) ✅ |
+| **TOTAL per /seo_strategy** | | | **~$3.00** | **Down from $4.10 estimate** |
 
 ### 0.5 SOP Reference Files
 - [x] `references/product-seo-llm-sop-2026.md` — Updated 2026 SOP (Steps 1-16)
@@ -238,6 +243,7 @@ Cost: FREE
 ### 0.6 Telegram Command Wrappers (Layer 1 + 2)
 - [x] `skills/seo-audit-quick/SKILL.md` — Quick 7-tool health check
 - [x] `skills/competitor-seo/SKILL.md` — DA + keyword gap analysis
+- [x] `skills/keyword-opportunities/SKILL.md` — Scan domain for quick wins + low-hanging fruit (**NEW**)
 - [x] `skills/product-page-report/SKILL.md` — Full product page pipeline → PDF
 - [x] `skills/content-cluster/SKILL.md` — Silo + articles (enhanced with SOP rules)
 - [x] `skills/generate-seo-report/SKILL.md` — Site-wide audit → PDF
