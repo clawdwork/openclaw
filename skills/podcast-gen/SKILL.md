@@ -1,6 +1,7 @@
 ---
 name: podcast-gen
 description: Generate podcast-style audio conversations from text, files, or URLs using Podcastfy.
+user-invocable: false
 metadata:
   {
     "openclaw":

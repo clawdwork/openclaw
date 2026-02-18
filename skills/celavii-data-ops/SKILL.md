@@ -1,6 +1,7 @@
 ---
 name: celavii-data-ops
 description: "Trigger profile enhancements, AI refinement, and data scrapes via the Celavii API. Refresh creator data, refine profiles for affinities/demographics, collect followers/following, scrape locations/hashtags/URLs, check job status, and monitor credit usage."
+user-invocable: false
 metadata:
   {
     "openclaw":

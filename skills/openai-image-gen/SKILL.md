@@ -1,6 +1,7 @@
 ---
 name: openai-image-gen
 description: Batch-generate images via OpenAI Images API. Random prompt sampler + `index.html` gallery.
+user-invocable: false
 homepage: https://platform.openai.com/docs/api-reference/images
 metadata:
   {

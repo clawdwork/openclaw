@@ -1,6 +1,7 @@
 ---
 name: obsidian
 description: Work with Obsidian vaults (plain Markdown notes) and automate via obsidian-cli.
+user-invocable: false
 homepage: https://help.obsidian.md
 metadata:
   {

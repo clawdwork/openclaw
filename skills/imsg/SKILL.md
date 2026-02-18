@@ -1,6 +1,7 @@
 ---
 name: imsg
 description: iMessage/SMS CLI for listing chats, history, watch, and sending.
+user-invocable: false
 homepage: https://imsg.to
 metadata:
   {

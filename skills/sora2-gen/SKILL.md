@@ -1,6 +1,7 @@
 ---
 name: sora2-gen
 description: Generate videos via OpenAI Sora 2 API (text-to-video, image-to-video, remix).
+user-invocable: false
 homepage: https://developers.openai.com/api/docs/guides/video-generation
 metadata:
   {

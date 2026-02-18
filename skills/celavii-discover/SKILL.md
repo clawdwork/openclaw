@@ -1,6 +1,7 @@
 ---
 name: celavii-discover
 description: "Search and discover Instagram creators using the Celavii API. Find creators by keyword, niche, follower range, AI-analyzed affinities, hashtag usage, and full-text post content search."
+user-invocable: false
 metadata:
   {
     "openclaw":

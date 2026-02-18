@@ -1,6 +1,7 @@
 ---
 name: weather
 description: Get current weather and forecasts (no API key required).
+user-invocable: false
 homepage: https://wttr.in/:help
 metadata: { "openclaw": { "emoji": "🌤️", "requires": { "bins": ["curl"] } } }
 ---

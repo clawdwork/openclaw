@@ -1,6 +1,7 @@
 ---
 name: gemini
 description: Gemini CLI for one-shot Q&A, summaries, and generation.
+user-invocable: false
 homepage: https://ai.google.dev/
 metadata:
   {

@@ -1,6 +1,7 @@
 ---
 name: spotify-player
 description: Terminal Spotify playback/search via spogo (preferred) or spotify_player.
+user-invocable: false
 homepage: https://www.spotify.com
 metadata:
   {

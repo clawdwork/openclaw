@@ -1,6 +1,7 @@
 ---
 name: summarize
 description: Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for “transcribe this YouTube/video”).
+user-invocable: false
 homepage: https://summarize.sh
 metadata:
   {

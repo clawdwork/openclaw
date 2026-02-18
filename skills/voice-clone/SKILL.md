@@ -1,6 +1,7 @@
 ---
 name: voice-clone
 description: Clone voices from audio samples via MiniMax Voice Cloning on Replicate.
+user-invocable: false
 homepage: https://replicate.com/minimax/voice-cloning
 metadata:
   {

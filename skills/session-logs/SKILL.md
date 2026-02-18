@@ -1,6 +1,7 @@
 ---
 name: session-logs
 description: Search and analyze your own session logs (older/parent conversations) using jq.
+user-invocable: false
 metadata: { "openclaw": { "emoji": "📜", "requires": { "bins": ["jq", "rg"] } } }
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: celavii-knowledge
 description: "Manage the Celavii knowledge base via API. Browse folders, create/read/update/delete entries, and perform semantic search for AI agent context retrieval."
+user-invocable: false
 metadata:
   {
     "openclaw":

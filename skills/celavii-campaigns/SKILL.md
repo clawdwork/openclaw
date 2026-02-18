@@ -1,6 +1,7 @@
 ---
 name: celavii-campaigns
 description: "Track and analyze influencer marketing campaigns via the Celavii API. List campaigns, view performance metrics, assigned creators, and matched content (hashtags, keywords, mentions)."
+user-invocable: false
 metadata:
   {
     "openclaw":

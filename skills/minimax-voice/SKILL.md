@@ -1,6 +1,7 @@
 ---
 name: minimax-voice
 description: Generate studio-grade speech via MiniMax Speech 2.6 HD/Turbo on Replicate.
+user-invocable: false
 homepage: https://replicate.com/minimax/speech-2.6-hd
 metadata:
   {

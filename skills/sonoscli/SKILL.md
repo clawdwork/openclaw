@@ -1,6 +1,7 @@
 ---
 name: sonoscli
 description: Control Sonos speakers (discover/status/play/volume/group).
+user-invocable: false
 homepage: https://sonoscli.sh
 metadata:
   {

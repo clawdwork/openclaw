@@ -1,6 +1,7 @@
 ---
 name: notion
 description: Notion API for creating and managing pages, databases, and blocks.
+user-invocable: false
 homepage: https://developers.notion.com
 metadata:
   {

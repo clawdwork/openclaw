@@ -1,6 +1,7 @@
 ---
 name: sag
 description: ElevenLabs text-to-speech with mac-style say UX.
+user-invocable: false
 homepage: https://sag.sh
 metadata:
   {

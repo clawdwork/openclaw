@@ -1,6 +1,7 @@
 ---
 name: camsnap
 description: Capture frames or clips from RTSP/ONVIF cameras.
+user-invocable: false
 homepage: https://camsnap.ai
 metadata:
   {

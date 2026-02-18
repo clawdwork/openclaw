@@ -1,3 +1,8 @@
+---
+description: Canvas Skill
+user-invocable: false
+---
+
 # Canvas Skill
 
 Display HTML content on connected OpenClaw nodes (Mac app, iOS, Android).

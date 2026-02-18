@@ -1,6 +1,7 @@
 ---
 name: veo3-gen
 description: Generate videos via Google Veo 3.1 API (text-to-video and image-to-video).
+user-invocable: false
 homepage: https://ai.google.dev/gemini-api/docs/video
 metadata:
   {

@@ -1,6 +1,7 @@
 ---
 name: celavii-analytics
 description: "Analyze audience demographics, geographic distribution, content niches, network overlap, shared hashtags, affinity-linked posts, and cohort-level intelligence (affinities, demographics, filtered drill-downs) via the Celavii API."
+user-invocable: false
 metadata:
   {
     "openclaw":

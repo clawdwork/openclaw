@@ -1,6 +1,7 @@
 ---
 name: celavii-crm
 description: "Manage creator relationships and pipeline via the Celavii API. View and update managed profiles with CRM data, pipeline summary, org-level stats. Full list CRUD: create/update/delete lists and add/remove members."
+user-invocable: false
 metadata:
   {
     "openclaw":

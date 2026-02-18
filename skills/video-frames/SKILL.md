@@ -1,6 +1,7 @@
 ---
 name: video-frames
 description: Extract frames or short clips from videos using ffmpeg.
+user-invocable: false
 homepage: https://ffmpeg.org
 metadata:
   {

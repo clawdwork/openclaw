@@ -1,6 +1,7 @@
 ---
 name: celavii-profiles
 description: "Get detailed creator intelligence from the Celavii API. Look up full profiles, bulk profile lookup, AI-analyzed affinities, recent posts, network data, followers/following lists, social links, and contact info."
+user-invocable: false
 metadata:
   {
     "openclaw":
