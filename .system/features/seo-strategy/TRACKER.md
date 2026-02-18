@@ -434,7 +434,7 @@ strategy-state.json
 | 3.2.6 | Test Phase 1: Discover | Ahrefs full ✅ (DR=73, 49K backlinks, 169K traffic), Semrush ✅ (AS=45, MozDA=39) | modash.io | [x] |
 | 3.2.7 | Test Phase 2: Analyze | Keywords ✅ (5 top), Keyword ideas ✅ (20+20), Competitors ⚠️ (empty for modash) | modash.io | [x] |
 | 3.2.8 | Test Phase 3: Prioritize | Fixed KD mapping: Unknown→15, Easy→10, Medium→35, Hard→70 | Scoring formula | [x] |
-| 3.2.9 | Test Phase 4: Plan | Verify cluster plans + cannibalization check | Test log | [ ] |
+| 3.2.9 | Test Phase 4: Plan | celavii.com: 2 clusters (instagram-analytics 4,700/mo + influencer-platforms 2,900/mo), 26 articles, cannibalization ✅ PASS (0 dupes, 0 high-sim), 26-week pub calendar, state file saved | `projects/celavii/research/seo/cluster-plan-*.md`, `strategy-state.json` | [x] |
 | 3.2.10 | Test Phase 5: Deliver | Verify strategy report + content briefs + technical checklist | Test log | [ ] |
 | 3.2.11 | E2E test: full pipeline | Full pipeline from start to finish on real domain | Test log | [ ] |
 | 3.2.12 | Test: resume from checkpoint | Interrupt mid-pipeline, restart, verify resume | Test log | [ ] |
