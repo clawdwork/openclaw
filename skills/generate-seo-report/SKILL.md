@@ -8,7 +8,9 @@ argument-hint: "<domain>"
 
 Generate a comprehensive, client-facing SEO audit report for any domain. Covers technical SEO, content quality, schema markup, competitor analysis, and actionable recommendations.
 
-**Read the full pipeline instructions:** `skills/seo/commands/generate-seo-report.md`
+**If the argument is `help`:** Read `skills/seo/commands/generate-seo-report.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full pipeline instructions:** `skills/seo/commands/generate-seo-report.md`
 
 ## Quick Usage
 

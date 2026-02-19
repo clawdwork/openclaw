@@ -8,7 +8,9 @@ argument-hint: "<domain> [competitor1] [competitor2] ..."
 
 Run a competitive SEO analysis comparing your domain against competitors. Identifies keyword gaps, domain authority differences, backlink opportunities, and SERP feature ownership.
 
-**Read the full instructions:** `skills/seo/commands/competitor-seo.md`
+**If the argument is `help`:** Read `skills/seo/commands/competitor-seo.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full instructions:** `skills/seo/commands/competitor-seo.md`
 
 ## Quick Usage
 

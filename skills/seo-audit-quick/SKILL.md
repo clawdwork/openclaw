@@ -8,7 +8,9 @@ argument-hint: "<domain>"
 
 Run a quick SEO health check on any domain. Uses 7 tools to produce a scored assessment covering technical health, content quality, and schema markup.
 
-**Read the full instructions:** `skills/seo/commands/seo-audit.md`
+**If the argument is `help`:** Read `skills/seo/commands/seo-audit.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full instructions:** `skills/seo/commands/seo-audit.md`
 
 ## Quick Usage
 

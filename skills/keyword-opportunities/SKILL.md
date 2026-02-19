@@ -8,7 +8,9 @@ argument-hint: "<domain>"
 
 Scan an entire domain to find the fastest, highest-ROI keyword opportunities. Uses Ahrefs, Google Trends, Autocomplete, and Rank Checker to produce a prioritized action plan.
 
-**Read the full instructions:** `skills/seo/commands/keyword-opportunities.md`
+**If the argument is `help`:** Read `skills/seo/commands/keyword-opportunities.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full instructions:** `skills/seo/commands/keyword-opportunities.md`
 
 ## Quick Usage
 

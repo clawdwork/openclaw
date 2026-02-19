@@ -8,7 +8,9 @@ argument-hint: "<url> [competitor1] [competitor2] ..."
 
 End-to-end product page SEO report. Takes a product URL and produces a client-facing, print-ready PDF proposal.
 
-**Read the full pipeline instructions:** `skills/seo/commands/product-page-report.md`
+**If the argument is `help`:** Read `skills/seo/commands/product-page-report.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full pipeline instructions:** `skills/seo/commands/product-page-report.md`
 
 ## Quick Usage
 

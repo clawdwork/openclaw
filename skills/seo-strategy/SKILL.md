@@ -1,12 +1,14 @@
 ---
 name: seo-strategy
-description: Complete top-to-bottom SEO strategy — 5-phase pipeline producing strategy report, content briefs, and technical checklist
+description: Complete top-to-bottom SEO strategy — 6-phase pipeline producing strategy PDF report, content briefs, and technical checklist
 argument-hint: "<domain>"
 ---
 
 # /seo_strategy
 
-Run a complete SEO strategy engagement. Chains all tools across 5 phases: Discover → Analyze → Prioritize → Plan → Deliver.
+Run a complete SEO strategy engagement. Chains all tools across 6 phases: Discover → Analyze → Prioritize → Plan → Deliver → Report.
+
+**If the argument is `help`:** Read `skills/seo/commands/seo-strategy.md` → find the `## Help` section → print the code block verbatim and stop.
 
 **Full instructions:** Read `skills/seo/commands/seo-strategy.md` for the complete process, tools, state file schema, and output templates.
 
@@ -28,6 +30,7 @@ Run a complete SEO strategy engagement. Chains all tools across 5 phases: Discov
 3. **PRIORITIZE** — score opportunities, group by theme, rank
 4. **PLAN** — content silos, publication calendar, cannibalization check
 5. **DELIVER** — compile strategy report, briefs, technical checklist
+6. **REPORT** — generate 9-page PDF from golden template
 
 ## Resume
 

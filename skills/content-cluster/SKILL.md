@@ -8,7 +8,9 @@ argument-hint: "<domain> \"<primary topic>\""
 
 Generate a content cluster plan with proper silo architecture, unique headings (no cannibalization), and LLM optimization. Follows the Product SEO + LLM SOP (2026).
 
-**Read the full instructions:** `skills/seo/commands/content-cluster.md`
+**If the argument is `help`:** Read `skills/seo/commands/content-cluster.md` → find the `## Help` section → print the code block verbatim and stop.
+
+**Full instructions:** `skills/seo/commands/content-cluster.md`
 
 ## Quick Usage
 
