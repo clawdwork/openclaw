@@ -339,6 +339,7 @@ describe("telegramMessageActions", () => {
         asVoice: true,
       }),
       cfg,
+      { mediaLocalRoots: undefined },
     );
   });
 
@@ -365,6 +366,7 @@ describe("telegramMessageActions", () => {
         silent: true,
       }),
       cfg,
+      { mediaLocalRoots: undefined },
     );
   });
 

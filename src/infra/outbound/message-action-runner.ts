@@ -7,6 +7,7 @@ import {
 } from "../../agents/tools/common.js";
 import { parseReplyDirectives } from "../../auto-reply/reply/reply-directives.js";
 import { dispatchChannelMessageAction } from "../../channels/plugins/message-actions.js";
+import { getAgentScopedMediaLocalRoots } from "../../media/local-roots.js";
 import type {
   ChannelId,
   ChannelMessageActionName,
@@ -648,7 +649,7 @@ async function handlePollAction(ctx: ResolvedActionContext): Promise<MessageActi
 }
 
 async function handlePluginAction(ctx: ResolvedActionContext): Promise<MessageActionRunResult> {
-  const { cfg, params, channel, accountId, dryRun, gateway, input, abortSignal } = ctx;
+  const { cfg, params, channel, accountId, dryRun, gateway, input, agentId, abortSignal } = ctx;
   throwIfAborted(abortSignal);
   const action = input.action as Exclude<ChannelMessageActionName, "send" | "poll" | "broadcast">;
   if (dryRun) {
@@ -671,6 +672,9 @@ async function handlePluginAction(ctx: ResolvedActionContext): Promise<MessageAc
     gateway,
     toolContext: input.toolContext,
     dryRun,
+    mediaLocalRoots: agentId
+      ? getAgentScopedMediaLocalRoots(cfg, agentId)
+      : undefined,
   });
   if (!handled) {
     throw new Error(`Message action ${action} not supported for channel ${channel}.`);

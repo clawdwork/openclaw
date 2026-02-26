@@ -314,6 +314,8 @@ export type ChannelMessageActionContext = {
   };
   toolContext?: ChannelThreadingToolContext;
   dryRun?: boolean;
+  /** Allowed local-media roots for the active agent (pass-through for plugin send). */
+  mediaLocalRoots?: readonly string[];
 };
 
 export type ChannelToolSend = {

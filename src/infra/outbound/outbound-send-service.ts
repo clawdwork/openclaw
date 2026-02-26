@@ -3,6 +3,7 @@ import { dispatchChannelMessageAction } from "../../channels/plugins/message-act
 import type { ChannelId, ChannelThreadingToolContext } from "../../channels/plugins/types.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import { appendAssistantMessageToSessionTranscript } from "../../config/sessions.js";
+import { getAgentScopedMediaLocalRoots } from "../../media/local-roots.js";
 import type { GatewayClientMode, GatewayClientName } from "../../utils/message-channel.js";
 import { throwIfAborted } from "./abort.js";
 import type { OutboundSendDeps } from "./deliver.js";
@@ -67,6 +68,9 @@ export async function executeSendAction(params: {
       gateway: params.ctx.gateway,
       toolContext: params.ctx.toolContext,
       dryRun: params.ctx.dryRun,
+      mediaLocalRoots: params.ctx.agentId
+        ? getAgentScopedMediaLocalRoots(params.ctx.cfg, params.ctx.agentId)
+        : undefined,
     });
     if (handled) {
       if (params.ctx.mirror) {
