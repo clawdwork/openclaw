@@ -37,6 +37,10 @@ Flash (coordinator) receives user message
         │   (image, video, mood board, product shot, character design,
         │    commercial ad, visual asset, brand identity visual)
         │
+        ├── Blog content task? ──▶ Spawn Blogger Agent (Pro, high)
+        │   (blog writing, rewriting, analysis, research, outlines,
+        │    schema, repurpose, GEO optimization — coupled with SEO)
+        │
         ├── Review creative output? ──▶ Spawn Quality Critic (GPT-5.2, xhigh)
         │   (proposals, images, decks — feedback loop after generation)
         │
@@ -100,6 +104,7 @@ The gateway resolves per-agent config: model, skills filter, workspace, identity
 | Finance               | `finance`           | Pro       | medium   | Budgets, forecasting, reconciliation                               | Ephemeral      |
 | Data                  | `data`              | Pro       | medium   | SQL, visualization, ETL, data quality                              | Ephemeral      |
 | Media Content         | `media-content`     | Pro       | low      | Image/video/audio prompt crafting, visual assets                   | Ephemeral      |
+| Blogger               | `blogger`           | Pro       | high     | Blog content production, coupled with SEO agent for briefs/KWs     | Ephemeral      |
 | Quality Critic        | `quality-critic`    | GPT-5.2   | xhigh    | Reviews creative outputs against specs (proposals, images, decks)  | Ephemeral      |
 | **Dev Coder**         | `dev-coder`         | Flash     | high     | Everyday coding, automations, scripts, simple deploys, CI/CD       | Ephemeral      |
 | **Prod Coder**        | `prod-coder`        | 5.2-Codex | xhigh    | Complex integrations, APIs, backends, prod-critical refactors      | Ephemeral      |
@@ -238,6 +243,9 @@ Flash (coordinator):
 | Mood board / brand ID | ✅ Yes         | Media Content (Pro)                        |
 | Product shot          | ✅ Yes         | Media Content (Pro)                        |
 | Character design      | ✅ Yes         | Media Content (Pro)                        |
+| Blog writing/rewrite  | ✅ Yes         | Blogger (Pro)                              |
+| Blog quality analysis | ✅ Yes         | Blogger (Pro)                              |
+| Blog research/outline | ✅ Yes         | Blogger (Pro)                              |
 | Review proposal/image | ✅ Yes         | Quality Critic (GPT-5.2, xhigh)            |
 | Web search            | ❌ No          | Flash handles directly                     |
 | Simple conversation   | ❌ No          | Flash handles directly                     |
@@ -325,7 +333,8 @@ The **main coordinator session** uses `agents.defaults.thinkingDefault` (current
 | Finance                | Pro       | `medium` | Accuracy, compliance                                         |
 | Data                   | Pro       | `medium` | SQL generation, data quality                                 |
 | Media Content          | Pro       | `low`    | Creative work, vision                                        |
-| Quality Critic         | GPT-5.2   | `xhigh`  | SOTA reasoning for deep review (92.4% GPQA, 52.9% ARC-AGI-2) |
+| Blogger                | Pro       | `high`   | Content production, E-E-A-T, quality scoring, SEO compliance |
+| Quality Critic         | GPT-5.2   | `xhigh`  | SOTA review (xhigh)                                           |
 | Dev Coder              | Flash     | `high`   | Code quality needs deep thinking                             |
 | Prod Coder             | 5.2-Codex | `xhigh`  | SOTA coding (55.6% SWE-Bench Pro), context compaction        |
 | Planner                | GPT-5.2   | `xhigh`  | SOTA reasoning replaces Opus at 65% cost savings             |
@@ -338,7 +347,7 @@ The **main coordinator session** uses `agents.defaults.thinkingDefault` (current
 | Provider             | Role                     | Agents                                                                               | Cost/1M            |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ------------------ |
 | **Google Flash**     | Primary workhorse        | 8 agents (coordinator, marketing, sales, product, support, search, dev-coder, grunt) | $0.50 in / $3 out  |
-| **Google Pro**       | Precision + creative     | 6 agents (seo, legal, finance, data, media-content, workspace-auditor)               | $2 in / $12 out    |
+| **Google Pro**       | Precision + creative     | 7 agents (seo, legal, finance, data, media-content, blogger, workspace-auditor)      | $2 in / $12 out    |
 | **OpenAI GPT-5.2**   | SOTA reasoning           | 2 agents (quality-critic, planner)                                                   | $1.75 in / $14 out |
 | **OpenAI 5.2-Codex** | SOTA coding              | 1 agent (prod-coder)                                                                 | $1.75 in / $14 out |
 | **Anthropic**        | **Removed from primary** | 0 agents (available in fallback chain only)                                          | —                  |

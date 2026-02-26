@@ -60,6 +60,7 @@ Each project has:
 ├── skills.md          ← Skills inventory (60 skills), loading mechanics
 ├── VALUES.md         ← Single source of truth for runtime values (ports, counts, paths)
 ├── MAINTENANCE.md     ← Documentation maintenance proposal and decisions
+├── memory.md          ← Memory system architecture, indexing, audit checklist
 ├── org-structure.md   ← Org directory layout, workspaces, access matrix, roles
 ├── deployments.md     ← GitHub, repo conventions, Vercel deployments, templates
 ├── security.md        ← Token architecture, env siloing, sandbox, leakage prevention
@@ -113,6 +114,7 @@ echo "=== Active projects ===" && ls ~/agent-workspace/projects/ && echo "=== Kn
    - **channels.md**: Do channel configs match gateway status?
    - **costs.md**: Are model prices still accurate?
    - **README.md**: Does overview diagram match current agent count/models?
+   - **memory.md**: Does memory architecture match actual state? (see Memory Maintenance mode below)
 
 6. Output a discrepancy checklist:
 
@@ -156,6 +158,7 @@ Use when: user says what changed (e.g., "added a new skill", "deployed a new sit
 | Workspace structure changed | `org-structure.md`, update Workspace Context in this workflow              |
 | Project added/removed       | `org-structure.md`, `~/agent-workspace/WORKSPACE.md` (project registry)   |
 | Workspace docs changed      | Verify `SOUL.md`, `WORKSPACE.md`, `PROJECT.md` consistency                |
+| Memory issues/dirty indexes | `memory.md`, run `openclaw memory index --force`, verify with status       |
 
 2. Check `VALUES.md` first — if the change affects a tracked value, update VALUES.md.
 
@@ -303,6 +306,61 @@ Use when: a new external API key needs to be configured.
 4. **Update** `VALUES.md` API Keys table
 5. **Append** to `CHANGELOG.md`
 6. **Run** `scripts/arch-verify.sh`
+
+---
+
+## Mode: Memory Maintenance
+
+Use when: "memory is dirty", "agents can't search", "reindex memory", "memory audit"
+
+### Steps
+
+1. Check memory index health:
+   // turbo
+
+```bash
+openclaw memory status 2>&1 | grep -E "Memory Search|Indexed|Dirty"
+```
+
+2. If any stores show `Dirty: yes` or `Indexed: 0/`, reindex:
+
+```bash
+openclaw memory index --force
+```
+
+3. Verify memory source files exist and are current:
+   // turbo
+
+```bash
+echo "=== Memory files ===" && ls -la ~/agent-workspace/memory/*.md && echo "=== MEMORY.md ===" && head -5 ~/agent-workspace/MEMORY.md && echo "=== Last updated ===" && stat -f "%Sm" ~/agent-workspace/MEMORY.md
+```
+
+4. Run the full audit checklist from `memory.md`:
+   - [ ] All stores indexed and clean (Dirty: no)
+   - [ ] File count matches source files on disk
+   - [ ] No daily log gaps > 3 days during active work
+   - [ ] `MEMORY.md` updated within last 7 days
+   - [ ] Active Projects section matches actual project state
+   - [ ] Configuration section matches `~/.openclaw/openclaw.json`
+   - [ ] Stale TODOs resolved or marked done
+   - [ ] Infrastructure Alerts verified or resolved
+
+5. If `MEMORY.md` needs updates, edit `~/agent-workspace/MEMORY.md` directly
+
+6. If daily log is missing for today, create `~/agent-workspace/memory/YYYY-MM-DD.md`
+
+7. After any file changes, reindex again:
+
+```bash
+openclaw memory index --force
+```
+
+8. Verify clean state:
+   // turbo
+
+```bash
+openclaw memory status 2>&1 | grep -E "Dirty: yes|Indexed: 0/" && echo "ISSUES REMAIN" || echo "All clean ✅"
+```
 
 ---
 

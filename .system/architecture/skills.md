@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 35 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 36 skills (managed: domain categories + celavii + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -109,7 +109,7 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 ---
 
-## Domain Skills (74 Skills across 16 Categories)
+## Domain Skills (74 Skills across 17 Categories)
 
 | Domain                 | Count | Skills                                                                                                                                                                                                | Model   |
 | ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
@@ -124,6 +124,7 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis                                                       | Pro     |
 | **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                                                                        | Pro     |
 | **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                                                                                | GPT-5.2 |
+| **Blogger**            | 1     | blog-orchestrator (content production coupled with SEO — write, rewrite, analyze, research, outline, schema, repurpose, geo, chart)                                                                   | Pro     |
 | **Workspace Auditor**  | 1     | workspace-audit (MWF structural, registry, semantic integrity checks)                                                                                                                                 | Pro     |
 
 ---
@@ -155,6 +156,7 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | **generating-proposal-documents** | (root)   | Proposal formatting                            |
 | **deploy-and-publish**            | (root)   | Deployment pipeline skill                      |
 | **workspace-wizard**              | (root)   | Agent provisioning wizard (admin-only)         |
+| **blogger**                       | (root)   | Blog content production (SEO-coupled)          |
 | **workspace-audit**               | (root)   | MWF workspace integrity audits                 |
 | **workspace-reconcile**           | (root)   | Autonomous fix execution from audit reports    |
 | **project-scaffold**              | (root)   | New project directory + PROJECT.md scaffolding |
@@ -176,10 +178,10 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 35 managed + 65 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 36 managed + 65 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 35 managed + 65 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 35 managed + 65 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 36 managed + 65 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 36 managed + 65 bundled                       |
 
 ---
 

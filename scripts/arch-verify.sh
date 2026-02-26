@@ -159,6 +159,86 @@ else
   warn "VALUES.md not found (create it for single-source-of-truth)"
 fi
 
+# --- Memory Index Health ---
+echo "=== Memory Index Health ==="
+MEMORY_DIR="$HOME/.openclaw/memory"
+MEMORY_SOURCE="$HOME/agent-workspace/memory"
+
+if [ -d "$MEMORY_DIR" ]; then
+  # Check main.sqlite exists
+  if [ -f "$MEMORY_DIR/main.sqlite" ]; then
+    ok "main.sqlite exists"
+  else
+    fail "main.sqlite missing — run 'openclaw memory index --force'"
+  fi
+
+  # Count memory source files
+  if [ -d "$MEMORY_SOURCE" ]; then
+    SOURCE_COUNT=$(find "$MEMORY_SOURCE" -name "*.md" -maxdepth 1 2>/dev/null | wc -l | tr -d ' ')
+    # +1 for MEMORY.md at workspace root
+    if [ -f "$HOME/agent-workspace/MEMORY.md" ]; then
+      SOURCE_COUNT=$((SOURCE_COUNT + 1))
+    fi
+    echo "  Memory source files: $SOURCE_COUNT"
+  else
+    warn "Memory source dir not found ($MEMORY_SOURCE)"
+  fi
+
+  # Check for dirty indexes using openclaw memory status
+  DIRTY_COUNT=0
+  DIRTY_STORES=""
+  while IFS= read -r line; do
+    if echo "$line" | grep -q "^Memory Search"; then
+      CURRENT_STORE=$(echo "$line" | sed 's/Memory Search (\(.*\))/\1/')
+    fi
+    if echo "$line" | grep -q "Dirty: yes"; then
+      DIRTY_COUNT=$((DIRTY_COUNT + 1))
+      DIRTY_STORES="$DIRTY_STORES $CURRENT_STORE"
+    fi
+  done < <(openclaw memory status 2>&1)
+
+  if [ "$DIRTY_COUNT" -eq 0 ]; then
+    ok "All memory stores clean (Dirty: no)"
+  else
+    fail "$DIRTY_COUNT memory store(s) dirty:$DIRTY_STORES — run 'openclaw memory index --force'"
+  fi
+
+  # Check for empty indexes (0 indexed files)
+  EMPTY_COUNT=0
+  EMPTY_STORES=""
+  while IFS= read -r line; do
+    if echo "$line" | grep -q "^Memory Search"; then
+      CURRENT_STORE=$(echo "$line" | sed 's/Memory Search (\(.*\))/\1/')
+    fi
+    if echo "$line" | grep -q "Indexed: 0/"; then
+      EMPTY_COUNT=$((EMPTY_COUNT + 1))
+      EMPTY_STORES="$EMPTY_STORES $CURRENT_STORE"
+    fi
+  done < <(openclaw memory status 2>&1)
+
+  if [ "$EMPTY_COUNT" -eq 0 ]; then
+    ok "All memory stores have indexed files"
+  else
+    fail "$EMPTY_COUNT memory store(s) empty:$EMPTY_STORES — run 'openclaw memory index --force'"
+  fi
+
+  # Check MEMORY.md freshness (warn if > 7 days old)
+  if [ -f "$HOME/agent-workspace/MEMORY.md" ]; then
+    MEMORY_MTIME=$(stat -f %m "$HOME/agent-workspace/MEMORY.md" 2>/dev/null || echo "0")
+    NOW=$(date +%s)
+    AGE_DAYS=$(( (NOW - MEMORY_MTIME) / 86400 ))
+    if [ "$AGE_DAYS" -le 7 ]; then
+      ok "MEMORY.md updated within last 7 days ($AGE_DAYS days ago)"
+    else
+      warn "MEMORY.md is $AGE_DAYS days old — consider updating"
+    fi
+  else
+    warn "MEMORY.md not found at ~/agent-workspace/MEMORY.md"
+  fi
+else
+  warn "Memory directory not found ($MEMORY_DIR)"
+fi
+
 echo ""
 echo "════════════════════════════════════════════════════"
 if [ "$FAILURES" -eq 0 ]; then

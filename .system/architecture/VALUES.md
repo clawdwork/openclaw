@@ -20,25 +20,25 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 35    | skills.md (×4)                    | 2026-02-16    |
-| Skill count (managed SKILL.md files) | 93    | (nested inside domain categories) | 2026-02-18    |
+| Skill count (managed top-level dirs) | 36    | skills.md (×4)                    | 2026-02-25    |
+| Skill count (managed SKILL.md files) | 119   | (nested inside domain categories) | 2026-02-25    |
 | Skill count (bundled repo dirs)      | 65    | skills.md, README.md              | 2026-02-16    |
 | Skill count (celavii)                | 10    | skills.md                         | 2026-02-16    |
-| Skill count (custom)                 | 8     | skills.md                         | 2026-02-16    |
+| Skill count (custom)                 | 9     | skills.md                         | 2026-02-25    |
 
 ## Agent Counts
 
 | Key                                    | Value | Files That Reference It | Last Verified |
 | -------------------------------------- | ----- | ----------------------- | ------------- |
-| **Agent count (domain)**               | 12    | README.md, agents.md    | 2026-02-16    |
-| **Agent count (total in agents.list)** | 17    | agents.md               | 2026-02-16    |
+| **Agent count (domain)**               | 13    | README.md, agents.md    | 2026-02-25    |
+| **Agent count (total in agents.list)** | 18    | agents.md               | 2026-02-25    |
 
 ## Provider Distribution
 
 | Key                               | Value         | Files That Reference It     | Last Verified |
 | --------------------------------- | ------------- | --------------------------- | ------------- |
 | **Google Flash agents (primary)** | 8             | agents.md, README.md        | 2026-02-16    |
-| **Google Pro agents (primary)**   | 6             | agents.md, README.md        | 2026-02-16    |
+| **Google Pro agents (primary)**   | 7             | agents.md, README.md        | 2026-02-25    |
 | **OpenAI GPT-5.2 agents**         | 2             | agents.md (critic, planner) | 2026-02-12    |
 | **OpenAI 5.2-Codex agents**       | 1             | agents.md (prod-coder)      | 2026-02-12    |
 | **Anthropic agents (primary)**    | 0             | agents.md (fallback only)   | 2026-02-12    |
@@ -46,6 +46,16 @@ When updating architecture docs, check this file first. If a value here is stale
 | **Sonnet/Opus status**            | fallback only | agents.md, README.md        | 2026-02-12    |
 | **Global thinkingDefault**        | medium        | agents.md, openclaw.json    | 2026-02-12    |
 | **Global subagents.thinking**     | low           | agents.md, openclaw.json    | 2026-02-12    |
+
+## Memory
+
+| Key                          | Value | Files That Reference It | Last Verified |
+| ---------------------------- | ----- | ----------------------- | ------------- |
+| **Memory stores (total)**    | 17    | memory.md               | 2026-02-25    |
+| **Memory source files**      | 13    | memory.md               | 2026-02-25    |
+| **Embedding model**          | text-embedding-3-small | memory.md, README.md | 2026-02-25 |
+| **Memory source dir**        | ~/agent-workspace/memory/ | memory.md          | 2026-02-25    |
+| **Memory index dir**         | ~/.openclaw/memory/       | memory.md          | 2026-02-25    |
 
 ## Paths
 

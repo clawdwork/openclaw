@@ -13,7 +13,7 @@
 
 Commission a new **`media-content`** domain sub-agent that orchestrates AI-powered image, video, and audio generation. The agent uses knowledge skills to craft optimized prompts, execution skills to generate media, and a per-project workspace to accumulate brand assets, feedback, and style preferences over time.
 
-**Agent model**: `google/gemini-3-pro-preview` (primary), `google/gemini-3-flash-preview` (fallback / test baseline)  
+**Agent model**: `google/gemini-3.1-pro-preview` (primary), `google/gemini-3-flash-preview` (fallback / test baseline)  
 **Image execution**: Gemini 3 Pro via `nano-banana-pro` (exists)  
 **Video execution**: Veo 3, Sora 2 (future — Phase 3)  
 **Audio execution**: MiniMax via Replicate, ElevenLabs (future — Phase 3)
@@ -25,7 +25,7 @@ Commission a new **`media-content`** domain sub-agent that orchestrates AI-power
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                     MEDIA CONTENT AGENT                           │
-│               Model: google/gemini-3-pro-preview (or Flash)        │
+│               Model: google/gemini-3.1-pro-preview (or Flash)        │
 │               ID: media-content                                   │
 │               Identity: 🎬 Media                                  │
 │                                                                    │
@@ -79,7 +79,7 @@ Flash (coordinator) receives user message
   "id": "media-content",
   "name": "Media Content",
   "model": {
-    "primary": "google/gemini-3-pro-preview",
+    "primary": "google/gemini-3.1-pro-preview",
     "fallbacks": ["google/gemini-3-flash-preview"]
   },
   "identity": { "name": "Media", "emoji": "🎬" },
@@ -112,7 +112,7 @@ Layer 1: TOOLS.md
   → Backward compat: ~/agent-workspace/projects/ symlinks to ~/org/shared/projects/
 
 Layer 2: agents.list config (above)
-  → Model: google/gemini-3-pro-preview (primary), Flash (fallback)
+  → Model: google/gemini-3.1-pro-preview (primary), Flash (fallback)
   → Skills: 5 knowledge + 2 execution (explicit names, no globs)
   → Identity: 🎬 Media
 
@@ -522,7 +522,7 @@ Before committing to Pro costs, test whether Flash + detailed SKILL.md documenta
 ```json
 {
   "model": {
-    "primary": "google/gemini-3-pro-preview",
+    "primary": "google/gemini-3.1-pro-preview",
     "fallbacks": ["google/gemini-3-flash-preview"]
   }
 }
