@@ -21,7 +21,7 @@ When updating architecture docs, check this file first. If a value here is stale
 | Key                                  | Value | Files That Reference It           | Last Verified |
 | ------------------------------------ | ----- | --------------------------------- | ------------- |
 | Skill count (managed top-level dirs) | 36    | skills.md (×4)                    | 2026-02-25    |
-| Skill count (managed SKILL.md files) | 119   | (nested inside domain categories) | 2026-02-25    |
+| Skill count (managed SKILL.md files) | 120   | (nested inside domain categories) | 2026-02-26    |
 | Skill count (bundled repo dirs)      | 65    | skills.md, README.md              | 2026-02-16    |
 | Skill count (celavii)                | 10    | skills.md                         | 2026-02-16    |
 | Skill count (custom)                 | 9     | skills.md                         | 2026-02-25    |
@@ -49,13 +49,13 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## Memory
 
-| Key                          | Value | Files That Reference It | Last Verified |
-| ---------------------------- | ----- | ----------------------- | ------------- |
-| **Memory stores (total)**    | 17    | memory.md               | 2026-02-25    |
-| **Memory source files**      | 13    | memory.md               | 2026-02-25    |
-| **Embedding model**          | text-embedding-3-small | memory.md, README.md | 2026-02-25 |
-| **Memory source dir**        | ~/agent-workspace/memory/ | memory.md          | 2026-02-25    |
-| **Memory index dir**         | ~/.openclaw/memory/       | memory.md          | 2026-02-25    |
+| Key                       | Value                     | Files That Reference It | Last Verified |
+| ------------------------- | ------------------------- | ----------------------- | ------------- |
+| **Memory stores (total)** | 17                        | memory.md               | 2026-02-25    |
+| **Memory source files**   | 13                        | memory.md               | 2026-02-25    |
+| **Embedding model**       | text-embedding-3-small    | memory.md, README.md    | 2026-02-25    |
+| **Memory source dir**     | ~/agent-workspace/memory/ | memory.md               | 2026-02-25    |
+| **Memory index dir**      | ~/.openclaw/memory/       | memory.md               | 2026-02-25    |
 
 ## Paths
 
