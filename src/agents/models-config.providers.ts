@@ -320,13 +320,26 @@ function resolveApiKeyFromProfiles(params: {
 }
 
 export function normalizeGoogleModelId(id: string): string {
-  if (id === "gemini-3-pro") {
+  // Fix common typo: dots instead of dashes (e.g., "gemini.31.pro" → "gemini-3.1-pro")
+  // Pattern: gemini.X.Y or gemini.XY where X/Y are digits
+  let normalized = id.replace(/^gemini\.(\d)\.?(\d)?\.?/i, (_, d1, d2) => {
+    return d2 ? `gemini-${d1}.${d2}-` : `gemini-${d1}-`;
+  });
+  // Also fix trailing dots before keywords (e.g., ".pro." → "-pro-")
+  normalized = normalized.replace(/\.pro\./g, "-pro-").replace(/\.pro$/g, "-pro");
+  normalized = normalized.replace(/\.flash\./g, "-flash-").replace(/\.flash$/g, "-flash");
+  normalized = normalized.replace(/\.preview$/g, "-preview");
+
+  if (normalized === "gemini-3.1-pro") {
+    return "gemini-3.1-pro-preview";
+  }
+  if (normalized === "gemini-3-pro") {
     return "gemini-3-pro-preview";
   }
-  if (id === "gemini-3-flash") {
+  if (normalized === "gemini-3-flash") {
     return "gemini-3-flash-preview";
   }
-  return id;
+  return normalized;
 }
 
 function normalizeGoogleProvider(provider: ProviderConfig): ProviderConfig {

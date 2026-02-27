@@ -14,6 +14,9 @@ const ANTHROPIC_OPUS_TEMPLATE_MODEL_IDS = ["claude-opus-4-5", "claude-opus-4.5"]
 const ZAI_GLM5_MODEL_ID = "glm-5";
 const ZAI_GLM5_TEMPLATE_MODEL_IDS = ["glm-4.7"] as const;
 
+const GOOGLE_GEMINI_31_PRO_MODEL_ID = "gemini-3.1-pro-preview";
+const GOOGLE_GEMINI_31_PRO_TEMPLATE_MODEL_IDS = ["gemini-3-pro-preview", "gemini-2.5-pro"] as const;
+
 const ANTIGRAVITY_OPUS_46_MODEL_ID = "claude-opus-4-6";
 const ANTIGRAVITY_OPUS_46_DOT_MODEL_ID = "claude-opus-4.6";
 const ANTIGRAVITY_OPUS_TEMPLATE_MODEL_IDS = ["claude-opus-4-5", "claude-opus-4.5"] as const;
@@ -181,6 +184,52 @@ function resolveZaiGlm5ForwardCompatModel(
   } as Model<Api>);
 }
 
+function resolveGoogleGemini31ProForwardCompatModel(
+  provider: string,
+  modelId: string,
+  modelRegistry: ModelRegistry,
+): Model<Api> | undefined {
+  const normalizedProvider = normalizeProviderId(provider);
+  if (normalizedProvider !== "google") {
+    return undefined;
+  }
+
+  const trimmedModelId = modelId.trim();
+  const lower = trimmedModelId.toLowerCase();
+  // Match gemini-3.1-pro-preview and variants like gemini-3.1-pro-preview-customtools
+  const isGemini31Pro =
+    lower === GOOGLE_GEMINI_31_PRO_MODEL_ID ||
+    lower.startsWith(`${GOOGLE_GEMINI_31_PRO_MODEL_ID}-`);
+  if (!isGemini31Pro) {
+    return undefined;
+  }
+
+  // Try to clone from existing templates
+  const cloned = cloneFirstTemplateModel({
+    normalizedProvider,
+    trimmedModelId,
+    templateIds: [...GOOGLE_GEMINI_31_PRO_TEMPLATE_MODEL_IDS],
+    modelRegistry,
+    patch: { reasoning: true },
+  });
+  if (cloned) {
+    return cloned;
+  }
+
+  // Fallback: create a new model definition with known Gemini 3.1 Pro specs
+  return normalizeModelCompat({
+    id: trimmedModelId,
+    name: trimmedModelId,
+    api: "google-generative-ai",
+    provider: normalizedProvider,
+    reasoning: true,
+    input: ["text", "image"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 1048576, // 1M tokens
+    maxTokens: 65536,
+  } as Model<Api>);
+}
+
 function resolveAntigravityOpus46ForwardCompatModel(
   provider: string,
   modelId: string,
@@ -244,6 +293,7 @@ export function resolveForwardCompatModel(
     resolveOpenAICodexGpt53FallbackModel(provider, modelId, modelRegistry) ??
     resolveAnthropicOpus46ForwardCompatModel(provider, modelId, modelRegistry) ??
     resolveZaiGlm5ForwardCompatModel(provider, modelId, modelRegistry) ??
+    resolveGoogleGemini31ProForwardCompatModel(provider, modelId, modelRegistry) ??
     resolveAntigravityOpus46ForwardCompatModel(provider, modelId, modelRegistry)
   );
 }
