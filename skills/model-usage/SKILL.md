@@ -14,7 +14,7 @@ metadata:
             {
               "id": "brew-cask",
               "kind": "brew",
-              "cask": "steipete/tap/codexbar",
+              "formula": "steipete/tap/codexbar",
               "bins": ["codexbar"],
               "label": "Install CodexBar (brew cask)",
             },

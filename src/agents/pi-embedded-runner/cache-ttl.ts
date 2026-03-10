@@ -8,11 +8,31 @@ export type CacheTtlEntryData = {
   modelId?: string;
 };
 
-export function isCacheTtlEligibleProvider(_provider: string, _modelId: string): boolean {
-  // Context pruning (softTrim, hardClear) is provider-agnostic.
-  // Originally gated to Anthropic only, but the pruning logic benefits all
-  // providers by reducing context size and token usage. (#4197, #5327)
-  return true;
+const CACHE_TTL_NATIVE_PROVIDERS = new Set(["anthropic", "moonshot", "zai"]);
+const OPENROUTER_CACHE_TTL_MODEL_PREFIXES = [
+  "anthropic/",
+  "moonshot/",
+  "moonshotai/",
+  "zai/",
+] as const;
+
+function isOpenRouterCacheTtlModel(modelId: string): boolean {
+  return OPENROUTER_CACHE_TTL_MODEL_PREFIXES.some((prefix) => modelId.startsWith(prefix));
+}
+
+export function isCacheTtlEligibleProvider(provider: string, modelId: string): boolean {
+  const normalizedProvider = provider.toLowerCase();
+  const normalizedModelId = modelId.toLowerCase();
+  if (CACHE_TTL_NATIVE_PROVIDERS.has(normalizedProvider)) {
+    return true;
+  }
+  if (normalizedProvider === "openrouter" && isOpenRouterCacheTtlModel(normalizedModelId)) {
+    return true;
+  }
+  if (normalizedProvider === "kilocode" && normalizedModelId.startsWith("anthropic/")) {
+    return true;
+  }
+  return false;
 }
 
 export function readLastCacheTtlTimestamp(sessionManager: unknown): number | null {
