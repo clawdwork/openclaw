@@ -7,6 +7,8 @@ export type CronJobBase<TSchedule, TSessionTarget, TWakeMode, TPayload, TDeliver
     description?: string;
     enabled: boolean;
     deleteAfterRun?: boolean;
+    /** Auto-disable job after this many successful runs. */
+    maxRuns?: number;
     createdAtMs: number;
     updatedAtMs: number;
     schedule: TSchedule;

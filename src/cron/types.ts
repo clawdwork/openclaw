@@ -110,6 +110,8 @@ export type CronJobState = {
   nextRunAtMs?: number;
   runningAtMs?: number;
   lastRunAtMs?: number;
+  /** Number of successful runs (for maxRuns auto-disable). */
+  runCount?: number;
   /** Preferred execution outcome field. */
   lastRunStatus?: CronRunStatus;
   /** Back-compat alias for lastRunStatus. */
