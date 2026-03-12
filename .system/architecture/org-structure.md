@@ -77,7 +77,7 @@ Three-digit padding supports up to 999 per role. `admin-001` = primary admin (yo
         └── {agent-id}.env           ← Agent-specific overrides
 ```
 
-Skills live at `~/.openclaw/skills/` → symlink to `~/agent-workspace/skills/` (all agents inherit).
+Skills live at `~/.openclaw/skills/` → symlink to `~/dev/workspace/skills/` (all agents inherit).
 
 ---
 
@@ -262,7 +262,7 @@ Docker `binds` control exactly which folders each agent sees. The agent literall
 │   └── sherpa-onnx-tts/                  ← Local TTS runtime + models
 │       ├── runtime/                      ← sherpa-onnx binaries
 │       └── models/                       ← Piper voice models (ONNX)
-├── skills/                               ← SYMLINK → ~/agent-workspace/skills/ (34 managed skills, all agents inherit)
+├── skills/                               ← SYMLINK → ~/dev/workspace/skills/ (34 managed skills, all agents inherit)
 ├── agents/                               ← Per-agent state (sessions, auth, QMD)
 │   ├── admin-001/
 │   │   ├── sessions/
@@ -323,23 +323,23 @@ Docker `binds` control exactly which folders each agent sees. The agent literall
 ## Migration Path (Current → Org Structure)
 
 ```
-~/agent-workspace/SOUL.md          → ~/org/workspaces/admin-001/SOUL.md
-~/agent-workspace/USER.md          → ~/org/workspaces/admin-001/USER.md
-~/agent-workspace/IDENTITY.md      → ~/org/workspaces/admin-001/IDENTITY.md
-~/agent-workspace/HEARTBEAT.md     → ~/org/workspaces/admin-001/HEARTBEAT.md
-~/agent-workspace/MEMORY.md        → ~/org/workspaces/admin-001/MEMORY.md
-~/agent-workspace/AGENTS.md        → ~/org/workspaces/admin-001/AGENTS.md
-~/agent-workspace/TOOLS.md         → ~/org/workspaces/admin-001/TOOLS.md
-~/agent-workspace/memory/          → ~/org/workspaces/admin-001/memory/
-~/agent-workspace/scripts/         → ~/org/workspaces/admin-001/scripts/
-~/agent-workspace/projects/        → ~/org/shared/projects/
-~/agent-workspace/knowledge/       → ~/org/shared/knowledge/
-~/agent-workspace/skills/          → ~/.openclaw/skills/    ✅ DONE (symlink created)
+~/dev/workspace/SOUL.md          → ~/org/workspaces/admin-001/SOUL.md
+~/dev/workspace/USER.md          → ~/org/workspaces/admin-001/USER.md
+~/dev/workspace/IDENTITY.md      → ~/org/workspaces/admin-001/IDENTITY.md
+~/dev/workspace/HEARTBEAT.md     → ~/org/workspaces/admin-001/HEARTBEAT.md
+~/dev/workspace/MEMORY.md        → ~/org/workspaces/admin-001/MEMORY.md
+~/dev/workspace/AGENTS.md        → ~/org/workspaces/admin-001/AGENTS.md
+~/dev/workspace/TOOLS.md         → ~/org/workspaces/admin-001/TOOLS.md
+~/dev/workspace/memory/          → ~/org/workspaces/admin-001/memory/
+~/dev/workspace/scripts/         → ~/org/workspaces/admin-001/scripts/
+~/dev/workspace/projects/        → ~/org/shared/projects/
+~/dev/workspace/knowledge/       → ~/org/shared/knowledge/
+~/dev/workspace/skills/          → ~/.openclaw/skills/    ✅ DONE (symlink created)
 
 Post-migration symlinks (backward compatibility):
-  ~/agent-workspace/projects  → ~/org/shared/projects
-  ~/agent-workspace/knowledge → ~/org/shared/knowledge
-  ~/.openclaw/skills          → ~/agent-workspace/skills  ✅ DONE (reverse symlink — admin workspace is canonical source)
+  ~/dev/workspace/projects  → ~/org/shared/projects
+  ~/dev/workspace/knowledge → ~/org/shared/knowledge
+  ~/.openclaw/skills          → ~/dev/workspace/skills  ✅ DONE (reverse symlink — admin workspace is canonical source)
 ```
 
 ---

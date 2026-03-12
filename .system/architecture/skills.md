@@ -7,8 +7,8 @@
 ## Skill Loading Locations
 
 ```
-~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 38 skills (managed: domain categories + celavii + social + custom)
+~/.openclaw/skills/           ← SYMLINK → ~/dev/workspace/skills/ (global managed dir)
+~/dev/workspace/skills/     ← 38 skills (managed: domain categories + celavii + social + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -21,17 +21,17 @@ All agents read skills from `~/.openclaw/skills/` (managed dir), which symlinks 
 Workspace skills can also be symlinked into the **OpenClaw repo's** `skills/` directory to appear as bundled skills. This enables gateway-level discovery (shows in `openclaw skills list`) and slash command registration via `commands/` subdirectories.
 
 ```
-~/agent-workspace/skills/{name}/    →  ~/Documents/CascadeProjects/openclaw/skills/{name}  (symlink)
-~/agent-workspace/skills/seo/seo-*/ →  ~/Documents/CascadeProjects/openclaw/skills/seo-*    (symlink)
+~/dev/workspace/skills/{name}/    →  ~/dev/openclaw/skills/{name}  (relative symlink)
+~/dev/workspace/skills/seo/seo-*/ →  ~/dev/openclaw/skills/seo-*    (relative symlink)
 ```
 
-**Setup script:** `~/agent-workspace/scripts/register-workspace-skills.sh`
-**Documentation:** `~/agent-workspace/knowledge/system-architecture/SKILL-REGISTRATION.md`
+**Setup script:** `~/dev/workspace/scripts/register-workspace-skills.sh`
+**Documentation:** `~/dev/workspace/knowledge/system-architecture/SKILL-REGISTRATION.md`
 
-**When to use:** After creating a new skill in `agent-workspace/skills/`, run:
+**When to use:** After creating a new skill in `~/dev/workspace/skills/`, run:
 
 ```bash
-~/agent-workspace/scripts/register-workspace-skills.sh
+~/dev/workspace/scripts/register-workspace-skills.sh
 openclaw gateway restart
 openclaw skills list 2>&1 | grep {skill-name}
 ```
@@ -41,7 +41,7 @@ openclaw skills list 2>&1 | grep {skill-name}
 - 15 SEO skills (`seo-orchestrator`, `seo-product-page`, etc.)
 - 11 workspace skills (`brand-identity`, `quality-critic`, `deploy-and-publish`, etc.)
 
-**Rule:** Never edit files in `openclaw/skills/` directly — always edit in `agent-workspace/skills/`. The symlinks ensure changes propagate instantly.
+**Rule:** Never edit files in `openclaw/skills/` directly — always edit in `~/dev/workspace/skills/`. The symlinks ensure changes propagate instantly.
 
 ### Loading Precedence
 
@@ -79,7 +79,7 @@ The `.agents/skills/` directories (added in v2026.2.12) enable skill overrides w
 managed: ~/.openclaw/skills/quality-critic/SKILL.md        ← default rubric
 personal: ~/.agents/skills/quality-critic/SKILL.md         ← admin tweaks (wins over managed)
 project: ~/projects/max-kick/.agents/skills/quality-critic/ ← client-specific (wins over personal)
-workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspace (wins over all)
+workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace (wins over all)
 ```
 
 ---

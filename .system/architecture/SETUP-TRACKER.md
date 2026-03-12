@@ -8,12 +8,12 @@
 
 ## Phase 1: Security Assessment ✅
 
-| Task                | Status  | Notes                                                |
-| ------------------- | ------- | ---------------------------------------------------- |
-| Clone repository    | ✅ Done | `/Users/operator/Documents/CascadeProjects/openclaw` |
-| Security research   | ✅ Done | Web search + docs review                             |
-| Security assessment | ✅ Done | `.security/security_assesment.md`                    |
-| Q&A addendum        | ✅ Done | Loopback, Tailscale, tools, channels                 |
+| Task                | Status  | Notes                                |
+| ------------------- | ------- | ------------------------------------ |
+| Clone repository    | ✅ Done | `~/dev/openclaw`                     |
+| Security research   | ✅ Done | Web search + docs review             |
+| Security assessment | ✅ Done | `.security/security_assesment.md`    |
+| Q&A addendum        | ✅ Done | Loopback, Tailscale, tools, channels |
 
 ---
 
@@ -34,7 +34,7 @@
 | ----------------------- | ------- | --------------------------- | -------------------------- |
 | Install dependencies    | ✅ Done | `pnpm install`              | 1m 6.8s                    |
 | Build project           | ✅ Done | `pnpm build`                | 4.1s, 157 files            |
-| Create config directory | ✅ Done | `mkdir -p ~/.openclaw`      | + ~/agent-workspace        |
+| Create config directory | ✅ Done | `mkdir -p ~/.openclaw`      | + ~/dev/workspace          |
 | Generate gateway token  | ✅ Done | `openssl rand -base64 48`   | Added to ~/.zshrc          |
 | Create config file      | ✅ Done | `~/.openclaw/openclaw.json` | Secure template            |
 | Set file permissions    | ✅ Done | `chmod 700/600`             | ~/.openclaw=700, .json=600 |
@@ -121,7 +121,7 @@ export BRAVE_API_KEY=""  # Get from brave.com/search/api
 ### Heartbeat
 
 - Default interval: 30 minutes
-- Reads `~/agent-workspace/HEARTBEAT.md`
+- Reads `~/dev/workspace/HEARTBEAT.md`
 - Skips if file empty (saves API costs)
 - Config: `agents.defaults.heartbeat`
 
@@ -168,7 +168,7 @@ export BRAVE_API_KEY=""  # Get from brave.com/search/api
 | 2026-02-04 | Installed pnpm                                 | ✅ v10.23.0                                                                                     |
 | 2026-02-04 | pnpm install                                   | ✅ 1m 6.8s                                                                                      |
 | 2026-02-04 | pnpm build                                     | ✅ 4.1s, 157 files                                                                              |
-| 2026-02-04 | Created ~/.openclaw + ~/agent-workspace        | ✅                                                                                              |
+| 2026-02-04 | Created ~/.openclaw + ~/dev/workspace          | ✅                                                                                              |
 | 2026-02-04 | Generated gateway token                        | ✅ Added to ~/.zshrc                                                                            |
 | 2026-02-04 | Created openclaw.json                          | ✅ Secure config                                                                                |
 | 2026-02-04 | Set permissions                                | ✅ 700/600                                                                                      |

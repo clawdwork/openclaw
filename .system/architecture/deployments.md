@@ -8,11 +8,11 @@
 
 ### Core Repositories
 
-| Repository                       | Purpose                                     | Local Path                                           | Remotes                                                       |
-| -------------------------------- | ------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------- |
-| **openclaw/openclaw**            | Official OpenClaw binary (upstream)         | —                                                    | Official source                                               |
-| **clawdwork/openclaw**           | OpenClaw binary fork (your customizations)  | `/Users/operator/Documents/CascadeProjects/openclaw` | origin: `clawdwork/openclaw`<br>upstream: `openclaw/openclaw` |
-| **clawdwork/openclaw-workspace** | Agent workspace (skills, projects, configs) | `~/agent-workspace`                                  | origin: `clawdwork/openclaw-workspace`                        |
+| Repository                       | Purpose                                     | Local Path        | Remotes                                                       |
+| -------------------------------- | ------------------------------------------- | ----------------- | ------------------------------------------------------------- |
+| **openclaw/openclaw**            | Official OpenClaw binary (upstream)         | —                 | Official source                                               |
+| **clawdwork/openclaw**           | OpenClaw binary fork (your customizations)  | `~/dev/openclaw`  | origin: `clawdwork/openclaw`<br>upstream: `openclaw/openclaw` |
+| **clawdwork/openclaw-workspace** | Agent workspace (skills, projects, configs) | `~/dev/workspace` | origin: `clawdwork/openclaw-workspace`                        |
 
 **Separation**: OpenClaw binary source and workspace content are **separate repositories**. Pulling from `openclaw/openclaw` updates only the binary source code, not workspace files.
 
@@ -20,11 +20,11 @@
 
 ```bash
 # Update OpenClaw binary from upstream
-cd /Users/operator/Documents/CascadeProjects/openclaw
+cd ~/dev/openclaw
 git pull upstream main
 
 # Update workspace content
-cd ~/agent-workspace
+cd ~/dev/workspace
 git pull origin main
 ```
 
@@ -75,14 +75,14 @@ git pull origin main
 
 ## Active Deployments (Vercel)
 
-| Site                         | Vercel URL                        | GitHub Repo                                 | Type        |
-| ---------------------------- | --------------------------------- | ------------------------------------------- | ----------- |
-| **Intel Hub**                | `intel-hub.vercel.app`            | `clawdwork/intel-hub`                       | Static HTML |
-| **Celavii SEO Proposal**     | `seo-proposal.vercel.app`         | `clawdwork/client-celavii-seo-proposal`     | React/Vite  |
-| **MaxKick SEO Proposal**     | `maxkick-seo-proposal.vercel.app` | `clawdwork/client-maxkick-seo-proposal`     | React/Vite  |
-| **Kick Sheetz Presentation** | `presentations-weld.vercel.app`   | `clawdwork/client-kick-sheetz-presentation` | Static HTML |
+| Site                          | Vercel URL                        | GitHub Repo                                 | Type        |
+| ----------------------------- | --------------------------------- | ------------------------------------------- | ----------- |
+| **Intel Hub**                 | `intel-hub.vercel.app`            | `clawdwork/intel-hub`                       | Static HTML |
+| **Celavii SEO Proposal**      | `seo-proposal.vercel.app`         | `clawdwork/client-celavii-seo-proposal`     | React/Vite  |
+| **MaxKick SEO Proposal**      | `maxkick-seo-proposal.vercel.app` | `clawdwork/client-maxkick-seo-proposal`     | React/Vite  |
+| **Kick Sheetz Presentation**  | `presentations-weld.vercel.app`   | `clawdwork/client-kick-sheetz-presentation` | Static HTML |
 | **Sheetz Attack Plan Report** | `deliverables-three.vercel.app`   | `clawdwork/sheetz-attack-plan-report`       | Static HTML |
-| **Sheetz Proposal (V9)**     | `sheetz-proposal.vercel.app`      | CLI deploy (no git repo)                    | Next.js     |
+| **Sheetz Proposal (V9)**      | `sheetz-proposal.vercel.app`      | CLI deploy (no git repo)                    | Next.js     |
 
 ### Legacy Netlify Deployments (Superseded — do not redeploy)
 

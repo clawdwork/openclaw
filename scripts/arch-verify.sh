@@ -162,7 +162,7 @@ fi
 # --- Memory Index Health ---
 echo "=== Memory Index Health ==="
 MEMORY_DIR="$HOME/.openclaw/memory"
-MEMORY_SOURCE="$HOME/agent-workspace/memory"
+MEMORY_SOURCE="$HOME/dev/workspace/memory"
 
 if [ -d "$MEMORY_DIR" ]; then
   # Check main.sqlite exists
@@ -176,7 +176,7 @@ if [ -d "$MEMORY_DIR" ]; then
   if [ -d "$MEMORY_SOURCE" ]; then
     SOURCE_COUNT=$(find "$MEMORY_SOURCE" -name "*.md" -maxdepth 1 2>/dev/null | wc -l | tr -d ' ')
     # +1 for MEMORY.md at workspace root
-    if [ -f "$HOME/agent-workspace/MEMORY.md" ]; then
+    if [ -f "$HOME/dev/workspace/MEMORY.md" ]; then
       SOURCE_COUNT=$((SOURCE_COUNT + 1))
     fi
     echo "  Memory source files: $SOURCE_COUNT"
@@ -223,8 +223,8 @@ if [ -d "$MEMORY_DIR" ]; then
   fi
 
   # Check MEMORY.md freshness (warn if > 7 days old)
-  if [ -f "$HOME/agent-workspace/MEMORY.md" ]; then
-    MEMORY_MTIME=$(stat -f %m "$HOME/agent-workspace/MEMORY.md" 2>/dev/null || echo "0")
+  if [ -f "$HOME/dev/workspace/MEMORY.md" ]; then
+    MEMORY_MTIME=$(stat -f %m "$HOME/dev/workspace/MEMORY.md" 2>/dev/null || echo "0")
     NOW=$(date +%s)
     AGE_DAYS=$(( (NOW - MEMORY_MTIME) / 86400 ))
     if [ "$AGE_DAYS" -le 7 ]; then
@@ -233,7 +233,7 @@ if [ -d "$MEMORY_DIR" ]; then
       warn "MEMORY.md is $AGE_DAYS days old — consider updating"
     fi
   else
-    warn "MEMORY.md not found at ~/agent-workspace/MEMORY.md"
+    warn "MEMORY.md not found at ~/dev/workspace/MEMORY.md"
   fi
 else
   warn "Memory directory not found ($MEMORY_DIR)"

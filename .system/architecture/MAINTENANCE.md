@@ -6,12 +6,12 @@
 
 ## Pain Points (observed 2026-02-09)
 
-| Issue                                                                              | Root Cause                                                                       | Files Affected                          |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------- |
-| Gateway port was 49152 in docs, actual is 19400                                    | LaunchAgent plist overrides config                                               | README.md, channels.md, skills.md       |
-| Skill count was 50, actual is 60                                                   | No automated count                                                               | README.md, skills.md (4 places)         |
-| New skills created in repo `skills/` but gateway reads `~/agent-workspace/skills/` | Unclear install path                                                             | skills.md (documented but easy to miss) |
-| API key location unclear                                                           | Multiple env mechanisms (`.env.example`, `~/.openclaw/.env`, config `env` block) | security.md, README.md                  |
+| Issue                                                                            | Root Cause                                                                       | Files Affected                          |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------- |
+| Gateway port was 49152 in docs, actual is 19400                                  | LaunchAgent plist overrides config                                               | README.md, channels.md, skills.md       |
+| Skill count was 50, actual is 60                                                 | No automated count                                                               | README.md, skills.md (4 places)         |
+| New skills created in repo `skills/` but gateway reads `~/dev/workspace/skills/` | Unclear install path                                                             | skills.md (documented but easy to miss) |
+| API key location unclear                                                         | Multiple env mechanisms (`.env.example`, `~/.openclaw/.env`, config `env` block) | security.md, README.md                  |
 
 ---
 
@@ -84,19 +84,19 @@ Create `.system/architecture/VALUES.md` as the single source of truth for freque
 ```markdown
 # System Values (Single Source of Truth)
 
-| Key                       | Value                                           | Last Verified |
-| ------------------------- | ----------------------------------------------- | ------------- |
-| **Gateway port**          | 19400                                           | 2026-02-09    |
-| **Skill count (managed)** | 60                                              | 2026-02-09    |
-| **Skill count (domain)**  | 50                                              | 2026-02-07    |
-| **Skill count (celavii)** | 7                                               | 2026-02-09    |
-| **Skill count (custom)**  | 5                                               | 2026-02-07    |
-| **Agent count**           | 13                                              | 2026-02-07    |
-| **Gateway version**       | 2026.2.3                                        | 2026-02-07    |
-| **WebSocket URL**         | ws://127.0.0.1:19400                            | 2026-02-09    |
-| **WebChat URL**           | http://127.0.0.1:19400                          | 2026-02-09    |
-| **Managed skills dir**    | ~/.openclaw/skills/ → ~/agent-workspace/skills/ | 2026-02-09    |
-| **API keys location**     | ~/.openclaw/.env                                | 2026-02-09    |
+| Key                       | Value                                         | Last Verified |
+| ------------------------- | --------------------------------------------- | ------------- |
+| **Gateway port**          | 19400                                         | 2026-02-09    |
+| **Skill count (managed)** | 60                                            | 2026-02-09    |
+| **Skill count (domain)**  | 50                                            | 2026-02-07    |
+| **Skill count (celavii)** | 7                                             | 2026-02-09    |
+| **Skill count (custom)**  | 5                                             | 2026-02-07    |
+| **Agent count**           | 13                                            | 2026-02-07    |
+| **Gateway version**       | 2026.2.3                                      | 2026-02-07    |
+| **WebSocket URL**         | ws://127.0.0.1:19400                          | 2026-02-09    |
+| **WebChat URL**           | http://127.0.0.1:19400                        | 2026-02-09    |
+| **Managed skills dir**    | ~/.openclaw/skills/ → ~/dev/workspace/skills/ | 2026-02-09    |
+| **API keys location**     | ~/.openclaw/.env                              | 2026-02-09    |
 ```
 
 This won't prevent duplication entirely, but it gives a single place to check/update and makes the `/architecture` workflow faster (update VALUES.md first, then grep for stale references).
@@ -109,7 +109,7 @@ This won't prevent duplication entirely, but it gives a single place to check/up
 ### Checklist (all steps required)
 
 1. Create `skills/{name}/SKILL.md` in the repo (source of truth)
-2. Copy to `~/agent-workspace/skills/{name}/` (runtime location)
+2. Copy to `~/dev/workspace/skills/{name}/` (runtime location)
 3. Verify visible via `ls ~/.openclaw/skills/{name}/`
 4. Update `skills.md` → add to appropriate section
 5. Update `skills.md` → increment skill count (all 4 locations)

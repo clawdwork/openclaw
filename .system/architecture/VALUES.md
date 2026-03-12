@@ -50,19 +50,19 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## Memory
 
-| Key                       | Value                     | Files That Reference It | Last Verified |
-| ------------------------- | ------------------------- | ----------------------- | ------------- |
-| **Memory stores (total)** | 17                        | memory.md               | 2026-02-25    |
-| **Memory source files**   | 13                        | memory.md               | 2026-02-25    |
-| **Embedding model**       | text-embedding-3-small    | memory.md, README.md    | 2026-02-25    |
-| **Memory source dir**     | ~/agent-workspace/memory/ | memory.md               | 2026-02-25    |
-| **Memory index dir**      | ~/.openclaw/memory/       | memory.md               | 2026-02-25    |
+| Key                       | Value                   | Files That Reference It | Last Verified |
+| ------------------------- | ----------------------- | ----------------------- | ------------- |
+| **Memory stores (total)** | 17                      | memory.md               | 2026-02-25    |
+| **Memory source files**   | 13                      | memory.md               | 2026-02-25    |
+| **Embedding model**       | text-embedding-3-small  | memory.md, README.md    | 2026-02-25    |
+| **Memory source dir**     | ~/dev/workspace/memory/ | memory.md               | 2026-02-25    |
+| **Memory index dir**      | ~/.openclaw/memory/     | memory.md               | 2026-02-25    |
 
 ## Paths
 
 | Key                    | Value                                            | Files That Reference It | Last Verified |
 | ---------------------- | ------------------------------------------------ | ----------------------- | ------------- |
-| **Managed skills dir** | ~/.openclaw/skills/ → ~/agent-workspace/skills/  | skills.md               | 2026-02-09    |
+| **Managed skills dir** | ~/.openclaw/skills/ → ~/dev/workspace/skills/    | skills.md               | 2026-02-09    |
 | **API keys location**  | ~/.openclaw/.env                                 | security.md, README.md  | 2026-02-09    |
 | **Config file**        | ~/.openclaw/openclaw.json                        | security.md, README.md  | 2026-02-09    |
 | **LaunchAgent plist**  | ~/Library/LaunchAgents/ai.openclaw.gateway.plist | (new)                   | 2026-02-09    |

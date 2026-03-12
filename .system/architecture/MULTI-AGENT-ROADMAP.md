@@ -81,23 +81,23 @@ Deploy 2-3 agents with distinct personalities and channels, sharing workspace.
 {
   agents: {
     defaults: {
-      workspace: "~/agent-workspace",
+      workspace: "~/dev/workspace",
     },
     profiles: {
       skippy: {
-        soul: "~/agent-workspace/souls/SKIPPY.md",
+        soul: "~/dev/workspace/souls/SKIPPY.md",
         channels: {
           telegram: { botToken: "TOKEN_A", allowFrom: ["ADMIN_ID"] },
         },
       },
       max: {
-        soul: "~/agent-workspace/souls/MAX.md",
+        soul: "~/dev/workspace/souls/MAX.md",
         channels: {
           telegram: { botToken: "TOKEN_B", allowFrom: ["ADMIN_ID", "DEV_ID"] },
         },
       },
       aria: {
-        soul: "~/agent-workspace/souls/ARIA.md",
+        soul: "~/dev/workspace/souls/ARIA.md",
         channels: {
           slack: { token: "SLACK_TOKEN", channels: ["sales"] },
         },
@@ -110,7 +110,7 @@ Deploy 2-3 agents with distinct personalities and channels, sharing workspace.
 ### Workspace Layout
 
 ```
-~/agent-workspace/
+~/dev/workspace/
 ├── souls/                    # Agent personalities
 │   ├── SKIPPY.md            # Admin/personal assistant
 │   ├── MAX.md               # Developer
@@ -184,7 +184,7 @@ agents: {
   defaults: {
     memorySearch: {
       extraPaths: [
-        "~/agent-workspace/shared/knowledge-base"
+        "~/dev/workspace/shared/knowledge-base"
       ]
     }
   }
