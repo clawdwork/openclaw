@@ -18,13 +18,14 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## Skill Counts
 
-| Key                                  | Value | Files That Reference It           | Last Verified |
-| ------------------------------------ | ----- | --------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 36    | skills.md (×4)                    | 2026-02-25    |
-| Skill count (managed SKILL.md files) | 120   | (nested inside domain categories) | 2026-02-26    |
-| Skill count (bundled repo dirs)      | 65    | skills.md, README.md              | 2026-02-16    |
-| Skill count (celavii)                | 10    | skills.md                         | 2026-02-16    |
-| Skill count (custom)                 | 9     | skills.md                         | 2026-02-25    |
+| Key                                  | Value | Files That Reference It                  | Last Verified |
+| ------------------------------------ | ----- | ---------------------------------------- | ------------- |
+| Skill count (managed top-level dirs) | 38    | skills.md (×4)                           | 2026-03-10    |
+| Skill count (managed SKILL.md files) | 122   | (nested inside domain categories)        | 2026-03-10    |
+| Skill count (bundled repo dirs)      | 65    | skills.md, README.md                     | 2026-02-16    |
+| Skill count (celavii)                | 10    | skills.md                                | 2026-02-16    |
+| Skill count (social)                 | 2     | skills.md (celavii-social, social-hooks) | 2026-03-10    |
+| Skill count (custom)                 | 9     | skills.md                                | 2026-02-25    |
 
 ## Agent Counts
 

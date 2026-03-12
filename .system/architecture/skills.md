@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/agent-workspace/skills/ (global managed dir)
-~/agent-workspace/skills/     ← 36 skills (managed: domain categories + celavii + custom)
+~/agent-workspace/skills/     ← 38 skills (managed: domain categories + celavii + social + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -142,6 +142,8 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 | 📈 **celavii-analytics** | ✅ Ready | Demographics, locations, niches, overlap, affinity posts   | 1/query   |
 | 📚 **celavii-knowledge** | ✅ Ready | Knowledge base CRUD, semantic search for AI context        | 0 (free)  |
 | ⚡ **celavii-data-ops**  | ✅ Ready | Profile enhancement, follower/hashtag/URL scrapes, job ops | 1-2+Apify |
+| 📱 **celavii-social**    | ✅ Ready | Social content orchestration — copy, media prompts, state  | 0 (local) |
+| 🎣 **social-hooks**      | ✅ Ready | Hook generation library — 6 categories, 7-step system      | 0 (local) |
 
 **Base URL**: `https://www.celavii.com/api/v1`  
 **Auth**: `CELAVII_API_KEY` (shared across all agents, stored in `~/.openclaw/.env`)  
@@ -180,10 +182,10 @@ workspace: ~/agent-workspace/skills/quality-critic/         ← explicit workspa
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 36 managed + 65 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 38 managed + 65 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 36 managed + 65 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 36 managed + 65 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 38 managed + 65 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 38 managed + 65 bundled                       |
 
 ---
 
