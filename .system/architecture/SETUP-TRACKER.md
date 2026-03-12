@@ -8,12 +8,12 @@
 
 ## Phase 1: Security Assessment ✅
 
-| Task                | Status  | Notes                                |
-| ------------------- | ------- | ------------------------------------ |
-| Clone repository    | ✅ Done | `~/dev/openclaw`                     |
-| Security research   | ✅ Done | Web search + docs review             |
-| Security assessment | ✅ Done | `.security/security_assesment.md`    |
-| Q&A addendum        | ✅ Done | Loopback, Tailscale, tools, channels |
+| Task                | Status  | Notes                                    |
+| ------------------- | ------- | ---------------------------------------- |
+| Clone repository    | ✅ Done | `~/dev/openclaw`                         |
+| Security research   | ✅ Done | Web search + docs review                 |
+| Security assessment | ✅ Done | `.system/security/security_assesment.md` |
+| Q&A addendum        | ✅ Done | Loopback, Tailscale, tools, channels     |
 
 ---
 
