@@ -15,9 +15,18 @@ End-to-end social media content orchestration for Celavii. Combines the social s
 ## Metadata
 
 - **Skill ID**: `celavii-social`
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **Category**: Social Media & Content
 - **Dependencies**: `brand-identity`, `media-content/image-prompting`, `media-content/creative-direction`, `nano-banana-pro`
+
+## Brand Assets
+
+| Asset            | Path                                                                                                    | Description                                      |
+| ---------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| **Logo (Local)** | `~/dev/workspace/projects/celavii/assets/brand/celavii-logo.jpg`                                        | Official Celavii logo (Elephant in 'C' gradient) |
+| **Logo (CDN)**   | `https://abzkebevxtauyijetrif.supabase.co/storage/v1/object/public/public-assets/hero/celavii-logo.png` | Web-hosted version                               |
+| **Brand Guide**  | `~/dev/workspace/projects/celavii/assets/brand/BRAND-GUIDE.md`                                          | Full brand specifications                        |
+| **Brand JSON**   | `~/dev/workspace/projects/celavii/assets/brand/brand.json`                                              | Machine-readable brand tokens                    |
 
 ## State File
 
@@ -103,6 +112,8 @@ high contrast, sharp focus, 1080x1080px
 
 ### Step 5: Execute Media Generation
 
+#### Standard Image Generation
+
 ```bash
 # Image generation via nano-banana-pro
 uv run ~/.openclaw/skills/nano-banana-pro/scripts/generate_image.py \
@@ -110,6 +121,38 @@ uv run ~/.openclaw/skills/nano-banana-pro/scripts/generate_image.py \
   --filename "./media/generated/social/ig-post-001-slide-1.png" \
   --resolution 1K
 ```
+
+#### Branded Asset Generation (Logo Required)
+
+**When to use:** CTA slides, brand announcement posts, slides marked `branded: true`, or any visual that requires the Celavii logo.
+
+**Logo Preservation Rules:**
+
+1. **Always pass logo as reference** via `-i` flag
+2. **Add preservation clause** to prompt: `incorporate the provided Celavii logo exactly as-is, do not redraw, stylize, or alter the elephant iconography`
+3. **Position guidance**: Place logo in lower-right corner or centered footer area
+4. **Never apply to**: Hero images, inline blog graphics, abstract visualizations (unless explicitly branded)
+
+```bash
+# Branded image generation with logo injection
+uv run ~/.openclaw/skills/nano-banana-pro/scripts/generate_image.py \
+  --prompt "CTA slide, Celavii brand style, dark gradient background (#0f172a to #1e293b), incorporate the provided Celavii logo exactly as-is without modification, do not redraw or alter the logo, place logo centered in lower third, 'CELAVII.COM' text below logo, Inter bold typography, blue-cyan accent glow, 1080x1080px" \
+  --filename "./media/generated/social/ig-post-001-slide-cta.png" \
+  -i ~/dev/workspace/projects/celavii/assets/brand/celavii-logo.jpg \
+  --resolution 1K
+```
+
+**Decision Tree:**
+
+| Asset Type             | Logo Required? | Use `-i` flag? |
+| ---------------------- | -------------- | -------------- |
+| CTA/Brand Slide        | ✅ Yes         | ✅ Yes         |
+| Cover Slide (branded)  | ✅ Yes         | ✅ Yes         |
+| Announcement Post      | ✅ Yes         | ✅ Yes         |
+| Abstract Network Graph | ❌ No          | ❌ No          |
+| Dashboard Mockup       | ❌ No          | ❌ No          |
+| Comparison Graphic     | ❌ No          | ❌ No          |
+| Blog Hero Image        | ❌ No          | ❌ No          |
 
 ### Step 6: Save and Update State
 
