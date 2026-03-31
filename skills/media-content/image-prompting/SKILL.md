@@ -161,6 +161,21 @@ Include **material** (vinyl, aluminum, canvas) and **viewing distance** if relev
 
 For full format table and examples: **read `references/dimensions-formats.md`**.
 
+## Digital Asset Dimensions (Web / Blog / Social)
+
+**Always match dimensions to the target surface.** Mismatched aspect ratios (e.g. square images for blog posts) waste generation cycles and require manual re-generation.
+
+| Target                   | Dimensions   | Aspect Ratio | When to use                                 |
+| ------------------------ | ------------ | ------------ | ------------------------------------------- |
+| Blog hero / OG image     | **1200x630** | **1.91:1**   | Blog cover images, OpenGraph, Twitter Cards |
+| Blog inline graphic      | **1200x675** | **16:9**     | In-article images between sections          |
+| Instagram / Threads      | 1080x1080    | 1:1          | Social feed posts, carousels                |
+| Instagram Story / TikTok | 1080x1920    | 9:16         | Vertical video, stories                     |
+| X/Twitter image          | 1200x675     | 16:9         | Tweet images                                |
+| Instagram portrait       | 1080x1350    | 4:5          | Max vertical feed real estate               |
+
+**Include pixel dimensions in every prompt.** Do not default to square unless the target is explicitly a social feed post.
+
 ## Photography Elements That Create Realism
 
 Simply adding a camera and lens transforms AI output into photorealistic results:

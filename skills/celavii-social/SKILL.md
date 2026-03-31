@@ -73,12 +73,26 @@ cat ~/agent-workspace/projects/celavii/README.md
 
 ### Step 2: Identify Content Type
 
+#### Platform Dimensions (Social)
+
 | Platform  | Primary Formats        | Dimensions           |
 | --------- | ---------------------- | -------------------- |
 | Instagram | Carousel, Reel, Single | 1080x1080, 1080x1920 |
 | TikTok    | Video                  | 1080x1920            |
 | X/Twitter | Thread, Single, Image  | 1200x675             |
 | Threads   | Text + Image           | 1080x1080            |
+
+#### Blog Image Dimensions (MANDATORY — do NOT use social dimensions for blog assets)
+
+| Asset Type              | Dimensions   | Aspect Ratio | Use Case                                                                            |
+| ----------------------- | ------------ | ------------ | ----------------------------------------------------------------------------------- |
+| Blog hero / cover image | **1200x630** | **1.91:1**   | OpenGraph, Twitter Card, Google Discover. This is the `coverImage` in frontmatter.  |
+| Blog inline graphic     | **1200x675** | **16:9**     | In-article images between H2 sections. Optimized for readability on mobile/desktop. |
+| Open Graph fallback     | 1200x630     | 1.91:1       | Required for social sharing previews.                                               |
+
+**Rule:** When generating images for blog posts, ALWAYS use blog dimensions (1200x630 for hero, 1200x675 for inline). Never generate 1080x1080 square images for blog use. Square images are for social platforms only.
+
+**Reference:** `skills/blogger/references/visual-media.md`, `research/seo/blog/image-specs-2026.md`
 
 ### Step 3: Generate Copy
 
@@ -103,12 +117,20 @@ For each visual asset needed, craft prompts using `media-content/image-prompting
 **Standard Celavii Image Prompt Structure:**
 
 ```
-[Format: carousel slide / social graphic / hero image], Celavii brand style,
+[Format: carousel slide / social graphic / blog hero / blog inline], Celavii brand style,
 [Subject: concept visualization], dark gradient background (#0f172a to #1e293b),
 blue-cyan accent lighting (#0066FF to #00D4FF), clean minimalist design,
 Inter typography, [specific elements], editorial tech aesthetic,
-high contrast, sharp focus, 1080x1080px
+high contrast, sharp focus, [DIMENSIONS — see table above]
 ```
+
+**Dimension selection (MANDATORY):**
+
+- Social post → `1080x1080px`
+- Social story/reel → `1080x1920px`
+- X/Twitter image → `1200x675px`
+- Blog hero/cover → `1200x630px` (1.91:1)
+- Blog inline → `1200x675px` (16:9)
 
 ### Step 5: Execute Media Generation
 
@@ -397,6 +419,13 @@ From `social-strategy-state.json` → `meta.brand_voice`:
 
 ## Media Prompt Patterns
 
+> **Note:** All patterns below use `[DIMENSIONS]` as a placeholder. Replace with the correct dimensions for your target:
+>
+> - Social (IG/Threads): `1080x1080px`
+> - Social (X/Twitter): `1200x675px`
+> - Blog hero: `1200x630px`
+> - Blog inline: `1200x675px`
+
 ### Network Graph (Three Circles)
 
 ```
@@ -406,7 +435,7 @@ three overlapping circles in blue (#0066FF), cyan (#00D4FF), and purple (#A855F7
 glowing connection lines, dark gradient background (#0f172a to #1e293b),
 data visualization aesthetic, clean minimalist design,
 subtle particle effects, high contrast, editorial tech style,
-1080x1080px, sharp focus
+[DIMENSIONS], sharp focus
 ```
 
 ### Dashboard/Platform UI
@@ -416,7 +445,7 @@ Modern SaaS dashboard mockup, Celavii brand style,
 dark mode interface, creator analytics display,
 engagement metrics visualization, blue accent highlights (#0066FF),
 clean card layouts, Inter typography, glass morphism effects,
-professional tech aesthetic, 1080x1080px
+professional tech aesthetic, [DIMENSIONS]
 ```
 
 ### Comparison Graphic
@@ -427,7 +456,7 @@ left side: red X marks and legacy dashboard chaos,
 right side: green checkmarks and clean Celavii interface,
 dark gradient background, blue-cyan accent lighting,
 minimalist iconography, Inter bold typography,
-high contrast, editorial tech aesthetic, 1080x1080px
+high contrast, editorial tech aesthetic, [DIMENSIONS]
 ```
 
 ### AI/Agentic Visual
@@ -438,7 +467,7 @@ glowing neural pathways connecting to chat interface,
 autonomous workflow representation, blue-cyan energy flows,
 dark gradient background (#0f172a), futuristic tech aesthetic,
 clean lines, particle effects, editorial style,
-1080x1080px, high contrast
+[DIMENSIONS], high contrast
 ```
 
 ---
