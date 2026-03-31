@@ -100,7 +100,7 @@ export {
 } from "./heartbeat-summary.js";
 
 export function getHeartbeatsEnabled(): boolean {
-  return heartbeatsEnabled;
+  return areHeartbeatsEnabled();
 }
 
 type HeartbeatConfig = AgentDefaultsConfig["heartbeat"];
