@@ -1,3 +1,5 @@
+import type { TaskAuditSummary } from "openclaw/plugin-sdk/tasks-summary";
+import type { TaskRegistrySummary } from "openclaw/plugin-sdk/tasks-summary";
 import type { ChannelId } from "../channels/plugins/types.js";
 
 export type SessionStatus = {
@@ -8,6 +10,7 @@ export type SessionStatus = {
   updatedAt: number | null;
   age: number | null;
   thinkingLevel?: string;
+  fastMode?: boolean;
   verboseLevel?: string;
   reasoningLevel?: string;
   elevatedLevel?: string;
@@ -34,6 +37,7 @@ export type HeartbeatStatus = {
 };
 
 export type StatusSummary = {
+  runtimeVersion?: string | null;
   linkChannel?: {
     id: ChannelId;
     label: string;
@@ -46,6 +50,8 @@ export type StatusSummary = {
   };
   channelSummary: string[];
   queuedSystemEvents: string[];
+  tasks: TaskRegistrySummary;
+  taskAudit: TaskAuditSummary;
   sessions: {
     paths: string[];
     count: number;

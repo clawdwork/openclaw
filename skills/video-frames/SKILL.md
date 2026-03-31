@@ -7,7 +7,7 @@ metadata:
   {
     "openclaw":
       {
-        "emoji": "🎞️",
+        "emoji": "🎬",
         "requires": { "bins": ["ffmpeg"] },
         "install":
           [

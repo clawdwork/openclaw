@@ -7,7 +7,7 @@ metadata:
   {
     "openclaw":
       {
-        "emoji": "♊️",
+        "emoji": "✨",
         "requires": { "bins": ["gemini"] },
         "install":
           [

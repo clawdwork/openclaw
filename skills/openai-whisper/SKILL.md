@@ -7,7 +7,7 @@ metadata:
   {
     "openclaw":
       {
-        "emoji": "🎙️",
+        "emoji": "🎤",
         "requires": { "bins": ["whisper"] },
         "install":
           [
