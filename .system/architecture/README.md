@@ -14,7 +14,7 @@ This architecture is split into focused modules. Each file is self-contained.
 | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | **[README.md](README.md)** (this file)     | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
 | **[agents.md](agents.md)**                 | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
-| **[skills.md](skills.md)**                 | Skills inventory (36 managed + 65 bundled), domain table, Celavii API, loading             |
+| **[skills.md](skills.md)**                 | Skills inventory (39 managed + 65 bundled), domain table, Celavii API, loading             |
 | **[VALUES.md](VALUES.md)**                 | Single source of truth for runtime values (ports, counts, paths)                           |
 | **[org-structure.md](org-structure.md)**   | Org directory layout, workspace structure, access matrix, roles, migration path            |
 | **[deployments.md](deployments.md)**       | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
@@ -23,7 +23,7 @@ This architecture is split into focused modules. Each file is self-contained.
 | **[costs.md](costs.md)**                   | Monthly projections, per-task estimates, cost comparison                                   |
 | **[model-strategy.md](model-strategy.md)** | Model reference, GPT-5.2 research, Option A/B comparison, thinking strategy                |
 | **[MAINTENANCE.md](MAINTENANCE.md)**       | Documentation maintenance proposal and decisions                                           |
-| **[memory.md](memory.md)**                 | Memory system architecture, indexing, per-agent stores, audit checklist                     |
+| **[memory.md](memory.md)**                 | Memory system architecture, indexing, per-agent stores, audit checklist                    |
 | **[CHANGELOG.md](CHANGELOG.md)**           | Version history                                                                            |
 
 ---
@@ -59,7 +59,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │                                                                   │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │  Marketing   │ │    Sales     │ │   Product    │  (Flash)     │      │
-│  │  │  6 skills    │ │  6 skills    │ │  6 skills    │              │      │
+│  │  │  6 skills    │ │  9 skills    │ │  6 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐                               │      │
 │  │  │   Support    │ │   Search     │                (Flash)        │      │
@@ -106,33 +106,34 @@ This architecture is split into focused modules. Each file is self-contained.
 
 ## Model Hierarchy
 
-| Role               | Model                            | Alias     | Cost/1M Tokens     | Use Case                                               |
-| ------------------ | -------------------------------- | --------- | ------------------ | ------------------------------------------------------ |
-| **Coordinator**    | `google/gemini-3-flash-preview`  | Flash     | $0.50 in / $3 out  | Conversation, routing, web search, coordination        |
-| **Dev Coder**      | `google/gemini-3-flash-preview`  | Flash     | $0.50 in / $3 out  | Everyday coding, scripts, simple deploys, CI/CD        |
-| **Prod Coder**     | `openai/gpt-5.2-codex`           | 5.2-Codex | $1.75 in / $14 out | Complex integrations, APIs, prod-critical code (xhigh) |
-| **Planner**        | `openai/gpt-5.2`                 | 5.2       | $1.75 in / $14 out | Architecture, strategy, SOTA reasoning (xhigh)         |
-| **Precision**      | `google/gemini-3.1-pro-preview`    | Pro       | $2 in / $12 out    | Legal, finance, data, media content (1M ctx)           |
-| **Quality Critic** | `openai/gpt-5.2`                 | 5.2       | $1.75 in / $14 out | Review creative outputs (xhigh reasoning)              |
-| ~~Tool Executor~~  | ~~`anthropic/claude-haiku-4-5`~~ | ~~Haiku~~ | ~~deprecated~~     | Replaced by Flash with thinking off                    |
-| **Fallback Chain** | Pro → GPT-5 Mini → GPT-5.1       | —         | varies             | Multi-provider resilience                              |
+| Role               | Model                           | Alias    | Cost/1M Tokens     | Use Case                                                                    |
+| ------------------ | ------------------------------- | -------- | ------------------ | --------------------------------------------------------------------------- |
+| **Coordinator**    | `google/gemini-3-flash-preview` | Flash    | $0.50 in / $3 out  | Conversation, routing, web search, coordination                             |
+| **Sales**          | `openai/gpt-5.4-mini`           | 5.4-Mini | TBD                | Research synthesis, qualification, pipeline orchestration                   |
+| **Dev Coder**      | `google/gemini-3-flash-preview` | Flash    | $0.50 in / $3 out  | Everyday coding, scripts, simple deploys, CI/CD                             |
+| **Prod Coder**     | `openai/gpt-5.4`                | 5.4      | $2.50 in / $15 out | Complex integrations, APIs, prod-critical code (xhigh, 57.7% SWE-Bench Pro) |
+| **Planner**        | `openai/gpt-5.4`                | 5.4      | $2.50 in / $15 out | Architecture, strategy, SOTA reasoning (xhigh, 1M ctx)                      |
+| **Precision**      | `google/gemini-3.1-pro-preview` | Pro      | $2 in / $12 out    | Legal, finance, data, media content (1M ctx)                                |
+| **Quality Critic** | `openai/gpt-5.4`                | 5.4      | $2.50 in / $15 out | Review creative outputs (xhigh, 33% fewer hallucinations)                   |
+| **Grunt**          | `openai/gpt-5.4-nano`           | 5.4-Nano | TBD                | File ops, bulk operations, cheapest model                                   |
+| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1 | —        | varies             | Multi-provider resilience                                                   |
 
 ### Domain Sub-Agent Models
 
-| Domain Agent          | Model   | Why                       | Skills                |
-| --------------------- | ------- | ------------------------- | --------------------- |
-| **Marketing**         | Flash   | Speed, volume, web search | 6 + 10 Celavii skills |
-| **Sales**             | Flash   | Research, outreach        | 6 skills, 3 commands  |
-| **Product**           | Flash   | Specs, roadmaps           | 6 skills, 6 commands  |
-| **Support**           | Flash   | Triage, responses         | 5 skills, 5 commands  |
-| **Enterprise Search** | Flash   | Native Google grounding   | 3 skills, 2 commands  |
-| **Legal**             | Pro     | Precision, risk           | 6 skills, 1+ commands |
-| **Finance**           | Pro     | Accuracy, compliance      | 6 skills, 5 commands  |
-| **Data**              | Pro     | SQL, code generation      | 7 skills, varies      |
-| **Media Content**     | Pro     | Prompt crafting, visuals  | 5 skills, 6 commands  |
-| **Blogger**           | Pro     | SEO-coupled content prod  | 1 skill (SEO handoff) |
-| **Quality Critic**    | GPT-5.2 | SOTA review (xhigh)       | 1 skill (agnostic)    |
-| **Workspace Auditor** | Pro     | Semantic drift detection  | 1 skill (MWF audit)   |
+| Domain Agent          | Model    | Why                                               | Skills                                       |
+| --------------------- | -------- | ------------------------------------------------- | -------------------------------------------- |
+| **Marketing**         | Flash    | Speed, volume, web search                         | 6 + 10 Celavii skills                        |
+| **Sales**             | 5.4-Mini | Research, synthesis, outreach, lead gen, pipeline | 9 skills, 10 commands, 6 scripts, 1 template |
+| **Product**           | Flash    | Specs, roadmaps                                   | 6 skills, 6 commands                         |
+| **Support**           | Flash    | Triage, responses                                 | 5 skills, 5 commands                         |
+| **Enterprise Search** | Flash    | Native Google grounding                           | 3 skills, 2 commands                         |
+| **Legal**             | Pro      | Precision, risk                                   | 6 skills, 1+ commands                        |
+| **Finance**           | Pro      | Accuracy, compliance                              | 6 skills, 5 commands                         |
+| **Data**              | Pro      | SQL, code generation                              | 7 skills, varies                             |
+| **Media Content**     | Pro      | Prompt crafting, visuals                          | 5 skills, 6 commands                         |
+| **Blogger**           | Pro      | SEO-coupled content prod                          | 1 skill (SEO handoff)                        |
+| **Quality Critic**    | GPT-5.2  | SOTA review (xhigh)                               | 1 skill (agnostic)                           |
+| **Workspace Auditor** | Pro      | Semantic drift detection                          | 1 skill (MWF audit)                          |
 
 ### Model Selection Logic (Fallback Chain)
 
@@ -151,7 +152,12 @@ Main Session Request
         │ Fail
         ▼
 ┌─────────────────────┐
-│  Try GPT-5 Mini    │ ──── Success ────▶ Use GPT-5 Mini
+│  Try GPT-5.4 Mini  │ ──── Success ────▶ Use GPT-5.4 Mini
+└─────────────────────┘
+        │ Fail
+        ▼
+┌─────────────────────┐
+│  Try GPT-5.4 Nano  │ ──── Success ────▶ Use GPT-5.4 Nano
 └─────────────────────┘
         │ Fail
         ▼

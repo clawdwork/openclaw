@@ -139,6 +139,23 @@ export function normalizeToolParams(params: unknown): Record<string, unknown> | 
   }
   const record = params as Record<string, unknown>;
   const normalized = { ...record };
+
+  // Some models (notably Gemini) send edit params as { path, edits: [{ oldText, newText }] }
+  // instead of flat { path, oldText, newText }. Unwrap the first edit entry so downstream
+  // validation and the edit tool see the expected flat structure.
+  if (Array.isArray(normalized.edits) && normalized.edits.length > 0) {
+    const first = normalized.edits[0];
+    if (first && typeof first === "object") {
+      const entry = first as Record<string, unknown>;
+      for (const key of Object.keys(entry)) {
+        if (!(key in normalized)) {
+          normalized[key] = entry[key];
+        }
+      }
+    }
+    delete normalized.edits;
+  }
+
   normalizeClaudeParamAliases(normalized);
   // Some providers/models emit text payloads as structured blocks instead of raw strings.
   // Normalize these for write/edit so content matching and writes stay deterministic.

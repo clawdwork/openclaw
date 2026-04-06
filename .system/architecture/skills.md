@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/dev/workspace/skills/ (global managed dir)
-~/dev/workspace/skills/     ← 38 skills (managed: domain categories + celavii + social + custom)
+~/dev/workspace/skills/     ← 39 skills (managed: domain categories + celavii + social + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -111,23 +111,23 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 
 ---
 
-## Domain Skills (88 Skills across 17 Categories)
+## Domain Skills (92 Skills across 17 Categories)
 
-| Domain                 | Count | Skills                                                                                                                                                                                                                                                                                   | Model   |
-| ---------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                                                                                                                                                              | Flash   |
-| **SEO**                | 18    | seo-orchestrator, seo-audit, seo-page, seo-technical, seo-content, seo-schema, seo-images, seo-sitemap, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang, seo-report-generator, seo-product-page, **seo-strategy**, **keyword-opportunities**, **competitor-seo** | Pro     |
-| **Sales**              | 6     | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach                                                                                                                                                                                   | Flash   |
-| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                                                                                                                                                                     | Flash   |
-| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                                                                                                                                                                    | Flash   |
-| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                                                                                                                                                                  | Flash   |
-| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                                                                                                                                                                       | Pro     |
-| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                                                                                                                                                             | Pro     |
-| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis                                                                                                                                          | Pro     |
-| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                                                                                                                                                           | Pro     |
-| **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                                                                                                                                                                   | GPT-5.2 |
-| **Blogger**            | 15    | blog-orchestrator, blog-write, blog-rewrite, blog-analyze, blog-audit, blog-brief, blog-outline, blog-schema, blog-repurpose, blog-geo, blog-chart, blog-calendar, blog-seo-check, blog-strategy, **blog-strategy-progress**                                                             | Pro     |
-| **Workspace Auditor**  | 1     | workspace-audit (MWF structural, registry, semantic integrity checks)                                                                                                                                                                                                                    | Pro     |
+| Domain                 | Count | Skills                                                                                                                                                                                                                                                                                   | Model     |
+| ---------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| **Marketing**          | 6     | brand-voice, campaign-planning, competitive-analysis, content-creation, intel-ingest, performance-analytics                                                                                                                                                                              | Flash     |
+| **SEO**                | 18    | seo-orchestrator, seo-audit, seo-page, seo-technical, seo-content, seo-schema, seo-images, seo-sitemap, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang, seo-report-generator, seo-product-page, **seo-strategy**, **keyword-opportunities**, **competitor-seo** | Pro       |
+| **Sales**              | 10    | account-research, call-prep, competitive-intelligence, create-an-asset, daily-briefing, draft-outreach, **lead-gen**, **sales-asset**, **sales-deck**, **sales-strategy**                                                                                                                | Flash/Pro |
+| **Product Management** | 6     | competitive-analysis, feature-spec, metrics-tracking, roadmap-management, stakeholder-comms, user-research-synthesis                                                                                                                                                                     | Flash     |
+| **Customer Support**   | 5     | customer-research, escalation, knowledge-management, response-drafting, ticket-triage                                                                                                                                                                                                    | Flash     |
+| **Enterprise Search**  | 3     | knowledge-synthesis, search-strategy, source-management                                                                                                                                                                                                                                  | Flash     |
+| **Legal**              | 6     | canned-responses, compliance, contract-review, legal-risk-assessment, meeting-briefing, nda-triage                                                                                                                                                                                       | Pro       |
+| **Finance**            | 6     | audit-support, close-management, financial-statements, journal-entry-prep, reconciliation, variance-analysis                                                                                                                                                                             | Pro       |
+| **Data**               | 7     | data-context-extractor, data-exploration, data-validation, data-visualization, interactive-dashboard-builder, sql-queries, statistical-analysis                                                                                                                                          | Pro       |
+| **Media Content**      | 5     | image-prompting, video-prompting, character-consistency, commercial-styles, creative-direction                                                                                                                                                                                           | Pro       |
+| **Quality Critic**     | 1     | quality-critic (agnostic review of proposals, images, decks, data viz)                                                                                                                                                                                                                   | GPT-5.2   |
+| **Blogger**            | 15    | blog-orchestrator, blog-write, blog-rewrite, blog-analyze, blog-audit, blog-brief, blog-outline, blog-schema, blog-repurpose, blog-geo, blog-chart, blog-calendar, blog-seo-check, blog-strategy, **blog-strategy-progress**                                                             | Pro       |
+| **Workspace Auditor**  | 1     | workspace-audit (MWF structural, registry, semantic integrity checks)                                                                                                                                                                                                                    | Pro       |
 
 ---
 
@@ -153,17 +153,18 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 
 ## Custom Skills (Non-Domain)
 
-| Skill                             | Category | Purpose                                        |
-| --------------------------------- | -------- | ---------------------------------------------- |
-| **shadcn-ui**                     | `ui/`    | UI component reference (React/Tailwind/shadcn) |
-| **brand-identity**                | (root)   | Celavii brand guidelines                       |
-| **generating-proposal-documents** | (root)   | Proposal formatting                            |
-| **deploy-and-publish**            | (root)   | Deployment pipeline skill                      |
-| **workspace-wizard**              | (root)   | Agent provisioning wizard (admin-only)         |
-| **blogger**                       | (root)   | Blog content production (SEO-coupled)          |
-| **workspace-audit**               | (root)   | MWF workspace integrity audits                 |
-| **workspace-reconcile**           | (root)   | Autonomous fix execution from audit reports    |
-| **project-scaffold**              | (root)   | New project directory + PROJECT.md scaffolding |
+| Skill                             | Category | Purpose                                                                     |
+| --------------------------------- | -------- | --------------------------------------------------------------------------- |
+| **shadcn-ui**                     | `ui/`    | UI component reference (React/Tailwind/shadcn)                              |
+| **brand-identity**                | (root)   | Celavii brand guidelines                                                    |
+| **generating-proposal-documents** | (root)   | Proposal formatting                                                         |
+| **deploy-and-publish**            | (root)   | Deployment pipeline skill                                                   |
+| **workspace-wizard**              | (root)   | Agent provisioning wizard (admin-only)                                      |
+| **blogger**                       | (root)   | Blog content production (SEO-coupled)                                       |
+| **workspace-audit**               | (root)   | MWF workspace integrity audits                                              |
+| **workspace-reconcile**           | (root)   | Autonomous fix execution from audit reports                                 |
+| **project-scaffold**              | (root)   | New project directory + PROJECT.md scaffolding                              |
+| **sales-deck**                    | (root)   | Sales pitch deck generator (React/Vite, visual assets, prospect archetypes) |
 
 ---
 
@@ -182,10 +183,10 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 
 | Agent Type                        | Workspace Skills            | Managed Skills (`~/.openclaw/skills/` → symlink) |
 | --------------------------------- | --------------------------- | ------------------------------------------------ |
-| **admin-001**                     | ✅ 38 managed + 65 bundled  | ✅ same via symlink                              |
+| **admin-001**                     | ✅ 39 managed + 65 bundled  | ✅ same via symlink                              |
 | **Sub-agents** (spawned by admin) | ✅ synced from parent       | ✅                                               |
-| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 38 managed + 65 bundled                       |
-| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 38 managed + 65 bundled                       |
+| **member-NNN** (provisioned)      | — (empty workspace skills/) | ✅ 39 managed + 65 bundled                       |
+| **guest-NNN** (provisioned)       | — (empty workspace skills/) | ✅ 39 managed + 65 bundled                       |
 
 ---
 
