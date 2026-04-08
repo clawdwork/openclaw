@@ -14,7 +14,7 @@
 Commission a new **`media-content`** domain sub-agent that orchestrates AI-powered image, video, and audio generation. The agent uses knowledge skills to craft optimized prompts, execution skills to generate media, and a per-project workspace to accumulate brand assets, feedback, and style preferences over time.
 
 **Agent model**: `google/gemini-3.1-pro-preview` (primary), `google/gemini-3-flash-preview` (fallback / test baseline)  
-**Image execution**: Gemini 3 Pro via `nano-banana-pro` (exists)  
+**Image execution**: Nano Banana 2 (default) or Pro via `nano-banana-pro` (exists)  
 **Video execution**: Veo 3, Sora 2 (future — Phase 3)  
 **Audio execution**: MiniMax via Replicate, ElevenLabs (future — Phase 3)
 
@@ -40,7 +40,7 @@ Commission a new **`media-content`** domain sub-agent that orchestrates AI-power
 │                                                                    │
 │  ┌─────────────────────────────────────────────────────────────┐ │
 │  │  EXECUTION SKILLS (what generates)                           │ │
-│  │  ├── nano-banana-pro    Gemini 3 Pro image gen       ✅ Now  │ │
+│  │  ├── nano-banana-pro    NB2 (default) / Pro image gen ✅ Now  │ │
 │  │  ├── veo3-gen           Veo 3 / 3.1 video gen       🔜 Ph3  │ │
 │  │  ├── sora2-gen          Sora 2 video gen             🔜 Ph3  │ │
 │  │  ├── minimax-voice      MiniMax via Replicate        🔜 Ph3  │ │
@@ -120,7 +120,7 @@ Layer 3: Task field (per-spawn from coordinator)
   → "Read skills/media-content/image-prompting/SKILL.md.
      Create a product shot for Max Kick energy drink can (2.75 inch).
      Read ~/org/shared/projects/max-kick/media/MEDIA-CONFIG.md for brand style.
-     Use nano-banana-pro to generate the image.
+     Use nano-banana-pro to generate the image (default: NB2; --model pro for premium).
      Save to ~/org/shared/projects/max-kick/media/generated/drafts/"
 ```
 
@@ -155,7 +155,7 @@ image-prompting/
 │   3. Choose equipment (camera + lens matched to scenario)
 │   4. Layer detail progressively (subject → environment → lighting → technical)
 │   5. Apply physical format specs if user specifies dimensions
-│   6. Execute via nano-banana-pro
+│   6. Execute via nano-banana-pro (default: NB2)
 │   7. Offer 2-3 alternative directions
 │
 └── references/
@@ -275,7 +275,7 @@ media-content/commands/
 - Agent can craft a video prompt following Veo 3 / Sora 2 rules
 - Agent can create and maintain character descriptors across a sequence
 - Agent offers multiple creative directions per request
-- Agent executes image generation via `nano-banana-pro`
+- Agent executes image generation via `nano-banana-pro` (default: NB2; `--model pro` for premium)
 - Agent respects physical dimension specifications (banners, cans, etc.)
 
 ---

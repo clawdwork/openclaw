@@ -513,7 +513,7 @@ Agent routing is controlled via workspace files that are injected into the syste
 | ----------------------------- | --------------- | -------------------------------------------------------------------- |
 | **Voice memo transcription**  | whisper         | User sends audio → Whisper transcribes → Agent responds to content   |
 | **Quick web research**        | web-search      | "What's the latest on X?" → Brave search → Summarized answer         |
-| **Generate an image**         | nano-banana-pro | "Create a logo for..." → Gemini 3 Pro → Image returned               |
+| **Generate an image**         | nano-banana-pro | "Create a logo for..." → NB2 (default) or Pro → Image returned       |
 | **Check GitHub issues**       | github          | "What PRs need review?" → `gh pr list` → Status summary              |
 | **Search past conversations** | session-logs    | "What did we discuss about Y?" → `jq`/`rg` search → Context recalled |
 

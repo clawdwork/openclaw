@@ -127,17 +127,17 @@
 
 ### Routing & Context
 
-| #    | Step                                                                                            | Status |
-| ---- | ----------------------------------------------------------------------------------------------- | ------ |
-| 2.12 | Update TOOLS.md with media file routing rules                                                   | ✅     |
-| 2.13 | Update AGENTS.md with media-content routing entry                                               | ✅     |
-| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute → save | ⬜     |
+| #    | Step                                                                                                          | Status |
+| ---- | ------------------------------------------------------------------------------------------------------------- | ------ |
+| 2.12 | Update TOOLS.md with media file routing rules                                                                 | ✅     |
+| 2.13 | Update AGENTS.md with media-content routing entry                                                             | ✅     |
+| 2.14 | Test end-to-end: user request → coordinator spawn → skill read → nano-banana-pro execute (NB2 default) → save | ⬜     |
 
 ---
 
 ## Phase 3A: Video Execution Skills (Future)
 
-> Mirror `nano-banana-pro` pattern for video generation.
+> Mirror `nano-banana-pro` pattern (now dual-model: NB2 default + Pro) for video generation.
 
 ### `veo3-gen`
 
