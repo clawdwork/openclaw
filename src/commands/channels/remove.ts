@@ -5,10 +5,15 @@ import {
   normalizeChannelId,
 } from "../../channels/plugins/index.js";
 import { replaceConfigFile, type OpenClawConfig } from "../../config/config.js";
+import {
+  PLUGIN_INSTALLS_CONFIG_PATH,
+  withoutPluginInstallRecords,
+  writePersistedPluginInstallLedger,
+} from "../../plugins/install-ledger-store.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../../routing/session-key.js";
 import { defaultRuntime, type RuntimeEnv } from "../../runtime.js";
+import { normalizeOptionalString } from "../../shared/string-coerce.js";
 import { createClackPrompter } from "../../wizard/clack-prompter.js";
-import { resolveInstallableChannelPlugin } from "../channel-setup/channel-plugin-resolution.js";
 import {
   type ChatChannel,
   channelLabel,
@@ -44,7 +49,7 @@ export async function channelsRemoveCommand(
 
   const useWizard = shouldUseWizard(params);
   const prompter = useWizard ? createClackPrompter() : null;
-  const rawChannel = opts.channel?.trim() ?? "";
+  const rawChannel = normalizeOptionalString(opts.channel) ?? "";
   let channel: ChatChannel | null = normalizeChannelId(rawChannel);
   let accountId = normalizeAccountId(opts.account);
   const deleteConfig = Boolean(opts.delete);
@@ -100,15 +105,20 @@ export async function channelsRemoveCommand(
     }
   }
 
-  const resolvedPluginState =
-    !useWizard && rawChannel
-      ? await resolveInstallableChannelPlugin({
+  const shouldResolveInstallablePlugin =
+    !useWizard && rawChannel && (!channel || !getChannelPlugin(channel));
+  const resolvedPluginState = shouldResolveInstallablePlugin
+    ? await (async () => {
+        const { resolveInstallableChannelPlugin } =
+          await import("../channel-setup/channel-plugin-resolution.js");
+        return await resolveInstallableChannelPlugin({
           cfg,
           runtime,
           rawChannel,
           allowInstall: true,
-        })
-      : null;
+        });
+      })()
+    : null;
   if (resolvedPluginState?.configChanged) {
     cfg = resolvedPluginState.cfg;
   }
@@ -166,9 +176,19 @@ export async function channelsRemoveCommand(
     });
   }
 
+  const shouldMovePluginInstalls = Boolean(
+    next.plugins?.installs && Object.keys(next.plugins.installs).length > 0,
+  );
+  if (shouldMovePluginInstalls) {
+    await writePersistedPluginInstallLedger(next.plugins?.installs ?? {});
+    next = withoutPluginInstallRecords(next);
+  }
   await replaceConfigFile({
     nextConfig: next,
     ...(baseHash !== undefined ? { baseHash } : {}),
+    ...(shouldMovePluginInstalls
+      ? { writeOptions: { unsetPaths: [Array.from(PLUGIN_INSTALLS_CONFIG_PATH)] } }
+      : {}),
   });
   if (useWizard && prompter) {
     await prompter.outro(
