@@ -60,19 +60,24 @@ X-Title: OpenClaw                            # app display name
 
 ## Registered Model Aliases
 
-Defined in `~/dev/config/openclaw.json` and `~/.openclaw/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`.
+Defined in `~/.openclaw/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`. **All 4 aliases route through the OpenRouter plugin** — direct provider plugins (`deepseek`, `moonshot`, `minimax`, `kimi-coding`) have been disabled to force OpenRouter routing for performance benchmarking.
 
-| Alias           | Slug                     | Context | $in/M  | $out/M | Tools      | Thinking | Caching (verified empirically)                                                | Routed via                                                                                                  |
-| --------------- | ------------------------ | ------- | ------ | ------ | ---------- | -------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `DeepSeek-V3.2` | `deepseek/deepseek-v3.2` | 131K    | $0.252 | $0.378 | ✅         | none     | ❌ on Novita (no first-party DeepSeek upstream on OpenRouter; cold=0, warm=0) | **`extensions/deepseek/`** (`DEEPSEEK_API_KEY`) — slug claimed by direct plugin                             |
-| `Kimi-K2.6`     | `moonshotai/kimi-k2.6`   | 256K    | $0.80  | $3.50  | unverified | ✅       | ✅ via Moonshot (cold=818, warm=818 — likely shared/warm cache, 0.20x read)   | **`extensions/moonshot/`** (`MOONSHOT_API_KEY` or `KIMI_API_KEY`); also in OpenRouter catalog — direct wins |
-| `MiniMax-M2.7`  | `minimax/minimax-m2.7`   | 196K    | $0.30  | $1.20  | unverified | ✅       | ✅ via Minimax (cold=0 → warm=768; standard write-once, hit-on-warm pattern)  | **`extensions/minimax/`** (`MINIMAX_API_KEY`)                                                               |
+| Alias             | Slug                                     | Context | $in/M  | $out/M | Tools      | Thinking                 | Caching (verified empirically)                   |
+| ----------------- | ---------------------------------------- | ------- | ------ | ------ | ---------- | ------------------------ | ------------------------------------------------ |
+| `DeepSeek-V3.2`   | `openrouter/deepseek/deepseek-v3.2`      | 128K    | $0.252 | $0.378 | ✅         | none                     | ❌ via Novita (cold=0, warm=0)                   |
+| `Kimi-K2.6`       | `openrouter/moonshotai/kimi-k2.6`        | 256K    | $0.80  | $3.50  | unverified | ✅                       | ✅ via Moonshot (cold=818, warm=818, 0.20x read) |
+| `Kimi-K2.6-Think` | `openrouter/moonshotai/kimi-k2-thinking` | 256K    | (live) | (live) | unverified | ✅ (high effort default) | unverified                                       |
+| `MiniMax-M2.7`    | `openrouter/minimax/minimax-m2.7`        | 192K    | $0.30  | $1.20  | unverified | ✅                       | ✅ via Minimax (cold=0 → warm=768)               |
 
-Kimi pricing is from `extensions/openrouter/provider-catalog.ts:14-19` (canonical). DeepSeek/MiniMax pricing is from OpenRouter model pages — but **see routing finding below**.
+**Orchestrator (main agent)** is configured to use `openrouter/moonshotai/kimi-k2.6` with `thinkingDefault: high` as of 2026-04-25 — replaces the prior default `google/gemini-3-flash-preview`. Verified live: `openclaw agent --agent main --message "..."` returns clean response routed through OpenRouter.
+
+Kimi pricing is from `extensions/openrouter/provider-catalog.ts:14-19` (canonical). DeepSeek/MiniMax pricing is from OpenRouter model pages.
 
 Last empirical verification: 2026-04-25 via `~/dev/workspace/scripts/openrouter-smoke-test.sh`.
 
-### Routing finding (post-merge `b6aa36e473`) — slugs route to direct provider plugins, not OpenRouter
+### Routing finding (post-merge `b6aa36e473`) — non-prefixed slugs route to direct provider plugins by default
+
+**Resolution applied (2026-04-25):** disabled the conflicting direct plugins (`deepseek`, `moonshot`, `minimax`, `kimi-coding`) via `openclaw plugins disable <name>` so the openrouter plugin's catalog wins for `openrouter/<provider>/<model>` slugs. Aliases re-registered with the `openrouter/` prefix.
 
 Upstream now ships **dedicated provider plugins** alongside the OpenRouter plugin:
 
