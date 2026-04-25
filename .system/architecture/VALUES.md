@@ -74,6 +74,7 @@ When updating architecture docs, check this file first. If a value here is stale
 | `ANTHROPIC_API_KEY`   | ~/.openclaw/.env | Set    | 2026-02-09    |
 | `OPENAI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
 | `GEMINI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
+| `OPENROUTER_API_KEY`  | ~/.openclaw/.env | Set    | 2026-04-25    |
 | `CELAVII_API_KEY`     | ~/.openclaw/.env | Set    | 2026-02-09    |
 | `ELEVENLABS_API_KEY`  | ~/.openclaw/.env | Set    | 2026-02-09    |
 | `BRAVE_API_KEY`       | ~/.openclaw/.env | Set    | 2026-02-09    |

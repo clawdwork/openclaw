@@ -10,21 +10,22 @@
 
 This architecture is split into focused modules. Each file is self-contained.
 
-| Document                                   | Content                                                                                    |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **[README.md](README.md)** (this file)     | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference              |
-| **[agents.md](agents.md)**                 | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection |
-| **[skills.md](skills.md)**                 | Skills inventory (39 managed + 65 bundled), domain table, Celavii API, loading             |
-| **[VALUES.md](VALUES.md)**                 | Single source of truth for runtime values (ports, counts, paths)                           |
-| **[org-structure.md](org-structure.md)**   | Org directory layout, workspace structure, access matrix, roles, migration path            |
-| **[deployments.md](deployments.md)**       | GitHub account, repo conventions, Vercel deployments, deploy templates                     |
-| **[security.md](security.md)**             | Token architecture, env siloing, credential isolation, sandbox, leakage prevention         |
-| **[channels.md](channels.md)**             | Telegram, WhatsApp, WebChat, bindings, DM policy                                           |
-| **[costs.md](costs.md)**                   | Monthly projections, per-task estimates, cost comparison                                   |
-| **[model-strategy.md](model-strategy.md)** | Model reference, GPT-5.2 research, Option A/B comparison, thinking strategy                |
-| **[MAINTENANCE.md](MAINTENANCE.md)**       | Documentation maintenance proposal and decisions                                           |
-| **[memory.md](memory.md)**                 | Memory system architecture, indexing, per-agent stores, audit checklist                    |
-| **[CHANGELOG.md](CHANGELOG.md)**           | Version history                                                                            |
+| Document                                   | Content                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **[README.md](README.md)** (this file)     | Overview diagram, model hierarchy, prompt caching, heartbeat, quick reference               |
+| **[agents.md](agents.md)**                 | Sub-agent definitions, routing, spawning, lifecycle, parallel execution, context injection  |
+| **[skills.md](skills.md)**                 | Skills inventory (39 managed + 65 bundled), domain table, Celavii API, loading              |
+| **[VALUES.md](VALUES.md)**                 | Single source of truth for runtime values (ports, counts, paths)                            |
+| **[org-structure.md](org-structure.md)**   | Org directory layout, workspace structure, access matrix, roles, migration path             |
+| **[deployments.md](deployments.md)**       | GitHub account, repo conventions, Vercel deployments, deploy templates                      |
+| **[security.md](security.md)**             | Token architecture, env siloing, credential isolation, sandbox, leakage prevention          |
+| **[channels.md](channels.md)**             | Telegram, WhatsApp, WebChat, bindings, DM policy                                            |
+| **[costs.md](costs.md)**                   | Monthly projections, per-task estimates, cost comparison                                    |
+| **[model-strategy.md](model-strategy.md)** | Model reference, GPT-5.2 research, Option A/B comparison, thinking strategy                 |
+| **[openrouter.md](openrouter.md)**         | OpenRouter integration: aliases, provider routing, caching matrix, reasoning, observability |
+| **[MAINTENANCE.md](MAINTENANCE.md)**       | Documentation maintenance proposal and decisions                                            |
+| **[memory.md](memory.md)**                 | Memory system architecture, indexing, per-agent stores, audit checklist                     |
+| **[CHANGELOG.md](CHANGELOG.md)**           | Version history                                                                             |
 
 ---
 
