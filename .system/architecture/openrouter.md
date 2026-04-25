@@ -60,17 +60,59 @@ X-Title: OpenClaw                            # app display name
 
 ## Registered Model Aliases
 
-Defined in `~/dev/config/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`. Routed through the bundled `extensions/openrouter/` plugin.
+Defined in `~/dev/config/openclaw.json` and `~/.openclaw/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`.
 
-| Alias           | Slug                     | Context | $in/M  | $out/M | Tools      | Thinking | Caching (verified)                                              | In plugin catalog |
-| --------------- | ------------------------ | ------- | ------ | ------ | ---------- | -------- | --------------------------------------------------------------- | ----------------- |
-| `DeepSeek-V3.2` | `deepseek/deepseek-v3.2` | 131K    | $0.252 | $0.378 | ✅         | none     | ❌ on Novita (no first-party DeepSeek host on OpenRouter)       | no                |
-| `Kimi-K2.6`     | `moonshotai/kimi-k2.6`   | 256K    | $0.80  | $3.50  | unverified | ✅       | ✅ via Moonshot upstream (818 cached on smoke test, 0.20x read) | **yes**           |
-| `MiniMax-M2.7`  | `minimax/minimax-m2.7`   | 196K    | $0.30  | $1.20  | unverified | ✅       | ❌ verified empirically (0 cached on warm pinned call)          | no                |
+| Alias           | Slug                     | Context | $in/M  | $out/M | Tools      | Thinking | Caching (verified empirically)                                                | Routed via                                                                                                  |
+| --------------- | ------------------------ | ------- | ------ | ------ | ---------- | -------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `DeepSeek-V3.2` | `deepseek/deepseek-v3.2` | 131K    | $0.252 | $0.378 | ✅         | none     | ❌ on Novita (no first-party DeepSeek upstream on OpenRouter; cold=0, warm=0) | **`extensions/deepseek/`** (`DEEPSEEK_API_KEY`) — slug claimed by direct plugin                             |
+| `Kimi-K2.6`     | `moonshotai/kimi-k2.6`   | 256K    | $0.80  | $3.50  | unverified | ✅       | ✅ via Moonshot (cold=818, warm=818 — likely shared/warm cache, 0.20x read)   | **`extensions/moonshot/`** (`MOONSHOT_API_KEY` or `KIMI_API_KEY`); also in OpenRouter catalog — direct wins |
+| `MiniMax-M2.7`  | `minimax/minimax-m2.7`   | 196K    | $0.30  | $1.20  | unverified | ✅       | ✅ via Minimax (cold=0 → warm=768; standard write-once, hit-on-warm pattern)  | **`extensions/minimax/`** (`MINIMAX_API_KEY`)                                                               |
 
-Kimi pricing is from `extensions/openrouter/provider-catalog.ts:14-19` (canonical). DeepSeek/MiniMax pricing is from OpenRouter model pages (live).
+Kimi pricing is from `extensions/openrouter/provider-catalog.ts:14-19` (canonical). DeepSeek/MiniMax pricing is from OpenRouter model pages — but **see routing finding below**.
 
 Last empirical verification: 2026-04-25 via `~/dev/workspace/scripts/openrouter-smoke-test.sh`.
+
+### Routing finding (post-merge `b6aa36e473`) — slugs route to direct provider plugins, not OpenRouter
+
+Upstream now ships **dedicated provider plugins** alongside the OpenRouter plugin:
+
+| Plugin                    | Claims slugs                     | Env var(s)                                                           |
+| ------------------------- | -------------------------------- | -------------------------------------------------------------------- |
+| `extensions/deepseek/`    | `deepseek/*`                     | `DEEPSEEK_API_KEY`                                                   |
+| `extensions/moonshot/`    | `moonshotai/*`                   | `MOONSHOT_API_KEY`, `KIMI_API_KEY`                                   |
+| `extensions/minimax/`     | `minimax/*`                      | `MINIMAX_API_KEY`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY` |
+| `extensions/kimi-coding/` | (Kimi coding-specific)           | (separate)                                                           |
+| `extensions/openrouter/`  | `openrouter/*` + curated catalog | `OPENROUTER_API_KEY`                                                 |
+
+**Implication**: when our 3 aliases resolve, they go through the **direct provider plugins**, not OpenRouter — even with the openrouter plugin enabled. Verified empirically:
+
+- Gateway log on restart: `auto-enabled plugins: deepseek/deepseek-v3.2 model configured` (deepseek plugin claimed it)
+- `openclaw models list --provider openrouter` returned `No models found`
+- `openclaw models status` confirmed: `openrouter effective=env:sk-or-v1...17dee082 | source=env: OPENROUTER_API_KEY` — provider auth resolved, but no models surface because the model catalog is only `auto`, `openrouter/hunter-alpha`, `openrouter/healer-alpha`, `moonshotai/kimi-k2.6` (and the moonshot plugin already claims that last one)
+
+### To force OpenRouter routing
+
+Use the `openrouter/` prefix and a curated catalog id:
+
+| Curated id                | Notes                                                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `auto`                    | OpenRouter picks the cheapest matching upstream                                                                                           |
+| `openrouter/hunter-alpha` | Reasoning, text, 1M context — preview, free                                                                                               |
+| `openrouter/healer-alpha` | Reasoning, text+image, 256K — preview, free                                                                                               |
+| `moonshotai/kimi-k2.6`    | Already in catalog, but moonshot plugin wins by default — disable `moonshot` plugin or add explicit provider override to force OpenRouter |
+
+For arbitrary OpenRouter-only models (GLM, Qwen, MiniMax-Audio, etc.), use the slug directly in chat completions calls or extend the plugin catalog.
+
+### Default routing recommendation
+
+| Use case                                        | Route                         | Why                                                                   |
+| ----------------------------------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| Production agent runs, cost-sensitive           | direct provider plugin        | No router markup; first-party caching; fewer hops                     |
+| Models with no direct plugin (GLM, Qwen)        | OpenRouter (`openrouter/...`) | Only available route                                                  |
+| Performance benchmarking / A-B comparison       | both, in parallel             | Direct = canonical baseline; OpenRouter = router-overhead measurement |
+| Preview models (`hunter-alpha`, `healer-alpha`) | OpenRouter only               | Curated previews are router-exclusive                                 |
+
+For the goal of measuring per-job model performance (cost, latency, quality), the canonical setup is **direct plugin for the production path + OpenRouter for the comparison path**. Cost difference on a same-prompt run reveals OpenRouter's routing overhead; latency difference reveals upstream choice penalty.
 
 ---
 
