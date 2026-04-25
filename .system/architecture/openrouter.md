@@ -1,9 +1,37 @@
 # OpenRouter Integration
 
 > Part of [System Architecture](README.md)
-> Verified: 2026-04-25 against https://openrouter.ai/docs
+> Verified: 2026-04-25 against https://openrouter.ai/docs and the bundled `extensions/openrouter/` plugin (post-merge `b6aa36e473`).
 
 OpenRouter is OpenClaw's fourth model provider, alongside Anthropic, OpenAI, and Google. It fronts ~300 models from ~60 upstream hosts via a single OpenAI-compatible endpoint. Use it for models we cannot reach directly: Kimi (Moonshot), GLM (Zhipu), DeepSeek, MiniMax, Qwen.
+
+## Bundled Plugin (`extensions/openrouter/`)
+
+As of 2026-04-25 upstream ships a first-class OpenRouter provider plugin. It replaces the prior hand-rolled `SHELL_ENV_EXPECTED_KEYS` registration and adds image generation, speech, and media-understanding contracts.
+
+| Aspect                | Value / location                                                                                                                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plugin manifest       | `extensions/openrouter/openclaw.plugin.json`                                                                                                                                                         |
+| `id`                  | `openrouter`                                                                                                                                                                                         |
+| `enabledByDefault`    | `true`                                                                                                                                                                                               |
+| `providerAuthEnvVars` | `{ "openrouter": ["OPENROUTER_API_KEY"] }` — flows into `resolveShellEnvExpectedKeys()`                                                                                                              |
+| CLI flag              | `--openrouter-api-key <key>` (registered via `providerAuthChoices`)                                                                                                                                  |
+| Contracts             | `mediaUnderstandingProviders`, `imageGenerationProviders`, `speechProviders` — all `["openrouter"]`                                                                                                  |
+| Public API            | `extensions/openrouter/api.ts` exports `buildOpenrouterProvider`, `buildOpenRouterImageGenerationProvider`, `buildOpenRouterSpeechProvider`, `applyOpenrouterConfig`, `OPENROUTER_DEFAULT_MODEL_REF` |
+| Base URL constant     | `OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"` (canonical; legacy `/v1` normalized)                                                                                                          |
+
+### Curated catalog in the plugin
+
+The plugin's `provider-catalog.ts` ships these models as first-class catalog entries (everything else is reachable but not curated):
+
+| Catalog id                | Name                 | Reasoning | Inputs       | Context | Max tokens | Cost ($/M)                              |
+| ------------------------- | -------------------- | --------- | ------------ | ------- | ---------- | --------------------------------------- |
+| `auto`                    | OpenRouter Auto      | no        | text         | 200K    | 8K         | 0 / 0 (router-billed)                   |
+| `openrouter/hunter-alpha` | Hunter Alpha         | yes       | text         | 1M      | 64K        | 0 / 0 (preview)                         |
+| `openrouter/healer-alpha` | Healer Alpha         | yes       | text + image | 256K    | 64K        | 0 / 0 (preview)                         |
+| `moonshotai/kimi-k2.6`    | MoonshotAI Kimi K2.6 | yes       | text + image | 256K    | 256K       | $0.80 in / $3.50 out / $0.20 cache-read |
+
+The DeepSeek and MiniMax slugs we use (below) are **not in the curated catalog** — they're reached through the same plugin but priced and routed by OpenRouter directly.
 
 ---
 
@@ -32,13 +60,15 @@ X-Title: OpenClaw                            # app display name
 
 ## Registered Model Aliases
 
-Defined in `~/dev/config/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`.
+Defined in `~/dev/config/openclaw.json` under `agents.defaults.models`. Switch with `/model <alias>`. Routed through the bundled `extensions/openrouter/` plugin.
 
-| Alias           | Slug                     | Context | $in/M  | $out/M | Tools      | Thinking | Caching (verified)                                                 |
-| --------------- | ------------------------ | ------- | ------ | ------ | ---------- | -------- | ------------------------------------------------------------------ |
-| `DeepSeek-V3.2` | `deepseek/deepseek-v3.2` | 131K    | $0.252 | $0.378 | ✅         | none     | ❌ on Novita (no upstream first-party DeepSeek host on OpenRouter) |
-| `Kimi-K2.6`     | `moonshotai/kimi-k2.6`   | 256K    | $0.745 | $4.66  | unverified | ✅       | ✅ via Moonshot AI upstream (818 cached on smoke test)             |
-| `MiniMax-M2.7`  | `minimax/minimax-m2.7`   | 196K    | $0.30  | $1.20  | unverified | ✅       | ❌ verified empirically (0 cached on warm pinned call)             |
+| Alias           | Slug                     | Context | $in/M  | $out/M | Tools      | Thinking | Caching (verified)                                              | In plugin catalog |
+| --------------- | ------------------------ | ------- | ------ | ------ | ---------- | -------- | --------------------------------------------------------------- | ----------------- |
+| `DeepSeek-V3.2` | `deepseek/deepseek-v3.2` | 131K    | $0.252 | $0.378 | ✅         | none     | ❌ on Novita (no first-party DeepSeek host on OpenRouter)       | no                |
+| `Kimi-K2.6`     | `moonshotai/kimi-k2.6`   | 256K    | $0.80  | $3.50  | unverified | ✅       | ✅ via Moonshot upstream (818 cached on smoke test, 0.20x read) | **yes**           |
+| `MiniMax-M2.7`  | `minimax/minimax-m2.7`   | 196K    | $0.30  | $1.20  | unverified | ✅       | ❌ verified empirically (0 cached on warm pinned call)          | no                |
+
+Kimi pricing is from `extensions/openrouter/provider-catalog.ts:14-19` (canonical). DeepSeek/MiniMax pricing is from OpenRouter model pages (live).
 
 Last empirical verification: 2026-04-25 via `~/dev/workspace/scripts/openrouter-smoke-test.sh`.
 
@@ -489,3 +519,6 @@ Outputs verified 2026-04-25:
 2. Confirm tool-calling support for Kimi K2.6 and MiniMax M2.7 via a dedicated tool-call smoke test.
 3. Add `OPENROUTER_API_KEY` presence + `/credits` balance check to `scripts/arch-verify.sh`.
 4. Decide which production agent (if any) gets routed to OpenRouter aliases — candidate: quality-critic with `Kimi-K2.6` as a cost-efficient second opinion alongside GPT-5.2.
+5. **Wire `CELAVII_API_KEY` into the new plugin env-var system** (post-merge regression — was in our deleted `SHELL_ENV_EXPECTED_KEYS` array; now needs registration through a custom plugin manifest's `providerAuthEnvVars` or equivalent).
+6. Evaluate whether to use the upstream plugin's image-generation (`buildOpenRouterImageGenerationProvider`) and speech (`buildOpenRouterSpeechProvider`) capabilities — could replace some current Replicate / ElevenLabs paths if quality and cost are competitive.
+7. Consider switching the in-config aliases to use the curated catalog ids (`auto`, `openrouter/hunter-alpha`, `openrouter/healer-alpha`) where appropriate; they get richer metadata in the gateway's model-selection UI.
