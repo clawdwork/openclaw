@@ -40,7 +40,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │               COORDINATOR (Kimi K2.6 via OpenRouter)                │   │
 │  │                                                                      │   │
-│  │  Model: openrouter/moonshotai/kimi-k2.6 (thinkingDefault: high)      │   │
+│  │  Model: openrouter/moonshotai/kimi-k2.6 (thinkingDefault: medium)    │   │
 │  │  Role: Conversation, routing, web search, coordination              │   │
 │  │  Context: 1M tokens, native Google grounding                        │   │
 │  │                                                                      │   │
@@ -107,17 +107,17 @@ This architecture is split into focused modules. Each file is self-contained.
 
 ## Model Hierarchy
 
-| Role               | Model                                 | Alias           | Cost/1M Tokens                                        | Use Case                                                                                                                   |
-| ------------------ | ------------------------------------- | --------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Coordinator**    | `openrouter/moonshotai/kimi-k2.6`     | Kimi-K2.6       | $0.80 in / $3.50 out (cache-read 0.20x)               | Conversation, routing, web search, coordination (thinking=high; replaced Gemini 3 Flash 2026-04-25)                        |
-| **Sales**          | `openai/gpt-5.4-mini`                 | 5.4-Mini        | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                  |
-| **Dev Coder**      | `google/gemini-3-flash-preview`       | Flash           | $0.50 in / $3 out                                     | Everyday coding, scripts, simple deploys, CI/CD                                                                            |
-| **Prod Coder**     | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Complex integrations, APIs, prod-critical code (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced GPT-5.4 2026-04-25) |
-| **Planner**        | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Architecture, strategy, SOTA reasoning (thinking=high, 1.6T MoE, 1M ctx; replaced GPT-5.4 2026-04-25)                      |
-| **Precision**      | `google/gemini-3.1-pro-preview`       | Pro             | $2 in / $12 out                                       | Legal, finance, data, media content (1M ctx)                                                                               |
-| **Quality Critic** | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Review creative outputs (thinking=high, native reasoning + tools + structured output; replaced GPT-5.4 2026-04-25)         |
-| **Grunt**          | `openai/gpt-5.4-nano`                 | 5.4-Nano        | TBD                                                   | File ops, bulk operations, cheapest model                                                                                  |
-| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1       | —               | varies                                                | Multi-provider resilience                                                                                                  |
+| Role               | Model                                 | Alias           | Cost/1M Tokens                                        | Use Case                                                                                                                                                                             |
+| ------------------ | ------------------------------------- | --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Coordinator**    | `openrouter/moonshotai/kimi-k2.6`     | Kimi-K2.6       | $0.80 in / $3.50 out (cache-read 0.20x)               | Conversation, routing, web search, coordination (thinking=medium; replaced Gemini 3 Flash 2026-04-25, downshifted from high 2026-04-25 since routing decisions don't need MoE depth) |
+| **Sales**          | `openai/gpt-5.4-mini`                 | 5.4-Mini        | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                                                                            |
+| **Dev Coder**      | `google/gemini-3-flash-preview`       | Flash           | $0.50 in / $3 out                                     | Everyday coding, scripts, simple deploys, CI/CD                                                                                                                                      |
+| **Prod Coder**     | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Complex integrations, APIs, prod-critical code (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced GPT-5.4 2026-04-25)                                                           |
+| **Planner**        | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Architecture, strategy, SOTA reasoning (thinking=high, 1.6T MoE, 1M ctx; replaced GPT-5.4 2026-04-25)                                                                                |
+| **Precision**      | `google/gemini-3.1-pro-preview`       | Pro             | $2 in / $12 out                                       | Legal, finance, data, media content (1M ctx)                                                                                                                                         |
+| **Quality Critic** | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Review creative outputs (thinking=high, native reasoning + tools + structured output; replaced GPT-5.4 2026-04-25)                                                                   |
+| **Grunt**          | `openai/gpt-5.4-nano`                 | 5.4-Nano        | TBD                                                   | File ops, bulk operations, cheapest model                                                                                                                                            |
+| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1       | —               | varies                                                | Multi-provider resilience                                                                                                                                                            |
 
 ### Domain Sub-Agent Models
 
