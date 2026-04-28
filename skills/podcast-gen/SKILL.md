@@ -1,13 +1,13 @@
 ---
 name: podcast-gen
-description: Generate podcast-style audio conversations from text, files, or URLs using Podcastfy.
+description: Generate podcast-style audio conversations from text, files, or URLs using Podcastfy + MiniMax Speech 2.8 TTS by default.
 user-invocable: false
 metadata:
   {
     "openclaw":
       {
         "emoji": "🎙️",
-        "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY"] },
+        "requires": { "bins": ["uv"], "env": ["GEMINI_API_KEY", "REPLICATE_API_TOKEN"] },
         "primaryEnv": "GEMINI_API_KEY",
       },
   }
@@ -74,11 +74,11 @@ uv run {baseDir}/scripts/generate_podcast.py -f ./report.md -u "https://blog.com
 
 ### TTS provider
 
-| Parameter  | Default | Description                                                                             |
-| ---------- | ------- | --------------------------------------------------------------------------------------- |
-| `--tts`    | `edge`  | TTS provider: `edge` (free), `minimax`, `openai`, `elevenlabs`, `gemini`, `geminimulti` |
-| `--voice1` | auto    | Voice for host 1 (questioner)                                                           |
-| `--voice2` | auto    | Voice for host 2 (answerer)                                                             |
+| Parameter  | Default   | Description                                                                                                                |
+| ---------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--tts`    | `minimax` | TTS provider: `minimax` (default — studio voices), `edge` (free fallback), `openai`, `elevenlabs`, `gemini`, `geminimulti` |
+| `--voice1` | auto      | Voice for host 1 (questioner) — minimax default `English_ManWithDeepVoice`                                                 |
+| `--voice2` | auto      | Voice for host 2 (answerer) — minimax default `Wise_Woman`                                                                 |
 
 ### LLM
 
@@ -164,7 +164,7 @@ uv run {baseDir}/scripts/generate_podcast.py \
 
 - **Always use `./` relative paths** for filenames so OpenClaw can auto-attach via chat.
 - The script prints a `MEDIA:` line for OpenClaw to auto-attach on supported chat providers.
-- Default TTS is Edge (free) — upgrade to OpenAI or ElevenLabs for higher quality.
+- Default TTS is **MiniMax Speech 2.8** (studio quality, ~$0.01/episode). Use `--tts edge` for a free fallback when REPLICATE_API_TOKEN is unavailable.
 - Longform podcasts can take 2–5 minutes to generate depending on content length.
 - Supports 40+ languages for both script and TTS.
 - Do not read the audio back; report the saved path only.

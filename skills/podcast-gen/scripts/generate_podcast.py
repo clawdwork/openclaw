@@ -249,9 +249,9 @@ def main():
 
     # TTS
     parser.add_argument(
-        "--tts", type=str, default="edge",
+        "--tts", type=str, default="minimax",
         choices=["edge", "openai", "elevenlabs", "gemini", "geminimulti", "minimax"],
-        help="TTS provider (default: edge — free, no API key; minimax for MiniMax Speech 2.8 HD)"
+        help="TTS provider (default: minimax — MiniMax Speech 2.8 studio voices; use edge for free fallback)"
     )
     parser.add_argument("--voice1", type=str, help="Voice for host 1 (questioner)")
     parser.add_argument("--voice2", type=str, help="Voice for host 2 (answerer)")
