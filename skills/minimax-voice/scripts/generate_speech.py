@@ -6,7 +6,7 @@
 # ]
 # ///
 """
-Generate speech using MiniMax Speech 2.6 HD via Replicate API.
+Generate speech using MiniMax Speech 2.8 HD via Replicate API.
 
 Usage:
     uv run generate_speech.py --text "Hello world" --filename "output.mp3"
@@ -39,7 +39,7 @@ def get_api_token(provided_token: str | None) -> str | None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate speech using MiniMax Speech 2.6 HD (Replicate)"
+        description="Generate speech using MiniMax Speech 2.8 HD (Replicate)"
     )
     parser.add_argument(
         "--text", "-t",
@@ -101,6 +101,25 @@ def main():
         help="Generate subtitle timestamps"
     )
     parser.add_argument(
+        "--language-boost",
+        default="None",
+        choices=[
+            "None", "Automatic", "English", "Chinese", "Chinese,Yue", "Cantonese",
+            "Arabic", "Russian", "Spanish", "French", "Portuguese", "German",
+            "Turkish", "Dutch", "Ukrainian", "Vietnamese", "Indonesian", "Japanese",
+            "Italian", "Korean", "Thai", "Polish", "Romanian", "Greek", "Czech",
+            "Finnish", "Hindi", "Bulgarian", "Danish", "Hebrew", "Malay", "Persian",
+            "Slovak", "Swedish", "Croatian", "Filipino", "Hungarian", "Norwegian",
+            "Slovenian", "Catalan", "Nynorsk", "Tamil", "Afrikaans",
+        ],
+        help="Locale hint (default: None). Use 'Automatic' for auto-detect or pick a locale.",
+    )
+    parser.add_argument(
+        "--english-normalization",
+        action="store_true",
+        help="Improve number/date pronunciation for English text (small latency cost)",
+    )
+    parser.add_argument(
         "--model", "-m",
         choices=["hd", "turbo"],
         default="hd",
@@ -140,8 +159,8 @@ def main():
 
     # Determine model
     model_map = {
-        "hd": "minimax/speech-2.6-hd",
-        "turbo": "minimax/speech-2.6-turbo",
+        "hd": "minimax/speech-2.8-hd",
+        "turbo": "minimax/speech-2.8-turbo",
     }
     model_id = model_map[args.model]
 
@@ -156,6 +175,8 @@ def main():
         "audio_format": args.audio_format,
         "sample_rate": args.sample_rate,
         "subtitle_enable": args.subtitles,
+        "language_boost": args.language_boost,
+        "english_normalization": args.english_normalization,
     }
 
     char_count = len(args.text)

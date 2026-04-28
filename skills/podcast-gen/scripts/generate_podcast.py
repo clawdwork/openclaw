@@ -116,7 +116,7 @@ def parse_transcript_segments(transcript_text):
     return segments
 
 
-def minimax_tts_segment(text, voice, api_token, model="speech-02-hd", timeout=120, max_retries=5):
+def minimax_tts_segment(text, voice, api_token, model="speech-2.8-hd", timeout=120, max_retries=5):
     """Generate audio for a single text segment using MiniMax via Replicate."""
     import replicate
     import httpx
@@ -124,7 +124,7 @@ def minimax_tts_segment(text, voice, api_token, model="speech-02-hd", timeout=12
     for attempt in range(max_retries):
         try:
             prediction = replicate.predictions.create(
-                model="minimax/speech-02-hd" if model == "speech-02-hd" else "minimax/speech-02-turbo",
+                model="minimax/speech-2.8-hd" if model == "speech-2.8-hd" else "minimax/speech-2.8-turbo",
                 input={
                     "text": text,
                     "voice_id": voice,
@@ -162,7 +162,7 @@ def minimax_tts_segment(text, voice, api_token, model="speech-02-hd", timeout=12
     return resp.content
 
 
-def generate_with_minimax(transcript_text, output_path, voice1, voice2, api_token, model="speech-02-hd"):
+def generate_with_minimax(transcript_text, output_path, voice1, voice2, api_token, model="speech-2.8-hd"):
     """Voice a Podcastfy transcript using MiniMax TTS and concatenate segments."""
     from pydub import AudioSegment
 
@@ -251,7 +251,7 @@ def main():
     parser.add_argument(
         "--tts", type=str, default="edge",
         choices=["edge", "openai", "elevenlabs", "gemini", "geminimulti", "minimax"],
-        help="TTS provider (default: edge — free, no API key; minimax for MiniMax Speech 2.6 HD)"
+        help="TTS provider (default: edge — free, no API key; minimax for MiniMax Speech 2.8 HD)"
     )
     parser.add_argument("--voice1", type=str, help="Voice for host 1 (questioner)")
     parser.add_argument("--voice2", type=str, help="Voice for host 2 (answerer)")
@@ -260,9 +260,9 @@ def main():
         help="Ending message for the podcast"
     )
     parser.add_argument(
-        "--minimax-model", type=str, default="speech-02-turbo",
-        choices=["speech-02-hd", "speech-02-turbo"],
-        help="MiniMax model variant (default: speech-02-turbo for fast; speech-02-hd for studio)"
+        "--minimax-model", type=str, default="speech-2.8-turbo",
+        choices=["speech-2.8-hd", "speech-2.8-turbo"],
+        help="MiniMax model variant (default: speech-2.8-turbo for fast; speech-2.8-hd for studio)"
     )
 
     # LLM

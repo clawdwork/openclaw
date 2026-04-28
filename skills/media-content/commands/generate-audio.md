@@ -18,7 +18,7 @@ read this aloud: [text]
    - **Primary — ElevenLabs** (`sag`): best expressiveness, v3 audio tags, emotion control
      - Requires: `ELEVENLABS_API_KEY`
      - Check credits: if API returns 401/429 or "quota exceeded", switch to fallback
-   - **Fallback — MiniMax Speech 2.6 HD** (`minimax-voice`): 300+ voices, 40+ languages, emotion presets
+   - **Fallback — MiniMax Speech 2.8 HD** (`minimax-voice`): 300+ voices, 40+ languages, emotion presets
      - Requires: `REPLICATE_API_TOKEN`
      - Use when ElevenLabs credits are exhausted or for multilingual content
 3. Select voice and emotion/style appropriate to the content

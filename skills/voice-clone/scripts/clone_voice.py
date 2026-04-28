@@ -108,7 +108,7 @@ def main():
             prediction = client.predictions.create(
                 model="minimax/voice-cloning",
                 input={
-                    "audio": audio_file,
+                    "voice_file": audio_file,
                 },
             )
 
@@ -161,7 +161,7 @@ def main():
             print(f"  Text: {args.text[:80]}{'...' if len(args.text) > 80 else ''}")
 
             demo_prediction = client.predictions.create(
-                model="minimax/speech-2.6-hd",
+                model="minimax/speech-2.8-hd",
                 input={
                     "text": args.text,
                     "voice_id": voice_id,

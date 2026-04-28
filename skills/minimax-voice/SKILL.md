@@ -1,8 +1,8 @@
 ---
 name: minimax-voice
-description: Generate studio-grade speech via MiniMax Speech 2.6 HD/Turbo on Replicate.
+description: Generate studio-grade speech via MiniMax Speech 2.8 HD/Turbo on Replicate.
 user-invocable: false
-homepage: https://replicate.com/minimax/speech-2.6-hd
+homepage: https://replicate.com/minimax/speech-2.8-hd
 metadata:
   {
     "openclaw":
@@ -24,7 +24,7 @@ metadata:
   }
 ---
 
-# MiniMax Speech 2.6 HD (Text-to-Speech)
+# MiniMax Speech 2.8 HD (Text-to-Speech)
 
 Use the bundled script to generate studio-grade speech from text.
 
@@ -77,19 +77,21 @@ API token
 
 Parameters
 
-| Flag            | Options                     | Default                       | Notes                                            |
-| --------------- | --------------------------- | ----------------------------- | ------------------------------------------------ |
-| `--text`        | text                        | (required)                    | Text to synthesize. Use `<#seconds#>` for pauses |
-| `--filename`    | path                        | (required)                    | Output file path                                 |
-| `--voice`       | voice ID                    | `English_expressive_narrator` | 300+ built-in + cloned voices                    |
-| `--emotion`     | see below                   | `auto`                        | Emotion control                                  |
-| `--format`      | `mp3`, `wav`, `flac`, `pcm` | `mp3`                         | Audio format                                     |
-| `--speed`       | 0.5-2.0                     | `1.0`                         | Speech rate                                      |
-| `--pitch`       | -12 to 12                   | `0`                           | Semitone adjustment                              |
-| `--volume`      | 0.1-2.0                     | `1.0`                         | Volume multiplier                                |
-| `--sample-rate` | 8000-48000                  | `32000`                       | Sample rate (Hz)                                 |
-| `--subtitles`   | flag                        | off                           | Generate .titles.json                            |
-| `--model`       | `hd`, `turbo`               | `hd`                          | Quality vs speed                                 |
+| Flag                      | Options                     | Default                       | Notes                                                |
+| ------------------------- | --------------------------- | ----------------------------- | ---------------------------------------------------- |
+| `--text`                  | text                        | (required)                    | Text to synthesize. Use `<#seconds#>` for pauses     |
+| `--filename`              | path                        | (required)                    | Output file path                                     |
+| `--voice`                 | voice ID                    | `English_expressive_narrator` | 300+ built-in + cloned voices                        |
+| `--emotion`               | see below                   | `auto`                        | Emotion control                                      |
+| `--format`                | `mp3`, `wav`, `flac`, `pcm` | `mp3`                         | Audio format                                         |
+| `--speed`                 | 0.5-2.0                     | `1.0`                         | Speech rate                                          |
+| `--pitch`                 | -12 to 12                   | `0`                           | Semitone adjustment                                  |
+| `--volume`                | 0.1-2.0                     | `1.0`                         | Volume multiplier                                    |
+| `--sample-rate`           | 8000-48000                  | `32000`                       | Sample rate (Hz)                                     |
+| `--subtitles`             | flag                        | off                           | Generate .titles.json                                |
+| `--language-boost`        | locale name                 | `None`                        | Hint locale (e.g. `English`, `Spanish`, `Automatic`) |
+| `--english-normalization` | flag                        | off                           | Better number/date pronunciation (English)           |
+| `--model`                 | `hd`, `turbo`               | `hd`                          | Quality vs speed                                     |
 
 Emotions
 
@@ -110,8 +112,8 @@ Model variants
 
 | Model | ID                         | Quality      | Latency | Cost            |
 | ----- | -------------------------- | ------------ | ------- | --------------- |
-| HD    | `minimax/speech-2.6-hd`    | Studio-grade | 2-45s   | $0.10/1K tokens |
-| Turbo | `minimax/speech-2.6-turbo` | High         | <2s     | $0.06/1K tokens |
+| HD    | `minimax/speech-2.8-hd`    | Studio-grade | 2-45s   | $0.10/1K tokens |
+| Turbo | `minimax/speech-2.8-turbo` | High         | <2s     | $0.06/1K tokens |
 
 Popular voices
 
