@@ -22,7 +22,10 @@ import {
   projectOutboundPayloadPlanForDelivery,
 } from "openclaw/plugin-sdk/outbound-runtime";
 import { clearHistoryEntriesIfEnabled } from "openclaw/plugin-sdk/reply-history";
-import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
+import {
+  resolveSendableOutboundReplyParts,
+  stripOutboundDirectivesFromText,
+} from "openclaw/plugin-sdk/reply-payload";
 import type { ReplyPayload } from "openclaw/plugin-sdk/reply-payload";
 import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
 import {
@@ -325,7 +328,7 @@ export const dispatchTelegramMessage = async ({
     accountId: route.accountId,
   });
   const renderDraftPreview = (text: string) => ({
-    text: renderTelegramHtmlText(text, { tableMode }),
+    text: renderTelegramHtmlText(stripOutboundDirectivesFromText(text), { tableMode }),
     parseMode: "HTML" as const,
   });
   const accountBlockStreamingEnabled =

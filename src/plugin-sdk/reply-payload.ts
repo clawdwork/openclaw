@@ -1,6 +1,7 @@
 import type { ReplyPayload as InternalReplyPayload } from "../auto-reply/reply-payload.js";
 import type { ChannelOutboundAdapter } from "../channels/plugins/outbound.types.js";
 import { createReplyToFanout } from "../infra/outbound/reply-policy.js";
+import { splitMediaFromOutput } from "../media/parse.js";
 import { normalizeLowercaseStringOrEmpty, readStringValue } from "../shared/string-coerce.js";
 
 export type { MediaPayload, MediaPayloadInput } from "../channels/plugins/media-payload.js";
@@ -142,16 +143,50 @@ export function hasOutboundReplyContent(
   return hasOutboundText(payload, { trim: options?.trimText }) || hasOutboundMedia(payload);
 }
 
-/** Normalize reply payload text/media into a trimmed, sendable shape for delivery paths. */
+/** Strip `MEDIA:` directive lines and audio tags from outbound text, leaving only the user-facing body. */
+export function stripOutboundDirectivesFromText(text: string): string {
+  if (!text) {
+    return text;
+  }
+  return splitMediaFromOutput(text).text ?? "";
+}
+
+/** Extract `MEDIA:` directive URLs embedded in outbound text (returns empty when none). */
+export function extractOutboundDirectiveMediaUrls(text: string): string[] {
+  if (!text) {
+    return [];
+  }
+  const split = splitMediaFromOutput(text);
+  if (split.mediaUrls?.length) {
+    return split.mediaUrls.map((entry) => entry.trim()).filter(Boolean);
+  }
+  if (split.mediaUrl) {
+    const single = split.mediaUrl.trim();
+    return single ? [single] : [];
+  }
+  return [];
+}
+
+/** Normalize reply payload text/media into a trimmed, sendable shape for delivery paths.
+ *
+ * Recognizes both pre-extracted `payload.mediaUrls`/`payload.mediaUrl` and `MEDIA:` directives
+ * still embedded in the text. The returned `text` is left raw (callers downstream are expected
+ * to strip directives at their own rendering boundary via `stripOutboundDirectivesFromText`); we
+ * only widen `mediaUrls`/`hasMedia` so gating logic correctly defers to the media-attach path.
+ */
 export function resolveSendableOutboundReplyParts(
   payload: { text?: string; mediaUrls?: string[]; mediaUrl?: string },
   options?: { text?: string },
 ): SendableOutboundReplyParts {
   const text = options?.text ?? payload.text ?? "";
   const trimmedText = text.trim();
-  const mediaUrls = resolveOutboundMediaUrls(payload)
+  const explicitMediaUrls = resolveOutboundMediaUrls(payload)
     .map((entry) => entry.trim())
     .filter(Boolean);
+  const directiveMediaUrls = explicitMediaUrls.length
+    ? []
+    : extractOutboundDirectiveMediaUrls(text);
+  const mediaUrls = explicitMediaUrls.length ? explicitMediaUrls : directiveMediaUrls;
   const mediaCount = mediaUrls.length;
   const hasText = Boolean(trimmedText);
   const hasMedia = mediaCount > 0;
