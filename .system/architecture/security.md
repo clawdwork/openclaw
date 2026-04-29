@@ -28,9 +28,23 @@ REPLICATE_API_TOKEN=          # ← Replicate API token for model inference
 # SEO COMPETITIVE INTELLIGENCE
 APIFY_API_TOKEN=              # ← Apify token for Ahrefs/Semrush/SERP scrapers
 
+# GOOGLE APIs (Search Console, Indexing, CrUX, GA4 Data)
+GOOGLE_APPLICATION_CREDENTIALS=  # ← Path to service-account JSON (e.g. ~/.config/celavii-seo/service-account.json)
+GOOGLE_GSC_PROPERTY=             # ← celavii.com (GSC property; service account auto-discovers sc-domain: vs https:// form)
+
 # CREATOR INTELLIGENCE (shared across all agents)
 CELAVII_API_KEY=              # ← cvii_live_* key from Celavii dashboard
 ```
+
+### Google Service Account (SEO + Blog Google APIs)
+
+| Path                                         | Permission | Purpose                                                               |
+| -------------------------------------------- | ---------- | --------------------------------------------------------------------- |
+| `~/.config/celavii-seo/`                     | 700        | Directory for SEO/Blog Google API config                              |
+| `~/.config/celavii-seo/service-account.json` | 600        | GCP service-account key (Search Console + Indexing + CrUX + GA4 Data) |
+| `~/.config/celavii-seo/google-api.json`      | 600        | Per-property settings (GSC property, GA4 property ID)                 |
+
+Service account email (`celavii-seo@<project>.iam.gserviceaccount.com`) must be added as: User in Search Console property settings, Owner in Indexing API allowed list, Viewer on the GA4 property. Reused `GEMINI_API_KEY` covers `gemini-embedding-2-preview` (cannibalization detection) and Gemini TTS (audio replacement). No new monthly spend.
 
 ### Permissions
 

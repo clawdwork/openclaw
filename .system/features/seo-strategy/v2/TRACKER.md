@@ -1,6 +1,6 @@
 # SEO + Blog Skills Upgrade — Implementation Tracker
 
-> **Last Updated:** 2026-04-27 (proposal v1.2 — Q1-Q6 answered, awaiting Q7 + Phase 1 start)
+> **Last Updated:** 2026-04-28 (Phase 1 agent work COMPLETE — 1.2.1-7 + 1.3 + 1.4.1-7 + 1.6 all done; 1.7 + Phase 1.5 awaiting 1.1 user GCP setup; 1.1 deferred per user direction 2026-04-28)
 > **Reference:** [IMPLEMENTATION.md](./IMPLEMENTATION.md)
 > **Research backing:** [docs/repos.md](docs/repos.md) | [docs/frameworks.md](docs/frameworks.md) | [docs/integration-recommendations.md](docs/integration-recommendations.md)
 > **Dry-run findings:** `DRY-RUN-FINDINGS.md` (created during Phase 1.5)
@@ -16,7 +16,7 @@
 
 ## Phase 19: Approval & Open Questions (PENDING ⏳)
 
-> Maps to IMPLEMENTATION §19. Numbering matches IMPLEMENTATION 1:1.
+> Maps to IMPLEMENTATION §19. NumbLetsering matches IMPLEMENTATION 1:1.
 
 ### 19.1 User Review
 
@@ -57,44 +57,46 @@
 
 ### 1.2 Vendor Google API Scripts (Agent, ~2h)
 
-- [ ] **1.2.1** Copy `google_auth.py` from `~/dev/research/claude-seo/skills/seo-google/scripts/`
-- [ ] **1.2.2** Copy `gsc_query.py`
-- [ ] **1.2.3** Copy `gsc_inspect.py`
-- [ ] **1.2.4** Copy `indexing_notify.py`
-- [ ] **1.2.5** Copy `crux_history.py`
-- [ ] **1.2.6** Copy `ga4_report.py`
-- [ ] **1.2.7** Vendor `requirements.txt` + create venv at `~/dev/workspace/skills/seo/scripts/venv/`
+- [x] **1.2.1** Copy `google_auth.py` from `~/dev/research/claude-seo/scripts/` ✅
+- [x] **1.2.2** Copy `gsc_query.py` ✅
+- [x] **1.2.3** Copy `gsc_inspect.py` ✅
+- [x] **1.2.4** Copy `indexing_notify.py` ✅
+- [x] **1.2.5** Copy `crux_history.py` ✅
+- [x] **1.2.6** Copy `ga4_report.py` ✅
+- [x] **1.2.7** Vendor `requirements-google.txt` + create venv at `~/dev/workspace/skills/seo/scripts/venv/` ✅ (Python 3.14, all deps installed, imports verified)
 - [ ] **1.2.8** Add `GOOGLE_APPLICATION_CREDENTIALS` + `GOOGLE_GSC_PROPERTY=celavii.com` to `~/.openclaw/.env` (reuse existing `GEMINI_API_KEY`)
 - [ ] **1.2.9** Register new env keys in `SHELL_ENV_EXPECTED_KEYS` at `openclaw/src/config/io.ts`
-- [ ] **1.2.10** Adapt `google_auth.py` to service account auth; `python google_auth.py --test` returns "Authenticated as celavii-seo@..."
+- [ ] **1.2.10** Run `python google_auth.py --check` (script natively supports service account; just needs config file at `~/.config/celavii-seo/google-api.json`)
+
+> Sub-tasks 1.2.1-1.2.6 also copied 10 reference docs into `skills/seo/seo-google/references/` + LICENSE.txt. Config paths in all 6 scripts adapted from `claude-seo` → `celavii-seo` namespace.
 
 ### 1.3 Skill Wrappers (Agent, ~1h)
 
-- [ ] **1.3.1** Author `~/dev/workspace/skills/seo/seo-google/SKILL.md`
-- [ ] **1.3.2** Author `~/dev/workspace/skills/blogger/blog-google/SKILL.md`
-- [ ] **1.3.3** Update `seo-orchestrator/SKILL.md` routing table (5 new commands)
-- [ ] **1.3.4** Update `blog-orchestrator/SKILL.md` (1 new command)
-- [ ] **1.3.5** Modify `blog_finalize.py` — auto-call `indexing_notify.py` on publish
+- [x] **1.3.1** Author `~/dev/workspace/skills/seo/seo-google/SKILL.md` ✅
+- [x] **1.3.2** Author `~/dev/workspace/skills/blogger/blog-google/SKILL.md` ✅
+- [x] **1.3.3** Update `seo-orchestrator/SKILL.md` routing table (5 new commands added) ✅
+- [x] **1.3.4** Update `blog-orchestrator/SKILL.md` (added `blog-google` to Sub-Skills table, count 13→14) ✅
+- [x] **1.3.5** Modify `blog_finalize.py` — added `--publish` flag + `auto_submit_on_publish()` function. Auto-calls `indexing_notify.py` + `drift_baseline.py` (graceful skip if Phase 2 not done yet). Syntax validated. ✅
 
 ### 1.4 Plugin + Hooks + Constitutional Scaffolding (Agent, ~1.5h)
 
-- [ ] **1.4.1** Create `~/dev/workspace/skills/seo/.claude-plugin/plugin.json` (`celavii-seo` v0.1.0, MIT)
-- [ ] **1.4.2** Create `~/dev/workspace/skills/blogger/.claude-plugin/plugin.json` (`celavii-blog` v0.1.0, MIT)
-- [ ] **1.4.3** Author `~/dev/workspace/skills/seo/hooks/hooks.json` (placeholder for Phase 2D)
-- [ ] **1.4.4** Author `~/dev/workspace/skills/blogger/hooks/hooks.json` (placeholder for Phase 2D)
-- [ ] **1.4.5** Author `~/.claude/rules/seo-constitution.md`
-- [ ] **1.4.6** Author `~/.claude/rules/blog-constitution.md` (anti-slop rules, voice rules, link minimums)
-- [ ] **1.4.7** Cross-reference both from `~/.claude/rules/celavii-design-system.md`
+- [x] **1.4.1** Create `~/dev/workspace/skills/seo/.claude-plugin/plugin.json` (`celavii-seo` v0.1.0, MIT) ✅ + NOTICE file
+- [x] **1.4.2** Create `~/dev/workspace/skills/blogger/.claude-plugin/plugin.json` (`celavii-blog` v0.1.0, MIT) ✅ + NOTICE file
+- [x] **1.4.3** Author `~/dev/workspace/skills/seo/hooks/hooks.json` (Phase 1 placeholder, Phase 2D wiring documented inline) ✅
+- [x] **1.4.4** Author `~/dev/workspace/skills/blogger/hooks/hooks.json` (Phase 1 placeholder, Phase 2D wiring documented inline) ✅
+- [x] **1.4.5** Author `~/dev/workspace/skills/seo/references/constitution.md` (14 articles) ✅ — corrected path: skill-internal references/, not `.claude/rules/` (rejected). Skills are openclaw-pipeline-loaded; constitution ships with the skill pack.
+- [x] **1.4.6** Author `~/dev/workspace/skills/blogger/references/constitution.md` (12 articles) ✅ — corrected path: skill-internal references/.
+- [x] **1.4.7** Cross-reference from `seo-orchestrator/SKILL.md` (Reference Files section) + `blog-orchestrator/SKILL.md` (Shared References section) ✅
 
 > **Note**: Phase 1 sub-sections skip `1.5` to avoid collision with Phase 1.5 (Dry-Run).
 
 ### 1.6 Architecture Updates (Agent, ~30 min)
 
-- [ ] **1.6.1** Update `openclaw/.system/architecture/security.md` — Google API key entries
-- [ ] **1.6.2** Update `openclaw/.system/architecture/VALUES.md` — API Keys table
-- [ ] **1.6.3** Update `openclaw/.system/architecture/skills.md` — increment counts (35→36 SEO, 16→17 Blog)
-- [ ] **1.6.4** Append CHANGELOG entry: "Added Google API integration to SEO + Blog stacks"
-- [ ] **1.6.5** Run `openclaw/scripts/arch-verify.sh` — expect 0 failures
+- [x] **1.6.1** Update `openclaw/.system/architecture/security.md` — added Google API env vars (`GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_GSC_PROPERTY`) + service-account credentials table ✅
+- [x] **1.6.2** Update `openclaw/.system/architecture/VALUES.md` — bumped SKILL.md count 125→127; added 2 Google API rows to API Keys table (status: Pending Phase 1.1) ✅
+- [x] **1.6.3** Update `openclaw/.system/architecture/skills.md` — SEO 18→19 (added `seo-google`), Blogger 15→16 (added `blog-google`), header total 92→94 ✅
+- [x] **1.6.4** Append CHANGELOG entry — 2026-04-28 entry covering Google API vendoring, env vars, plugin manifests, blog_finalize.py extension, $0 net new cost ✅
+- [!] **1.6.5** Run `openclaw/scripts/arch-verify.sh` — completed; 1 pre-existing failure (`CELAVII_API_KEY` literal-grep against `src/config/io.ts` while real registration lives in `src/config/shell-env-expected-keys.ts` via dynamic provider/channel resolvers). **0 new regressions introduced by Phase 1.6.** Pre-existing failure is tech debt outside Phase 1 scope.
 
 ### 1.7 Acceptance Criteria
 
@@ -297,17 +299,24 @@ Total Phase 1-3: ~8 days agent work + ~40 min user setup. Phase 4 deferrable.
 
 (Populated as work progresses.)
 
-| ID  | Phase | Issue      | Status | Resolution |
-| --- | ----- | ---------- | ------ | ---------- |
-| —   | —     | (none yet) | —      | —          |
+| ID  | Phase  | Issue                                                                                      | Status              | Resolution                                                                                                          |
+| --- | ------ | ------------------------------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| B1  | 1.4.5  | `seo-constitution.md` Write rejected (wrong path)                                          | resolved 2026-04-28 | Authored at `skills/seo/references/constitution.md` (skill-internal, openclaw pipeline loads it)                    |
+| B2  | 1.4.6  | `blog-constitution.md` Write rejected (wrong path)                                         | resolved 2026-04-28 | Authored at `skills/blogger/references/constitution.md`                                                             |
+| B3  | 1.1    | User-led GCP setup (~20 min, 7 sub-tasks)                                                  | pending             | User to perform 1.1.1-1.1.7 in parallel with agent work                                                             |
+| B4  | 1.2.10 | Auth test requires service account JSON from B3                                            | pending             | Will run after B3 completes                                                                                         |
+| B5  | 1.6.5  | Pre-existing arch-verify CELAVII_API_KEY failure (literal grep against `src/config/io.ts`) | open                | Out of Phase 1 scope; real registration lives in `shell-env-expected-keys.ts`. Verifier check needs a separate fix. |
 
 ---
 
 ## Change Log
 
-| Date       | Version | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ---------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-04-27 | 1.0     | Initial proposal at v1 location (later moved)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| 2026-04-27 | 1.1     | Validation v1.1 applied: added 14 critical design rules, dry-run phase, plugin scaffolding, constitutional files, cross-model critic config, embeddings-based cannibalization, hooks wiring, license compliance, skill-to-repo cheat sheet, 7 open questions, 12 anti-patterns. Moved to `seo-strategy/v2/`. Added research-grounding docs (`docs/`) + this TRACKER.md.                                                                                                                                                                         |
-| 2026-04-27 | 1.1.1   | Drift fix: folded Constitutional sub-section into §1.4 (now 1.4.5-1.4.7); skipped sub-section 1.5 in Phase 1 (collision with Phase 1.5 Dry-Run); flattened TRACKER dry-run from 1.5.1.x/1.5.2.x → 1.5.1-1.5.9; added §1.7.7 (plugin manifests check); reconciled approval section with IMPLEMENTATION §19; added §16 license compliance tracking; renamed PROJ.x → 12.17-12.20. Now every TRACKER ID maps 1:1 to IMPLEMENTATION ID.                                                                                                             |
-| 2026-04-27 | 1.2     | User feedback applied: (1) OAuth → service account auth (simpler, no token rotation); (2) embeddings → `gemini-embedding-2-preview` 768d reusing existing `GEMINI_API_KEY` (matches social_listener pattern); (3) cross-model critic → existing Kimi K2.6/Gemini 3 Flash generator + DeepSeek V4 Pro critic (no Opus needed); (4) Phase 4B audio promoted from optional → mandatory in Phase 1 timeline; (5) net new monthly cost dropped from ~$2 → $0. Q1-Q6 marked answered; only Q7 (final scope green-light) + Phase 1 commitment pending. |
+| Date       | Version | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-04-27 | 1.0     | Initial proposal at v1 location (later moved)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 2026-04-27 | 1.1     | Validation v1.1 applied: added 14 critical design rules, dry-run phase, plugin scaffolding, constitutional files, cross-model critic config, embeddings-based cannibalization, hooks wiring, license compliance, skill-to-repo cheat sheet, 7 open questions, 12 anti-patterns. Moved to `seo-strategy/v2/`. Added research-grounding docs (`docs/`) + this TRACKER.md.                                                                                                                                                                                      |
+| 2026-04-27 | 1.1.1   | Drift fix: folded Constitutional sub-section into §1.4 (now 1.4.5-1.4.7); skipped sub-section 1.5 in Phase 1 (collision with Phase 1.5 Dry-Run); flattened TRACKER dry-run from 1.5.1.x/1.5.2.x → 1.5.1-1.5.9; added §1.7.7 (plugin manifests check); reconciled approval section with IMPLEMENTATION §19; added §16 license compliance tracking; renamed PROJ.x → 12.17-12.20. Now every TRACKER ID maps 1:1 to IMPLEMENTATION ID.                                                                                                                          |
+| 2026-04-27 | 1.2     | User feedback applied: (1) OAuth → service account auth (simpler, no token rotation); (2) embeddings → `gemini-embedding-2-preview` 768d reusing existing `GEMINI_API_KEY` (matches social_listener pattern); (3) cross-model critic → existing Kimi K2.6/Gemini 3 Flash generator + DeepSeek V4 Pro critic (no Opus needed); (4) Phase 4B audio promoted from optional → mandatory in Phase 1 timeline; (5) net new monthly cost dropped from ~$2 → $0. Q1-Q6 marked answered; only Q7 (final scope green-light) + Phase 1 commitment pending.              |
+| 2026-04-28 | exec    | Phase 1 execution started (commit `369cbd002a`). Completed: 1.2.1-1.2.7 (vendored 6 scripts + 10 references + LICENSE; venv created with Python 3.14 + Google API libs verified); 1.3.1-1.3.5 (seo-google + blog-google SKILL.md authored, both orchestrators updated, blog_finalize.py extended with `--publish` flag + `auto_submit_on_publish()` function, syntax validated); 1.4.1-1.4.4 (4 plugin manifests + 2 NOTICE files + 2 hooks.json placeholders authored). Blocked: 1.4.5/1.4.6 constitutional file writes rejected — awaiting user direction. |
+| 2026-04-28 | exec    | Phase 1.6 architecture updates completed: security.md (Google API env vars + service-account credentials table); VALUES.md (SKILL.md count 125→127, 2 new API key rows pending Phase 1.1); skills.md (SEO 18→19 with seo-google, Blogger 15→16 with blog-google, header total 92→94); CHANGELOG entry appended; arch-verify.sh shows 1 pre-existing CELAVII_API_KEY failure (B5) — 0 new regressions from Phase 1.6 work.                                                                                                                                    |
+| 2026-04-28 | exec    | B1/B2 resolved: constitutional files authored at corrected skill-internal paths (`skills/seo/references/constitution.md` 14 articles + `skills/blogger/references/constitution.md` 12 articles). Original `.claude/rules/` path was wrong (these skills are openclaw-pipeline-loaded; constitution ships with the skill pack via `references/` convention, matching existing `quality-gates.md`, `eeat-framework.md`, etc.). 1.4.7 cross-references added in both orchestrators. Phase 1 agent work now COMPLETE.                                            |

@@ -37,7 +37,7 @@ This proposal does NOT replace our internal stack. It augments it. We retain our
 | `~/dev/workspace/projects/celavii/research/seo/strategy-state-v2-2026-04-27.json`                                                | Current state + indexation diagnosis                                        | New skills feed this same audit trail                 |
 | `~/dev/research/claude-seo/skills/seo-google/`                                                                                   | All Google API scripts                                                      | Direct vendor source                                  |
 | `~/dev/research/claude-blog/skills/blog-google/`                                                                                 | Same scripts surfaced from blog orchestrator                                | Confirms one-time setup unlocks both                  |
-| `~/.claude/rules/celavii-design-system.md`                                                                                       | Brand voice, banned language                                                | Constitutional principle file foundation              |
+| `~/dev/openclaw/.claude/rules/social-constitution.md`                                                                            | Brand voice, banned language, gate principles (10 articles)                 | Constitutional principle file pattern                 |
 
 ---
 
@@ -65,7 +65,7 @@ Phase 1: CRITICAL — Google API foundation + plugin scaffolding
   ├─ seo-google + blog-google — one Google Cloud project unlocks BOTH
   ├─ .claude-plugin/plugin.json (celavii-seo + celavii-blog)
   ├─ hooks/hooks.json (PostToolUse content validation)
-  └─ .claude/rules/{seo,blog}-constitution.md (constitutional principle files)
+  └─ skills/{seo,blogger}/references/constitution.md (skill-internal constitutional principle files; openclaw pipeline loads via skill invocation)
 ```
 
 ### Layer Properties
@@ -195,9 +195,9 @@ Both pulled clean (claude-seo +96 commits, claude-blog reset to origin).
 - [ ] **1.4.2** Create `~/dev/workspace/skills/blogger/.claude-plugin/plugin.json` — name `celavii-blog`, version 0.1.0, MIT license, NOTICE for vendored scripts
 - [ ] **1.4.3** Author `~/dev/workspace/skills/seo/hooks/hooks.json` — placeholder for Phase 2 PostToolUse content validation
 - [ ] **1.4.4** Author `~/dev/workspace/skills/blogger/hooks/hooks.json` — placeholder for Phase 2 PostToolUse content validation
-- [ ] **1.4.5** Author `~/.claude/rules/seo-constitution.md` — every claim cites a source, every keyword target verified in arsenal, every link silo-prefixed, every report cites tool used
-- [ ] **1.4.6** Author `~/.claude/rules/blog-constitution.md` — anti-slop rules (banned: "delve", "tapestry", "multifaceted", "navigate the landscape"), voice rules, internal-link minimums (≥6), citation requirements
-- [ ] **1.4.7** Cross-reference both constitutions from `~/.claude/rules/celavii-design-system.md`
+- [x] **1.4.5** Author `~/dev/workspace/skills/seo/references/constitution.md` — 14 articles (intake-first, deterministic aggregate, raw archive accumulation, evidence rules, atomic skills, PROJECT.md registration, dry-run indexing, cross-model critic, iteration cap, anti-slop rubric, cosine ≥0.85, force-fresh URL inspection, GA4 DDA, canonical-only baselines). Skill-internal path; openclaw pipeline loads at skill invocation. ✅
+- [x] **1.4.6** Author `~/dev/workspace/skills/blogger/references/constitution.md` — 12 articles (specificity, sourced claims, distinctive POV, banned language, cross-model critic, iteration cap, cannibalization threshold, PROJECT.md registration, URL silo routing, auto-submit on publish, audio versioning, locked published dir). Skill-internal path. ✅
+- [x] **1.4.7** Cross-reference both constitutions from `seo-orchestrator/SKILL.md` (Reference Files section) + `blog-orchestrator/SKILL.md` (Shared References section). ✅
 
 #### 1.5 Architecture Updates
 
@@ -345,7 +345,7 @@ Both pulled clean (claude-seo +96 commits, claude-blog reset to origin).
 
 - [ ] **4C.1** Copy `blog-persona/SKILL.md` → `~/dev/workspace/skills/blogger/blog-persona/SKILL.md`
 - [ ] **4C.2** Encode Celavii brand voice as `.styles/celavii/voice.json` (NN/g 4D vector + Mailchimp tone-by-context)
-- [ ] **4C.3** Cross-reference from blog-constitution.md
+- [ ] **4C.3** Cross-reference from `skills/blogger/references/constitution.md`
 - [ ] **4C.4** Acceptance: `/blog persona apply <draft>` flags voice deviations
 
 **Estimated effort**: 4-6 hours (only if executed)
@@ -546,9 +546,11 @@ skills/blogger/
     ├── source_validator.py                [Phase 2]
     └── cannibalization_detector.py        [Phase 2 — embeddings, custom build]
 
-~/.claude/rules/
-├── seo-constitution.md                    [Phase 1]
-└── blog-constitution.md                   [Phase 1]
+skills/seo/references/
+└── constitution.md                        [Phase 1 — 14 articles; skill-internal, openclaw pipeline loads]
+
+skills/blogger/references/
+└── constitution.md                        [Phase 1 — 12 articles; skill-internal, openclaw pipeline loads]
 
 .styles/celavii/
 └── voice.json                             [Phase 4C OPT]
@@ -577,7 +579,8 @@ openclaw/.system/architecture/security.md  [Phase 1+3 — document new API keys]
 openclaw/.system/architecture/VALUES.md    [Phase 1+3 — update API Keys table]
 openclaw/.system/architecture/skills.md    [all phases — increment skill counts]
 openclaw/.system/architecture/CHANGELOG.md [each phase — append entry]
-~/.claude/rules/celavii-design-system.md   [Phase 1.5 — cross-reference constitutions]
+skills/seo/seo-orchestrator/SKILL.md       [Phase 1.4.7 — cross-reference seo/references/constitution.md]
+skills/blogger/blog-orchestrator/SKILL.md  [Phase 1.4.7 — cross-reference blogger/references/constitution.md]
 ```
 
 ### Untouched (defended)
