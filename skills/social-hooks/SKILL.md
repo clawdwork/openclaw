@@ -24,6 +24,25 @@ Dedicated hook generation library with formulas, templates, and a systematic wri
 - Carousels with strong hooks get **1.9× higher reach** than single-image posts
 - First slide/line determines **70% of engagement** outcome
 - Average scroll speed: **3-4 posts per second** — you have 0.3 seconds to stop them
+- 2026 reality: **save rate + retention rate** beat like rate as virality predictors. Optimize for the 3-second hold. (Reference: [`docs/frameworks.md § 7`](file:///Users/operator/dev/openclaw/.system/features/social-strategy/docs/frameworks.md))
+
+---
+
+## 5 Canonical Archetypes (Phase B18)
+
+Every "X hooks" listicle on the internet traces back to these 5 root archetypes. The 6 tactical categories below are practical instantiations.
+
+| #   | Archetype             | Mechanism                                   | Maps to category                        |
+| --- | --------------------- | ------------------------------------------- | --------------------------------------- |
+| 1   | **Curiosity Gap**     | Withhold key info; medium gap (Loewenstein) | Curiosity / Cliffhanger                 |
+| 2   | **Contrarian Take**   | Challenge conventional wisdom               | Mistake / Myth                          |
+| 3   | **Story Hook**        | Narrative cold-open, in-medias-res          | (often combined with Curiosity)         |
+| 4   | **Authority Claim**   | Credibility-first, data-led                 | Statistic                               |
+| 5   | **Pattern Interrupt** | Contrasting opposites; format break         | (visual-driven; cuts across categories) |
+
+Question hooks + Promise hooks + Step-by-Step lists are tactical _delivery_ formats — they each carry one of the 5 underlying archetypes in their first frame.
+
+When `social-hooks generate` produces variants, each variant is tagged with an archetype + a tactical category, then scored on the 4-axis rubric below.
 
 ---
 
@@ -328,3 +347,84 @@ When generating content via `celavii-social`, reference this skill for hook sele
 - Buffer Content Repurposing Guide
 - Hootsuite Digital Trends 2025
 - Later 2025 Social Media Benchmark Report
+- [Opus.pro — TikTok Hook Formulas](https://www.opus.pro/blog/tiktok-hook-formulas) — 3-second hold metric
+- [Justin Welsh — Anatomy of a Viral LinkedIn Post](https://www.justinwelsh.me/newsletter/the-anatomy-of-a-viral-linkedin-post)
+- [Mewse — Curiosity Hooks (Loewenstein information gap)](https://mewse.ai/curiosity-hooks)
+
+---
+
+## Phase B18 — Modes + CLI
+
+### Mode A — Generate variants from a brief
+
+```bash
+social-hooks generate --brief content/social/briefs/celavii-tt-001-brief.md \
+  --archetypes all --count 5
+```
+
+Output (saved alongside brief at `content/social/briefs/celavii-tt-001-hooks.md`):
+
+```markdown
+## Hook Variants — celavii-tt-001
+
+### Variant 1 — Curiosity Gap (tactical: Statistic)
+
+> "I scored 5K creator profiles. The #1 fake-follower tell isn't what you think."
+
+- Specificity: 8/10 (concrete number, named action)
+- Gap size: medium ✓
+- Archetype clarity: 9/10
+- 3s-hold prediction: 0.72
+- Score: 8.0
+```
+
+### Mode B — Score an existing hook
+
+```bash
+social-hooks score --text "Most agencies are wrong about creator analytics. Here's why."
+```
+
+### Mode C — Extract archetypes from competitor posts
+
+Used by `social-aggregate` Phase 3 — given competitor hooks (extracted by `social-competitor-scrape`), tag with archetype and surface dominant archetypes per competitor.
+
+```bash
+social-hooks extract --raw raw/celavii-modaberlin-tiktok-posts-*.json
+```
+
+### 4-Axis Scoring Rubric
+
+| Axis                              | Weight | Method                                                              |
+| --------------------------------- | ------ | ------------------------------------------------------------------- |
+| Specificity                       | 30%    | Real numbers + named entities + concrete examples (≥3 = full score) |
+| Gap-size (Curiosity / Contrarian) | 25%    | Medium ideal; too obvious = low, too cryptic = low                  |
+| Archetype clarity                 | 20%    | Single dominant archetype, not a muddle                             |
+| 3s-hold prediction                | 25%    | Heuristic: first 3 words contain (number, verb, name) → high        |
+
+### Anti-Slop Filter (Constitution Article 5)
+
+Reject any hook containing forbidden phrases or AI-slop tells from `~/dev/workspace/.styles/celavii/voice.json`. Hard-fail on: "delve", "tapestry", "harness the power", "navigate the landscape", "in conclusion", "in today's fast-paced".
+
+### Channel Voice Override
+
+Hooks adopt channel voice (`~/dev/workspace/.styles/celavii/voice.json#channel_overrides`):
+
+- **Elioth**: first-person, candid → favor Story + Authority
+- **Celavii**: educational, data-rich → favor Authority + Curiosity Gap
+- **CutMaster**: snappy, demo-driven → favor Pattern Interrupt + Contrarian
+
+### Integration
+
+- Called by `social-brief` Mode B (generate hook variants)
+- Called by `social-aggregate` Mode E (extract archetypes from competitor data)
+- Output consumed by Gate C scoring (`social-quality`)
+- Feeds `state.phases.analyze.patterns.{competitor}.common_hooks`
+
+### Status
+
+- [x] Pre-existing 6-category framework (kept as tactical catalog above)
+- [x] 5-archetype foundation layer (added Phase B18)
+- [x] 4-axis scoring rubric documented
+- [ ] `scripts/score_hook.py` — 4-axis scorer (Phase B18.1)
+- [ ] `scripts/generate_variants.py` — LLM-driven variant generator (Phase B18.1)
+- [ ] Smoke test against 10 sample briefs (Phase B18.2)

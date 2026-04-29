@@ -99,39 +99,102 @@ social-drift monitor --channels elioth,celavii,cutmaster --frequency daily
 
 Compare current channel voice against `.styles/celavii/voice.json` channel target. Calls `social-persona enforce` over last N posts → averages 4-D vector → reports per-axis drift.
 
-## SQLite Schema (planned)
+## SQLite Schema (Phase B16)
 
 ```sql
-CREATE TABLE post_snapshots (
-  id INTEGER PRIMARY KEY,
-  post_id TEXT NOT NULL,
-  channel TEXT NOT NULL,
-  platform TEXT NOT NULL,
-  url_hash TEXT NOT NULL,
-  captured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  caption TEXT,
-  hashtags JSON,
-  metrics JSON,
-  status TEXT,
-  raw_file TEXT
+-- post_snapshots: per-post timestamped snapshots
+CREATE TABLE IF NOT EXISTS post_snapshots (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id      TEXT NOT NULL,
+  channel      TEXT NOT NULL,
+  platform     TEXT NOT NULL,
+  url_hash     TEXT NOT NULL,                    -- sha256(normalized_url)
+  captured_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  caption      TEXT,
+  hashtags     JSON,                              -- ["#celavii", ...]
+  metrics      JSON,                              -- {likes, comments, saves, views, ...}
+  status       TEXT CHECK (status IN ('live','deleted','hidden')),
+  raw_file     TEXT                               -- path to raw/celavii-{post}-{ts}.json
 );
 
-CREATE INDEX idx_post_channel_time ON post_snapshots(channel, captured_at DESC);
+CREATE INDEX IF NOT EXISTS idx_post_channel_time ON post_snapshots(channel, captured_at DESC);
+CREATE INDEX IF NOT EXISTS idx_post_id          ON post_snapshots(post_id);
+CREATE INDEX IF NOT EXISTS idx_url_hash         ON post_snapshots(url_hash);
 
-CREATE TABLE channel_baselines (
-  id INTEGER PRIMARY KEY,
-  channel TEXT NOT NULL,
-  platform TEXT NOT NULL,
-  captured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  followers INTEGER,
-  median_er REAL,
-  posts_per_week REAL,
-  format_mix JSON,
-  voice_4d JSON
+-- channel_baselines: per-channel per-platform rolling baseline
+CREATE TABLE IF NOT EXISTS channel_baselines (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  channel         TEXT NOT NULL,
+  platform        TEXT NOT NULL,
+  captured_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  followers       INTEGER,
+  median_er       REAL,
+  posts_per_week  REAL,
+  format_mix      JSON,                          -- {reel: 0.4, carousel: 0.3, ...}
+  voice_4d        JSON                           -- {humor: 0.2, formality: -0.3, ...}
 );
 
-CREATE INDEX idx_baselines_channel_time ON channel_baselines(channel, platform, captured_at DESC);
+CREATE INDEX IF NOT EXISTS idx_baselines_channel_time
+  ON channel_baselines(channel, platform, captured_at DESC);
+
+-- voice_snapshots: per-channel rolling voice 4-D vector
+CREATE TABLE IF NOT EXISTS voice_snapshots (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  channel         TEXT NOT NULL,
+  captured_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  source_post_ids JSON,                          -- which posts were averaged
+  humor           REAL,
+  formality       REAL,
+  respectfulness  REAL,
+  enthusiasm      REAL,
+  drift_vs_target JSON                           -- {humor: 0.05, formality: -0.20, ...}
+);
+
+CREATE INDEX IF NOT EXISTS idx_voice_channel_time
+  ON voice_snapshots(channel, captured_at DESC);
+
+-- drift_alerts: log of CRITICAL/WARNING fires
+CREATE TABLE IF NOT EXISTS drift_alerts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  fired_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  rule_id      TEXT NOT NULL,                    -- "rule-1-post-deleted-7d", ...
+  severity     TEXT CHECK (severity IN ('CRITICAL','WARNING','INFO')),
+  channel      TEXT,
+  platform     TEXT,
+  post_id      TEXT,
+  evidence     JSON,
+  resolved_at  TIMESTAMP,
+  notes        TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_alerts_unresolved ON drift_alerts(resolved_at, fired_at DESC);
 ```
+
+DDL lives at `~/dev/openclaw/skills/social-drift/scripts/sqlite-schema.sql` (Phase B16.1).
+
+## URL Normalization
+
+Post URLs are normalized before hashing (per claude-seo seo-drift rule):
+
+1. Lowercase
+2. Strip ports
+3. Sort query params alphabetically
+4. Remove UTM params + tracking ids
+5. Strip trailing slash
+
+Example: `https://www.tiktok.com/@celaviihq/video/12345?utm_source=ig` → `https://www.tiktok.com/@celaviihq/video/12345` → sha256 = url_hash.
+
+## Drift Rule Implementation Plan (Phase B16.1)
+
+Rules implemented as standalone functions in `scripts/rules/{rule_id}.py`. Each takes (current_snapshot, baseline, voice_target) and returns `(fired: bool, severity, evidence: dict)`.
+
+The 17 rules are split across 3 files:
+
+- `rules/critical.py` — rules 1–6 (block on appearance)
+- `rules/warning.py` — rules 7–13 (surface, don't block)
+- `rules/info.py` — rules 14–17 (log only)
+
+Main entry point `scripts/compare.py` runs all rules and aggregates findings.
 
 ## Integration Points
 

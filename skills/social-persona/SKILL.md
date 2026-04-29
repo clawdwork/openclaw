@@ -74,6 +74,62 @@ social-persona enforce --file projects/celavii/content/social/briefs/celavii-ig-
   --context to_marketers
 ```
 
+### Mode A — `discover` algorithm (Phase B13)
+
+```python
+# Pseudo:
+samples = glob("content/blog/published/*.mdx")
+scores = []
+for sample in samples:
+    text = strip_frontmatter(sample.read_text())
+    # 4 axes scored via LLM (Sonnet) with NN/g rubric prompt
+    s = score_4d(text)  # → {humor: -0.2, formality: -0.5, respectfulness: 0.0, enthusiasm: 0.4}
+    scores.append(s)
+
+# Aggregate
+voice_4d = {
+    axis: {"value": median(s[axis] for s in scores), "stddev": std([s[axis] for s in scores])}
+    for axis in ["humor", "formality", "respectfulness", "enthusiasm"]
+}
+
+# Vocabulary
+forbidden = top_recurring_phrases_to_avoid(scores) + AI_SLOP_TELLS
+preferred = derive_preferred_terms(samples)
+
+# Structural
+max_sentence = p90([avg_sentence_length(s) for s in samples])
+max_paragraph = p90([avg_paragraph_words(s) for s in samples])
+
+# Output
+voice_json = build_voice_json(voice_4d, forbidden, preferred, max_sentence, max_paragraph)
+write_to_path(args.output, voice_json)
+```
+
+### Mode B — `enforce` checklist
+
+For a single post / brief / script:
+
+1. Load `voice.json` (or `--voice path` override)
+2. Detect channel from filename/`--channel` → apply `channel_overrides`
+3. Apply `tone_by_context` if `--context` set
+4. **Hard fails** (block edit via hooks/exit-code-2):
+   - Forbidden phrase present
+   - AI-slop tell present
+   - Specificity score < `min_specificity_score` (7/100w)
+5. **Warnings** (allow with note):
+   - Sentence > `max_sentence_words`
+   - Paragraph > `max_paragraph_words`
+   - 4-D axis off target by >0.30
+   - Wrong person (e.g. third-person on Elioth post)
+
+### Mode C — `lint` (CI/CD style)
+
+For a directory of briefs/scripts: batch-lint, output JSON report. Used by Phase G pilot's anti-slop self-review.
+
+```bash
+social-persona lint --dir content/social/briefs/ --out lint-report.json
+```
+
 ## References
 
 - `references/NOTICE.md` — vendored-skill attribution

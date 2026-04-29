@@ -190,44 +190,44 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 **Goal**: Build the independent skills first. Strategy pipeline assembles them later. Order chosen so each skill can be tested standalone.
 
-- [ ] **B1** `social-research` SKILL.md — reads pillars from state, produces research packet for {week, channel, pillar}. Uses Celavii content search + web_search + Brave.
+- [x] **B1** `social-research` SKILL.md — reads pillars from state, produces research packet for {week, channel, pillar}. Uses Celavii content search + web_search + Brave.
   - References: [celavii-discover/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-discover/SKILL.md) `/content/search` endpoint
   - Output path: `content/social/research/{week}-{channel}-research.md`
-- [ ] **B2** Test `social-research` standalone with one pillar from existing v2 state
-- [ ] **B3** `social-citations` SKILL.md (or fold into research) — extracts URL+claim pairs into citation doc
+- [~] **B2** Test `social-research` standalone with one pillar from existing v2 state
+- [x] **B3** `social-citations` SKILL.md (or fold into research) — extracts URL+claim pairs into citation doc
   - Output: `content/social/research/{post-id}-citations.md`
-- [ ] **B4** `social-brief` SKILL.md — reads research packet, produces brief with hook, beats, CTA, hashtags, success metric
+- [x] **B4** `social-brief` SKILL.md — reads research packet, produces brief with hook, beats, CTA, hashtags, success metric
   - Mirrors structure of [skills/blogger/blog-brief/](file:///Users/operator/dev/workspace/skills/blogger/blog-brief/)
   - Output: `content/social/briefs/{channel}-{post-id}-brief.md`
-- [ ] **B5** Test `social-brief` against one existing pillar
-- [ ] **B6** `social-script` SKILL.md — long-form video script (TT/YT/Reels)
+- [~] **B5** Test `social-brief` against one existing pillar
+- [x] **B6** `social-script` SKILL.md — long-form video script (TT/YT/Reels)
   - Output: `content/social/scripts/{channel}-{post-id}-script.md`
-- [ ] **B7** `social-shotlist` SKILL.md — shot list from script (camera angle, b-roll cues, on-screen text, duration)
+- [x] **B7** `social-shotlist` SKILL.md — shot list from script (camera angle, b-roll cues, on-screen text, duration)
   - Output: `content/social/shotlists/{channel}-{post-id}-shots.md`
-- [ ] **B8** `social-quality` SKILL.md — single skill, three checklists (gate-a, gate-b, gate-c-per-post)
+- [x] **B8** `social-quality` SKILL.md — single skill, three checklists (gate-a, gate-b, gate-c-per-post)
   - References: [.claude/rules/celavii-design-system.md](file:///Users/operator/dev/.claude/rules/celavii-design-system.md), [skills/quality-critic/](file:///Users/operator/dev/workspace/skills/quality-critic/) (steal Gate A pattern + intake-context lesson from [DRY-RUN-TEST-FINDINGS.md](file:///Users/operator/dev/workspace/.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md))
   - Sub-references: `references/social-quality-checklist.md`, `references/banned-language.md`
-- [ ] **B9** Silo-check sub-mode in `social-quality` — given a brief, verify pillar alignment with state.phases.aggregate.pillars
-- [ ] **B10** `social-trend-detect` SKILL.md — per-platform trend gathering (Apify TT trending, X explore, IG hashtag growth, YT trending)
+- [x] **B9** Silo-check sub-mode in `social-quality` — given a brief, verify pillar alignment with state.phases.aggregate.pillars
+- [x] **B10** `social-trend-detect` SKILL.md — per-platform trend gathering (Apify TT trending, X explore, IG hashtag growth, YT trending)
   - Output: `raw/trend-{platform}-{topic}-{ts}.json` + summary md
-- [ ] **B11** `social-discover` + `social-competitor-scrape` SKILL.md (combined, since both lean on Celavii API)
+- [x] **B11** `social-discover` + `social-competitor-scrape` SKILL.md (combined, since both lean on Celavii API)
   - References: [celavii-data-ops/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md) `/scrape/*` family
   - Always dry-run first (per data-ops convention)
   - ⚠️ **CELAVII EVAL**: before authoring, evaluate `/Users/operator/code/celavii/social_listener/src/lib/platform-adapters/` (instagram.ts, tiktok.ts, x.ts) and `scripts/adapters/` validators — wrap, don't reimplement
   - ⚠️ **CELAVII EVAL**: review `social_listener/Implementation/pipelines/scrape-dispatch-queue/` — their BullMQ queue model may already cover Phase 0 ACQUIRE
-- [ ] **B12** `social-plan` SKILL.md — calendar generation, repurposing loops
+- [x] **B12** `social-plan` SKILL.md — calendar generation, repurposing loops
   - Output: `research/social/calendar-Qx-{date}.md`
   - Adopt Gary Vee Reverse Pyramid (1 pillar → 30+ atomic). Reference: [docs/frameworks.md § 8](docs/frameworks.md)
   - Use 2026 cadence rules per platform (Buffer/Sprout data). Reference: [docs/frameworks.md § 3](docs/frameworks.md)
-- [ ] **B13** `social-persona` SKILL.md — structured 4D voice JSON (NNGroup model). Replaces ad-hoc voice_rules in state.meta.intake. Built on A14 vendored Anthropic skill.
-- [ ] **B14** `social-factcheck` SKILL.md — fork [Libr-AI/OpenFactVerification (Loki)](https://github.com/Libr-AI/OpenFactVerification) graph topology: claim decomposition → check-worthiness → query gen → evidence retrieval → verdict. Pair with [BharathxD/ClaimeAI](https://github.com/BharathxD/ClaimeAI) LangGraph reference and [amazon-science/RefChecker](https://github.com/amazon-science/RefChecker) for AI-fabricated stat detection.
-- [ ] **B15** `social-cannibalization` SKILL.md — cosine-similarity (text-embedding-ada-002 or Voyage) + 30-day temporal window per channel. Threshold 0.85. Replaces Gate B manual check. Reference: [docs/frameworks.md § 10](docs/frameworks.md)
-- [ ] **B16** `social-drift` SKILL.md — SQLite baseline + 17-rule comparator (claude-seo `seo-drift` pattern). Cache at `~/.cache/claude-social/drift/`. Tracks engagement regressions, deleted posts, caption edits.
-- [ ] **B17** `social-sxo` SKILL.md — platform-fit analyzer ("does this post deserve to engage?"). Reads native ranking signals backwards to detect format/audience mismatches. Adapted from claude-seo `seo-sxo`.
-- [ ] **B18** `social-hooks` SKILL.md — generate 5+ hook variants per post tagged by 5 archetypes (Curiosity Gap, Contrarian, Story, Authority, Pattern Interrupt). Score each on specificity + gap-size + archetype clarity + predicted 3s-retention. Reference: [docs/frameworks.md § 7](docs/frameworks.md)
-- [ ] **B19** Integrate [ClipsAI/clipsai](https://github.com/ClipsAI/clipsai) (Apache 2.0) as backbone for `social-repurpose` video lane (transcript-aware cuts) + [Shaarav4795/ClippedAI](https://github.com/Shaarav4795/ClippedAI) viral-title prompt patterns
-- [ ] **B20** Adversarial 8-pass humanizer loop in `social-quality` (OpenClaudia Humanizer pattern) — anti-slop defense
-- [ ] **B21** Claim-extraction step in `social-quality` Gate C using RefChecker (catches AI-fabricated stats before publish)
+- [x] **B13** `social-persona` SKILL.md — structured 4D voice JSON (NNGroup model). Replaces ad-hoc voice_rules in state.meta.intake. Built on A14 vendored Anthropic skill.
+- [x] **B14** `social-factcheck` SKILL.md — fork [Libr-AI/OpenFactVerification (Loki)](https://github.com/Libr-AI/OpenFactVerification) graph topology: claim decomposition → check-worthiness → query gen → evidence retrieval → verdict. Pair with [BharathxD/ClaimeAI](https://github.com/BharathxD/ClaimeAI) LangGraph reference and [amazon-science/RefChecker](https://github.com/amazon-science/RefChecker) for AI-fabricated stat detection.
+- [x] **B15** `social-cannibalization` SKILL.md — cosine-similarity (text-embedding-ada-002 or Voyage) + 30-day temporal window per channel. Threshold 0.85. Replaces Gate B manual check. Reference: [docs/frameworks.md § 10](docs/frameworks.md)
+- [x] **B16** `social-drift` SKILL.md — SQLite baseline + 17-rule comparator (claude-seo `seo-drift` pattern). Cache at `~/.cache/claude-social/drift/`. Tracks engagement regressions, deleted posts, caption edits.
+- [x] **B17** `social-sxo` SKILL.md — platform-fit analyzer ("does this post deserve to engage?"). Reads native ranking signals backwards to detect format/audience mismatches. Adapted from claude-seo `seo-sxo`.
+- [x] **B18** `social-hooks` SKILL.md — generate 5+ hook variants per post tagged by 5 archetypes (Curiosity Gap, Contrarian, Story, Authority, Pattern Interrupt). Score each on specificity + gap-size + archetype clarity + predicted 3s-retention. Reference: [docs/frameworks.md § 7](docs/frameworks.md)
+- [~] **B19** Integrate [ClipsAI/clipsai](https://github.com/ClipsAI/clipsai) (Apache 2.0) as backbone for `social-repurpose` video lane (transcript-aware cuts) + [Shaarav4795/ClippedAI](https://github.com/Shaarav4795/ClippedAI) viral-title prompt patterns
+- [x] **B20** Adversarial 8-pass humanizer loop in `social-quality` (OpenClaudia Humanizer pattern) — anti-slop defense
+- [x] **B21** Claim-extraction step in `social-quality` Gate C using RefChecker (catches AI-fabricated stats before publish)
 
 **Exit criteria**: Each sub-skill independently invocable. Test invocation: `"run social-brief for fake-test-post"` produces a real artifact. Voice schema enforced by `social-persona`. Cross-skill dependencies (B13 ← A14, B19 ← B12) wired.
 
