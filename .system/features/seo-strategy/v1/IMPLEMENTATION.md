@@ -38,11 +38,11 @@ Layer 1: TOOLS (single-use, fast answers)
 
 ### Layer Properties
 
-| Layer | Input | Output | Time | Dependencies |
-|-------|-------|--------|------|-------------|
-| **Tools** | domain + optional args | Markdown research file | 10-15 min | None (standalone) |
-| **Workflows** | domain + topic/URL | Client-facing PDF + research | 20-45 min | Tools run internally |
-| **Strategy** | domain only | Complete engagement package | 60-90 min | Chains Tools + Workflows via state file |
+| Layer         | Input                  | Output                       | Time      | Dependencies                            |
+| ------------- | ---------------------- | ---------------------------- | --------- | --------------------------------------- |
+| **Tools**     | domain + optional args | Markdown research file       | 10-15 min | None (standalone)                       |
+| **Workflows** | domain + topic/URL     | Client-facing PDF + research | 20-45 min | Tools run internally                    |
+| **Strategy**  | domain only            | Complete engagement package  | 60-90 min | Chains Tools + Workflows via state file |
 
 ---
 
@@ -50,35 +50,35 @@ Layer 1: TOOLS (single-use, fast answers)
 
 ### Layer 1: Tools
 
-| Command | Status | Telegram | File |
-|---------|--------|----------|------|
-| `/seo_audit_quick` | ✅ LIVE | ✅ Registered | `skills/seo-audit-quick/SKILL.md` |
-| `/competitor_seo` | ✅ LIVE | ✅ Registered | `skills/competitor-seo/SKILL.md` |
+| Command                  | Status               | Telegram            | File                                    |
+| ------------------------ | -------------------- | ------------------- | --------------------------------------- |
+| `/seo_audit_quick`       | ✅ LIVE              | ✅ Registered       | `skills/seo-audit-quick/SKILL.md`       |
+| `/competitor_seo`        | ✅ LIVE              | ✅ Registered       | `skills/competitor-seo/SKILL.md`        |
 | `/keyword_opportunities` | ✅ LIVE (E2E tested) | ✅ Registered (#12) | `skills/keyword-opportunities/SKILL.md` |
 
 ### Layer 2: Workflows
 
-| Command | Status | Telegram | File |
-|---------|--------|----------|------|
-| `/product_page_report` | ✅ LIVE | ✅ Registered | `skills/product-page-report/SKILL.md` |
-| `/content_cluster` | ✅ LIVE (enhanced with SOP) | ✅ Registered | `skills/content-cluster/SKILL.md` |
-| `/generate_seo_report` | ✅ LIVE | ✅ Registered | `skills/generate-seo-report/SKILL.md` |
+| Command                | Status                      | Telegram      | File                                  |
+| ---------------------- | --------------------------- | ------------- | ------------------------------------- |
+| `/product_page_report` | ✅ LIVE                     | ✅ Registered | `skills/product-page-report/SKILL.md` |
+| `/content_cluster`     | ✅ LIVE (enhanced with SOP) | ✅ Registered | `skills/content-cluster/SKILL.md`     |
+| `/generate_seo_report` | ✅ LIVE                     | ✅ Registered | `skills/generate-seo-report/SKILL.md` |
 
 ### Layer 3: Strategy
 
-| Command | Status | Telegram | File |
-|---------|--------|----------|------|
-| `/seo_strategy` | ❌ NOT BUILT | ❌ | — |
+| Command         | Status       | Telegram | File |
+| --------------- | ------------ | -------- | ---- |
+| `/seo_strategy` | ❌ NOT BUILT | ❌       | —    |
 
 ### Supporting Infrastructure
 
-| Item | Status | File |
-|------|--------|------|
-| SOP Reference Files | ✅ Saved | `skills/seo/references/product-seo-llm-sop-2026.md` |
-| Publication Schedule | ✅ Saved | `skills/seo/references/product-publication-schedule.md` |
-| State File Schema | ✅ DESIGNED | `skills/seo/references/strategy-state-schema.json` |
-| Validate Proposal Script | ✅ Working | `skills/seo/scripts/validate-proposal.sh` |
-| Revenue Estimation Script | ✅ Working | `skills/seo/scripts/estimate-revenue.sh` |
+| Item                      | Status      | File                                                    |
+| ------------------------- | ----------- | ------------------------------------------------------- |
+| SOP Reference Files       | ✅ Saved    | `skills/seo/references/product-seo-llm-sop-2026.md`     |
+| Publication Schedule      | ✅ Saved    | `skills/seo/references/product-publication-schedule.md` |
+| State File Schema         | ✅ DESIGNED | `skills/seo/references/strategy-state-schema.json`      |
+| Validate Proposal Script  | ✅ Working  | `skills/seo/scripts/validate-proposal.sh`               |
+| Revenue Estimation Script | ✅ Working  | `skills/seo/scripts/estimate-revenue.sh`                |
 
 ---
 
@@ -95,6 +95,7 @@ Layer 1: TOOLS (single-use, fast answers)
 ```
 
 **What it does:**
+
 1. Scans the domain's current keyword positions (Ahrefs)
 2. Identifies competitors automatically (Ahrefs)
 3. Runs keyword gap analysis (what competitors rank for, domain doesn't)
@@ -103,14 +104,14 @@ Layer 1: TOOLS (single-use, fast answers)
 
 **Tools used:**
 
-| # | Tool | Purpose |
-|---|------|---------|
-| 1 | `run-apify-ahrefs.sh {domain} keywords` | Current keyword rankings + positions |
-| 2 | `run-apify-ahrefs.sh {domain} competitors` | Auto-discover competitors |
-| 3 | `run-apify-ahrefs.sh {competitor} keywords` | Competitor keyword inventory |
-| 4 | `run-apify-serp.sh "{top keywords}"` | SERP features, PAA, difficulty validation |
-| 5 | `run-sitemap-gen.sh {domain}` | Existing content inventory |
-| 6 | `web_search site:{domain}` | Indexed page count |
+| #   | Tool                                        | Purpose                                   |
+| --- | ------------------------------------------- | ----------------------------------------- |
+| 1   | `run-apify-ahrefs.sh {domain} keywords`     | Current keyword rankings + positions      |
+| 2   | `run-apify-ahrefs.sh {domain} competitors`  | Auto-discover competitors                 |
+| 3   | `run-apify-ahrefs.sh {competitor} keywords` | Competitor keyword inventory              |
+| 4   | `run-apify-serp.sh "{top keywords}"`        | SERP features, PAA, difficulty validation |
+| 5   | `run-sitemap-gen.sh {domain}`               | Existing content inventory                |
+| 6   | `web_search site:{domain}`                  | Indexed page count                        |
 
 **Output:** `projects/{project}/research/seo/keyword-opportunities-{YYYY-MM-DD}.md`
 
@@ -135,9 +136,11 @@ Layer 1: TOOLS (single-use, fast answers)
    - Each with volume, KD, and which competitor ranks
 
 5. **Priority Scoring**
+
    ```
    Priority = (Volume × CTR_estimate) / (KD × Effort_estimate)
    ```
+
    - CTR_estimate: based on SERP features (featured snippet, PAA, etc.)
    - Effort_estimate: 1 (optimize existing) / 2 (write short article) / 3 (write long article) / 5 (build silo)
 
@@ -151,12 +154,12 @@ Layer 1: TOOLS (single-use, fast answers)
 
 #### 4.2 Tasks
 
-| # | Task | Status | Depends On |
-|---|------|--------|-----------|
-| 4.2.1 | Create `skills/seo/commands/keyword-opportunities.md` | ✅ COMPLETE | — |
-| 4.2.2 | Create `skills/keyword-opportunities/SKILL.md` (Telegram wrapper) | ✅ COMPLETE | 4.2.1 |
-| 4.2.3 | E2E test with modash.io | ✅ COMPLETE | 4.2.2 |
-| 4.2.4 | Register in gateway, verify Telegram command | ✅ COMPLETE (#12) | 4.2.3 |
+| #     | Task                                                              | Status            | Depends On |
+| ----- | ----------------------------------------------------------------- | ----------------- | ---------- |
+| 4.2.1 | Create `skills/seo/commands/keyword-opportunities.md`             | ✅ COMPLETE       | —          |
+| 4.2.2 | Create `skills/keyword-opportunities/SKILL.md` (Telegram wrapper) | ✅ COMPLETE       | 4.2.1      |
+| 4.2.3 | E2E test with modash.io                                           | ✅ COMPLETE       | 4.2.2      |
+| 4.2.4 | Register in gateway, verify Telegram command                      | ✅ COMPLETE (#12) | 4.2.3      |
 
 ---
 
@@ -195,9 +198,7 @@ Path: `projects/{project}/research/seo/strategy-state.json`
       "quick_wins": [
         { "keyword": "...", "position": 14, "volume": 890, "action": "optimize title" }
       ],
-      "low_hanging_fruit": [
-        { "keyword": "...", "kd": 18, "volume": 450, "topic_cluster": "..." }
-      ],
+      "low_hanging_fruit": [{ "keyword": "...", "kd": 18, "volume": 450, "topic_cluster": "..." }],
       "content_gaps": [
         { "keyword": "...", "competitor": "zyn.com", "competitor_position": 3, "volume": 1200 }
       ],
@@ -245,13 +246,13 @@ Path: `projects/{project}/research/seo/strategy-state.json`
 
 #### 4.5 Tasks
 
-| # | Task | Status | Depends On |
-|---|------|--------|-----------|
-| 4.5.1 | Define state file JSON schema | ✅ COMPLETE | — |
-| 4.5.2 | Add state file read/write to `keyword-opportunities.md` | ✅ COMPLETE | Phase 1 |
-| 4.5.3 | Add state file read/write to `content-cluster.md` | ✅ COMPLETE | 4.5.1 |
-| 4.5.4 | Add state file read/write to `seo-audit.md` | ✅ COMPLETE | 4.5.1 |
-| 4.5.5 | Add state file read/write to `competitor-seo.md` | ✅ COMPLETE | 4.5.1 |
+| #     | Task                                                    | Status      | Depends On |
+| ----- | ------------------------------------------------------- | ----------- | ---------- |
+| 4.5.1 | Define state file JSON schema                           | ✅ COMPLETE | —          |
+| 4.5.2 | Add state file read/write to `keyword-opportunities.md` | ✅ COMPLETE | Phase 1    |
+| 4.5.3 | Add state file read/write to `content-cluster.md`       | ✅ COMPLETE | 4.5.1      |
+| 4.5.4 | Add state file read/write to `seo-audit.md`             | ✅ COMPLETE | 4.5.1      |
+| 4.5.5 | Add state file read/write to `competitor-seo.md`        | ✅ COMPLETE | 4.5.1      |
 
 ---
 
@@ -337,13 +338,13 @@ The `/seo_strategy` command produces:
 
 #### 4.8 Tasks
 
-| # | Task | Status | Depends On |
-|---|------|--------|-----------|
-| 4.8.1 | Create `skills/seo/commands/seo-strategy.md` | NOT STARTED | Phase 1 + 2 |
-| 4.8.2 | Create `skills/seo-strategy/SKILL.md` (Telegram wrapper) | NOT STARTED | 4.8.1 |
-| 4.8.3 | Create strategy PDF template (Next.js) | NOT STARTED | 4.8.1 |
-| 4.8.4 | Test full pipeline with maxkickusa.medusajs.site | NOT STARTED | 4.8.2 + 4.8.3 |
-| 4.8.5 | Register in gateway, verify Telegram command | NOT STARTED | 4.8.4 |
+| #     | Task                                                     | Status      | Depends On    |
+| ----- | -------------------------------------------------------- | ----------- | ------------- |
+| 4.8.1 | Create `skills/seo/commands/seo-strategy.md`             | NOT STARTED | Phase 1 + 2   |
+| 4.8.2 | Create `skills/seo-strategy/SKILL.md` (Telegram wrapper) | NOT STARTED | 4.8.1         |
+| 4.8.3 | Create strategy PDF template (Next.js)                   | NOT STARTED | 4.8.1         |
+| 4.8.4 | Test full pipeline with maxkickusa.medusajs.site         | NOT STARTED | 4.8.2 + 4.8.3 |
+| 4.8.5 | Register in gateway, verify Telegram command             | NOT STARTED | 4.8.4         |
 
 ---
 
@@ -370,6 +371,7 @@ Week 4: /generate_seo_report maxkickusa.com    → monthly progress report
 ```
 /product_page_report maxkickusa.com/products/new-flavor
 ```
+
 One command → full product page optimization + content plan + PDF.
 
 ### Use Case 4: "We're Getting Crushed by Competitor X"
@@ -398,17 +400,18 @@ One command → full product page optimization + content plan + PDF.
 
 All content-producing commands enforce the Product SEO + LLM SOP (2026):
 
-| SOP Section | Enforced By |
-|-------------|------------|
+| SOP Section                                    | Enforced By                                 |
+| ---------------------------------------------- | ------------------------------------------- |
 | Step 4: Heading Structure (No Cannibalization) | `/content_cluster`, `/seo_strategy` Phase 4 |
-| Step 5: LLM Micro-Summary Blocks | `/content_cluster`, `/product_page_report` |
-| Step 12: Pillar Page Requirements | `/content_cluster` |
-| Step 13: 12-20 Supporting Articles | `/content_cluster` |
-| Step 14: Interlinking Structure | `/content_cluster`, `/seo_strategy` Phase 4 |
-| Step 15: Unique Heading Enforcement | `/content_cluster`, `/seo_strategy` Phase 4 |
-| Publication Schedule (anti-spam cadence) | `/content_cluster`, `/seo_strategy` Phase 4 |
+| Step 5: LLM Micro-Summary Blocks               | `/content_cluster`, `/product_page_report`  |
+| Step 12: Pillar Page Requirements              | `/content_cluster`                          |
+| Step 13: 12-20 Supporting Articles             | `/content_cluster`                          |
+| Step 14: Interlinking Structure                | `/content_cluster`, `/seo_strategy` Phase 4 |
+| Step 15: Unique Heading Enforcement            | `/content_cluster`, `/seo_strategy` Phase 4 |
+| Publication Schedule (anti-spam cadence)       | `/content_cluster`, `/seo_strategy` Phase 4 |
 
 **Reference files:**
+
 - `skills/seo/references/product-seo-llm-sop-2026.md`
 - `skills/seo/references/product-publication-schedule.md`
 - `skills/seo/references/product-seo-llm-sop-original.md`
@@ -419,45 +422,45 @@ All content-producing commands enforce the Product SEO + LLM SOP (2026):
 
 After full implementation, the Telegram `/` menu will show:
 
-| # | Command | Layer | Purpose |
-|---|---------|-------|---------|
-| 1 | `/seo_strategy` | Strategy | Complete top-to-bottom SEO engagement |
-| 2 | `/product_page_report` | Workflow | Product page → PDF proposal |
-| 3 | `/content_cluster` | Workflow | One topic → silo + articles |
-| 4 | `/generate_seo_report` | Workflow | Site-wide audit → PDF |
-| 5 | `/keyword_opportunities` | Tool | Scan domain for quick wins |
-| 6 | `/competitor_seo` | Tool | DA + keyword gap analysis |
-| 7 | `/seo_audit_quick` | Tool | 7-tool health check |
-| 8 | `/seo_orchestrator` | Router | Natural language SEO routing |
-| 9 | `/deploy_and_publish` | Utility | Deployment pipeline |
-| 10 | `/quality_critic` | Utility | Quality review |
-| 11 | `/project_scaffold` | Utility | New project setup |
-| 12 | `/workspace_audit` | Utility | Workspace health |
-| 13 | `/workspace_reconcile` | Utility | Fix workspace issues |
+| #   | Command                  | Layer    | Purpose                               |
+| --- | ------------------------ | -------- | ------------------------------------- |
+| 1   | `/seo_strategy`          | Strategy | Complete top-to-bottom SEO engagement |
+| 2   | `/product_page_report`   | Workflow | Product page → PDF proposal           |
+| 3   | `/content_cluster`       | Workflow | One topic → silo + articles           |
+| 4   | `/generate_seo_report`   | Workflow | Site-wide audit → PDF                 |
+| 5   | `/keyword_opportunities` | Tool     | Scan domain for quick wins            |
+| 6   | `/competitor_seo`        | Tool     | DA + keyword gap analysis             |
+| 7   | `/seo_audit_quick`       | Tool     | 7-tool health check                   |
+| 8   | `/seo_orchestrator`      | Router   | Natural language SEO routing          |
+| 9   | `/deploy_and_publish`    | Utility  | Deployment pipeline                   |
+| 10  | `/quality_critic`        | Utility  | Quality review                        |
+| 11  | `/project_scaffold`      | Utility  | New project setup                     |
+| 12  | `/workspace_audit`       | Utility  | Workspace health                      |
+| 13  | `/workspace_reconcile`   | Utility  | Fix workspace issues                  |
 
 ---
 
 ## 8. Implementation Priority
 
-| Priority | Phase | What | Est. Effort |
-|----------|-------|------|-------------|
-| **P0** | Phase 1 | `/keyword_opportunities` command | 2-3 hours |
-| **P1** | Phase 2 | State file schema + integration | 1-2 hours |
-| **P2** | Phase 3 | `/seo_strategy` command + PDF template | 4-6 hours |
-| **P3** | — | Quarterly comparison (diff vs previous state) | 1-2 hours |
+| Priority | Phase   | What                                          | Est. Effort |
+| -------- | ------- | --------------------------------------------- | ----------- |
+| **P0**   | Phase 1 | `/keyword_opportunities` command              | 2-3 hours   |
+| **P1**   | Phase 2 | State file schema + integration               | 1-2 hours   |
+| **P2**   | Phase 3 | `/seo_strategy` command + PDF template        | 4-6 hours   |
+| **P3**   | —       | Quarterly comparison (diff vs previous state) | 1-2 hours   |
 
 ---
 
 ## 9. File Tracking
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `skills/seo/commands/keyword-opportunities.md` | Command spec | NOT STARTED |
-| `skills/keyword-opportunities/SKILL.md` | Telegram wrapper | NOT STARTED |
-| `skills/seo/commands/seo-strategy.md` | Master pipeline spec | NOT STARTED |
-| `skills/seo-strategy/SKILL.md` | Telegram wrapper | NOT STARTED |
-| `skills/seo/templates/strategy-report/` | PDF template (Next.js) | NOT STARTED |
-| `strategy-state.json` schema | State file for chaining | NOT STARTED |
+| File                                           | Purpose                 | Status      |
+| ---------------------------------------------- | ----------------------- | ----------- |
+| `skills/seo/commands/keyword-opportunities.md` | Command spec            | NOT STARTED |
+| `skills/keyword-opportunities/SKILL.md`        | Telegram wrapper        | NOT STARTED |
+| `skills/seo/commands/seo-strategy.md`          | Master pipeline spec    | NOT STARTED |
+| `skills/seo-strategy/SKILL.md`                 | Telegram wrapper        | NOT STARTED |
+| `skills/seo/templates/strategy-report/`        | PDF template (Next.js)  | NOT STARTED |
+| `strategy-state.json` schema                   | State file for chaining | NOT STARTED |
 
 ---
 
