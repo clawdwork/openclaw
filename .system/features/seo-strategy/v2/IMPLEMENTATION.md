@@ -251,13 +251,15 @@ Both pulled clean (claude-seo +96 commits, claude-blog reset to origin).
 
 #### 2A. SEO Drift Monitoring
 
-- [ ] **2A.1** Copy `drift_baseline.py` from `~/dev/research/claude-seo/skills/seo-drift/scripts/` → `~/dev/workspace/skills/seo/scripts/drift_baseline.py`
-- [ ] **2A.2** Copy `drift_compare.py` → `~/dev/workspace/skills/seo/scripts/drift_compare.py`
-- [ ] **2A.3** Author `~/dev/workspace/skills/seo/seo-drift/SKILL.md` — routing for baseline / compare modes
-- [ ] **2A.4** Configure SQLite location at `~/.config/celavii-seo/drift/baselines.db`
-- [ ] **2A.5** Capture baseline for all 13 currently-published posts + the 2 just-shipped articles (15 baselines total)
-- [ ] **2A.6** Add `seo-drift` to `seo-orchestrator/SKILL.md` routing table
-- [ ] **2A.7** Acceptance: deliberate test (manually change one post's H1 in dev) is caught at severity HIGH on next compare
+- [x] **2A.1** Vendor `drift_baseline.py` (410 lines) from `~/dev/research/claude-seo/scripts/`. ✅
+- [x] **2A.2** Vendor `drift_compare.py` (544 lines). ✅
+- [x] **2A.2b** ★ EXTRAS: Also vendored `drift_report.py` (376), `drift_history.py` (127), 3 transitive deps (`fetch_page.py`, `parse_html.py`, `pagespeed_check.py`), and 17-rule `comparison-rules.md`. Namespace patched `~/.cache/claude-seo/` → `~/.config/<slug>-seo/` (B8 retrofit added per-project cache_dir). ✅
+- [x] **2A.3** Author `~/dev/workspace/skills/seo/seo-drift/SKILL.md` — 5 modes (baseline / compare / report / history / monitor); mirrors `social-drift` pattern; cites SEO constitution Articles 1, 4, 6, 14. ✅
+- [x] **2A.4** SQLite at `~/.config/celavii-seo/drift/baselines.db` (mode 600, dir 700). ✅
+- [x] **2A.5** Capture baseline for **14 deployed posts** (URL source: live sitemap `https://celavii.com/blog/sitemap.xml`, not workspace MDX nor local repo clone — see B6). Baseline IDs 21-34. ✅
+- [x] **2A.6** Add 2 routing rows (Drift baseline + Drift compare) to `seo-orchestrator/SKILL.md`. ✅
+- [x] **2A.7** Acceptance PASSED: synthetic good baseline (with H1 + per-article canonical) vs current SSR state surfaced 2 CRITICAL findings (`canonical_changed`, `h1_removed`), 3 WARNING, 2 INFO. ✅
+- [⚠] **2A.X SIDE FINDING** (not in original spec): Verified Next.js production SSR omits `<h1>` for all 14 deployed articles (raw `curl … | grep '<h1'` returned 0 across 4 silos). Likely root cause of 23% indexation rate. Logged as TRACKER **B7**.
 
 #### 2B. Blog Fact-Check (with cross-model critic)
 
