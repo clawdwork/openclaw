@@ -1,0 +1,32 @@
+{
+  "$comment": "PostToolUse hooks for social content. Pattern borrowed from claude-seo (validate-schema.py exit-code-2-blocks). Exit code 2 = block edit; 1 = warn only; 0 = allow.",
+  "hooks": [
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "filePathPattern": "projects/celavii/content/social/**/*.md",
+      "command": "python3 ${OPENCLAW_HOME}/.system/features/social-strategy/hooks/validate-social-content.py \"$FILE_PATH\"",
+      "description": "Lint social content files: banned language, char limits per platform, voice JSON enforcement"
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "filePathPattern": "projects/celavii/research/social/social-strategy-state.json",
+      "command": "python3 ${OPENCLAW_HOME}/.system/features/social-strategy/hooks/validate-state-schema.py \"$FILE_PATH\"",
+      "description": "Validate v3 state-file schema; reject if required fields missing or schema_version absent"
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit|Write",
+      "filePathPattern": "projects/celavii/content/social/briefs/**/*.md",
+      "command": "python3 ${OPENCLAW_HOME}/.system/features/social-strategy/hooks/validate-brief.py \"$FILE_PATH\"",
+      "description": "Validate brief structure: hook, beats, CTA, hashtags, success metric, e_tags (≥1), pillar reference"
+    }
+  ],
+  "exit_codes": {
+    "0": "allow — all checks passed",
+    "1": "warn — surface issues but allow save",
+    "2": "block — refuse the write/edit"
+  },
+  "validators_status": "stubbed — validators to be implemented in Phase A12 follow-up"
+}

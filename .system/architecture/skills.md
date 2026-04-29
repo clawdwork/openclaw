@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/dev/workspace/skills/ (global managed dir)
-~/dev/workspace/skills/     ← 39 skills (managed: domain categories + celavii + social + custom)
+~/dev/workspace/skills/     ← 42 skills (managed: domain categories + celavii + social-agents + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -133,17 +133,20 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 
 ## Creator Intelligence Skills (Celavii API)
 
-| Skill                    | Status   | Purpose                                                    | Credits   |
-| ------------------------ | -------- | ---------------------------------------------------------- | --------- |
-| 🔍 **celavii-discover**  | ✅ Ready | Search creators by keyword, niche, affinities, hashtags    | 1/query   |
-| 👤 **celavii-profiles**  | ✅ Ready | Full profile detail, affinities, posts, network, contact   | 0 (free)  |
-| 📊 **celavii-campaigns** | ✅ Ready | Campaign list, metrics, creators, matched content          | 0–1       |
-| 🤝 **celavii-crm**       | ✅ Ready | CRM pipeline, managed profiles, lists, org stats           | 0 (free)  |
-| 📈 **celavii-analytics** | ✅ Ready | Demographics, locations, niches, overlap, affinity posts   | 1/query   |
-| 📚 **celavii-knowledge** | ✅ Ready | Knowledge base CRUD, semantic search for AI context        | 0 (free)  |
-| ⚡ **celavii-data-ops**  | ✅ Ready | Profile enhancement, follower/hashtag/URL scrapes, job ops | 1-2+Apify |
-| 📱 **celavii-social**    | ✅ Ready | Social content orchestration — copy, media prompts, state  | 0 (local) |
-| 🎣 **social-hooks**      | ✅ Ready | Hook generation library — 6 categories, 7-step system      | 0 (local) |
+| Skill                      | Status              | Purpose                                                                                                                                                                         | Credits   |
+| -------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 🔍 **celavii-discover**    | ✅ Ready            | Search creators by keyword, niche, affinities, hashtags                                                                                                                         | 1/query   |
+| 👤 **celavii-profiles**    | ✅ Ready            | Full profile detail, affinities, posts, network, contact                                                                                                                        | 0 (free)  |
+| 📊 **celavii-campaigns**   | ✅ Ready            | Campaign list, metrics, creators, matched content                                                                                                                               | 0–1       |
+| 🤝 **celavii-crm**         | ✅ Ready            | CRM pipeline, managed profiles, lists, org stats                                                                                                                                | 0 (free)  |
+| 📈 **celavii-analytics**   | ✅ Ready            | Demographics, locations, niches, overlap, affinity posts                                                                                                                        | 1/query   |
+| 📚 **celavii-knowledge**   | ✅ Ready            | Knowledge base CRUD, semantic search for AI context                                                                                                                             | 0 (free)  |
+| ⚡ **celavii-data-ops**    | ✅ Ready            | Profile enhancement, follower/hashtag/URL scrapes, job ops                                                                                                                      | 1-2+Apify |
+| 📱 **celavii-social**      | ✅ Ready            | Social content orchestration — copy, media prompts, state                                                                                                                       | 0 (local) |
+| 🎣 **social-hooks**        | ✅ Ready            | Hook generation library — 6 categories, 7-step system                                                                                                                           | 0 (local) |
+| 📣 **social-orchestrator** | 🚧 Phase A          | Multi-channel social pipeline router (`/social_strategy`, `/social_curate`, `/social_post`). Source-of-truth: [.system/features/social-strategy/](../features/social-strategy/) | 0 (local) |
+| 🗣️ **social-persona**      | 🚧 Phase A scaffold | NN/g 4-D voice extraction + enforcement. Voice spec at `~/dev/workspace/.styles/celavii/voice.json`                                                                             | 0 (local) |
+| 📉 **social-drift**        | 🚧 Phase A scaffold | SQLite baseline + drift detection (engagement regression, voice slip, post deletion). Cache at `~/.cache/claude-social/drift/`                                                  | 0 (local) |
 
 **Base URL**: `https://www.celavii.com/api/v1`  
 **Auth**: `CELAVII_API_KEY` (shared across all agents, stored in `~/.openclaw/.env`)  
