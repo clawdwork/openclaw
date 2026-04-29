@@ -3,8 +3,8 @@
 > **Status**: Proposal — Awaiting Approval (revised 2026-04-28 with research findings)
 > **Author**: Operator + Claude
 > **Date**: 2026-04-28
-> **Supersedes**: [content-strategy-pipeline-proposal.md](content-strategy-pipeline-proposal.md) (64 lines, lacked depth — see § Gap Analysis below)
-> **Models on**: SEO 7-phase pipeline ([seo-strategy.md](../../../../skills/seo/commands/seo-strategy.md)), Blogger sub-skill model ([skills/blogger/](../../../../skills/blogger/))
+> **Supersedes**: [content-strategy-pipeline-proposal.md](file:///Users/operator/dev/workspace/projects/celavii/research/social/content-strategy-pipeline-proposal.md) (64 lines, lacked depth — see § Gap Analysis below)
+> **Models on**: SEO 7-phase pipeline ([seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md)), Blogger sub-skill model ([skills/blogger/](file:///Users/operator/dev/workspace/skills/blogger/))
 > **Research backing**: [docs/repos.md](docs/repos.md), [docs/frameworks.md](docs/frameworks.md), [docs/integration-recommendations.md](docs/integration-recommendations.md), [community-repos-extraction-notes.md](community-repos-extraction-notes.md)
 > **Celavii capability source-of-truth**: `/Users/operator/code/celavii/social_listener/` — see § 11
 
@@ -14,36 +14,36 @@
 
 Build a **complete social-media team** equivalent in depth to the existing SEO team — a `/social_strategy` autonomous pipeline plus atomic sub-skills that can be invoked independently for week-to-week production work (research → brief → script → shot list → citations → silo check → handoff).
 
-The lift target: match what [seo-strategy.md](../../../../skills/seo/commands/seo-strategy.md) (1,232 lines, 7 phases, 2 critic gates, deterministic aggregator, raw archive) does for SEO, applied to multi-channel social (Elioth / Celavii / CutMaster × IG / TikTok / X / YouTube).
+The lift target: match what [seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md) (1,232 lines, 7 phases, 2 critic gates, deterministic aggregator, raw archive) does for SEO, applied to multi-channel social (Elioth / Celavii / CutMaster × IG / TikTok / X / YouTube).
 
 ## 2. References & Why They Matter
 
-| Reference                                                                                                                                                          | What we borrow                                                                                                                          | Why                                                                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| [skills/seo/commands/seo-strategy.md](../../../../skills/seo/commands/seo-strategy.md)                                                                             | 7-phase shape, intake flow, state file pattern, raw archive, 2 critic gates, Phase 2B remediation loop                                  | Proven end-to-end on celavii.com (DR 0 → 105-article plan, 532-keyword arsenal). The structure WORKS.                    |
-| [skills/seo/seo-orchestrator/SKILL.md](../../../../skills/seo/seo-orchestrator/SKILL.md)                                                                           | Task-routing table, "Minimum Tools Per Task Type", evidence rules, citation requirements                                                | The orchestrator pattern is what makes SEO feel like a team — single entry, routes by task.                              |
-| [.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md](../../../../.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md)                                       | "Critic must read intake before scoring" lesson                                                                                         | Gate A in SEO initially failed because critics ran context-free. Don't repeat it.                                        |
-| [skills/blogger/](../../../../skills/blogger/) (16 sub-skills)                                                                                                     | Atomic-skill independence pattern: `blog-brief`, `blog-outline`, `blog-write`, `blog-audio`, `blog-repurpose` etc. each invocable alone | This is what the user asked for explicitly: weekly curation skills must work without re-running the full strategy.       |
-| [skills/celavii-social/SKILL.md](../../../../skills/celavii-social/SKILL.md)                                                                                       | Existing per-post execution skill (copy + media prompts + state update)                                                                 | Already built — slots in as the post-strategy execution layer. Don't rebuild.                                            |
-| [skills/celavii-data-ops/SKILL.md](../../../../skills/celavii-data-ops/SKILL.md), [skills/celavii-discover/SKILL.md](../../../../skills/celavii-discover/SKILL.md) | Celavii API endpoints (Instagram), `/scrape/*` family, dry-run + status-poll pattern, credit accounting                                 | API access is verified (Pro tier, scrape:trigger scope). Multi-platform extension comes later — IG is enough to ship v1. |
-| [WORKSPACE.md](../../../../WORKSPACE.md)                                                                                                                           | Path routing rules, project alias map, "absolute paths required" rule                                                                   | Every artifact must land in the right place; agents must register files in PROJECT.md.                                   |
-| [projects/celavii/PROJECT.md](../../PROJECT.md)                                                                                                                    | File Index pattern, blog content layout, social state file already at v2                                                                | New skills must update File Index after every save. State v2 file already exists — we'll version to v3.                  |
-| [.claude/rules/celavii-design-system.md](../../../../../.claude/rules/celavii-design-system.md)                                                                    | Brand voice, color system, banned language ("toggle tax", prefer "agentic" over "AI-powered")                                           | Gate A and `social-quality` must enforce these.                                                                          |
+| Reference                                                                                                                                                                                                            | What we borrow                                                                                                                          | Why                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [skills/seo/commands/seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md)                                                                                                      | 7-phase shape, intake flow, state file pattern, raw archive, 2 critic gates, Phase 2B remediation loop                                  | Proven end-to-end on celavii.com (DR 0 → 105-article plan, 532-keyword arsenal). The structure WORKS.                    |
+| [skills/seo/seo-orchestrator/SKILL.md](file:///Users/operator/dev/workspace/skills/seo/seo-orchestrator/SKILL.md)                                                                                                    | Task-routing table, "Minimum Tools Per Task Type", evidence rules, citation requirements                                                | The orchestrator pattern is what makes SEO feel like a team — single entry, routes by task.                              |
+| [.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md](file:///Users/operator/dev/workspace/.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md)                                                                | "Critic must read intake before scoring" lesson                                                                                         | Gate A in SEO initially failed because critics ran context-free. Don't repeat it.                                        |
+| [skills/blogger/](file:///Users/operator/dev/workspace/skills/blogger/) (16 sub-skills)                                                                                                                              | Atomic-skill independence pattern: `blog-brief`, `blog-outline`, `blog-write`, `blog-audio`, `blog-repurpose` etc. each invocable alone | This is what the user asked for explicitly: weekly curation skills must work without re-running the full strategy.       |
+| [skills/celavii-social/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-social/SKILL.md)                                                                                                                | Existing per-post execution skill (copy + media prompts + state update)                                                                 | Already built — slots in as the post-strategy execution layer. Don't rebuild.                                            |
+| [skills/celavii-data-ops/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md), [skills/celavii-discover/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-discover/SKILL.md) | Celavii API endpoints (Instagram), `/scrape/*` family, dry-run + status-poll pattern, credit accounting                                 | API access is verified (Pro tier, scrape:trigger scope). Multi-platform extension comes later — IG is enough to ship v1. |
+| [WORKSPACE.md](file:///Users/operator/dev/workspace/WORKSPACE.md)                                                                                                                                                    | Path routing rules, project alias map, "absolute paths required" rule                                                                   | Every artifact must land in the right place; agents must register files in PROJECT.md.                                   |
+| [projects/celavii/PROJECT.md](file:///Users/operator/dev/workspace/projects/celavii/PROJECT.md)                                                                                                                      | File Index pattern, blog content layout, social state file already at v2                                                                | New skills must update File Index after every save. State v2 file already exists — we'll version to v3.                  |
+| [.claude/rules/celavii-design-system.md](file:///Users/operator/dev/.claude/rules/celavii-design-system.md)                                                                                                          | Brand voice, color system, banned language ("toggle tax", prefer "agentic" over "AI-powered")                                           | Gate A and `social-quality` must enforce these.                                                                          |
 
 ## 3. Gap Analysis (vs. existing proposal)
 
-The original [content-strategy-pipeline-proposal.md](content-strategy-pipeline-proposal.md) is 64 lines, 6 phases. It's directionally correct but missing what makes the SEO team a "team":
+The original [content-strategy-pipeline-proposal.md](file:///Users/operator/dev/workspace/projects/celavii/research/social/content-strategy-pipeline-proposal.md) is 64 lines, 6 phases. It's directionally correct but missing what makes the SEO team a "team":
 
-| Asset                    | Original proposal                                             | This proposal                                                                         | Why required                                                        |
-| ------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Intake flow              | None                                                          | 5 structured Qs stored in `state.meta.intake`                                         | SEO Gate A failure root cause was missing intake context for critic |
-| State schema             | "social-strategy-state.json" mentioned                        | Versioned schema in [SOCIAL-STRATEGY-STATE-SPEC.md](SOCIAL-STRATEGY-STATE-SPEC.md) v3 | v2 already exists; need explicit v3 schema for new pipeline         |
-| Raw archive              | Not mentioned                                                 | `raw/{tool}-{target}-{ts}.json` mandatory                                             | Cross-run reuse, never overwrite                                    |
-| Deterministic aggregator | Not mentioned                                                 | Phase 3 script, no LLM                                                                | 5–10× token cost reduction (proven in SEO Phase 3)                  |
-| Critic gates             | One gate (Phase 5, score ≥80)                                 | Gate A (strategy) + Gate B (calendar) + Gate C (per-post) + Phase 2B remediation      | Two-gate pattern catches strategy drift early                       |
-| Atomic sub-skills        | Routes to `marketing`, `blogger`, `media-content` generalists | 11 social-specific skills, each independently invocable                               | User-requested: weekly curation must work without strategy re-run   |
-| Tooling inventory        | None                                                          | Celavii API + Apify + Brave + web_fetch + minimums per task                           | Evidence rules require citations                                    |
-| Cost/time                | "1–2 days"                                                    | Phase-by-phase estimates, ~$3–6 / ~90–120 min                                         | Match SEO precision                                                 |
+| Asset                    | Original proposal                                             | This proposal                                                                                                                                               | Why required                                                        |
+| ------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Intake flow              | None                                                          | 5 structured Qs stored in `state.meta.intake`                                                                                                               | SEO Gate A failure root cause was missing intake context for critic |
+| State schema             | "social-strategy-state.json" mentioned                        | Versioned schema in [SOCIAL-STRATEGY-STATE-SPEC.md](file:///Users/operator/dev/workspace/projects/celavii/research/social/SOCIAL-STRATEGY-STATE-SPEC.md) v3 | v2 already exists; need explicit v3 schema for new pipeline         |
+| Raw archive              | Not mentioned                                                 | `raw/{tool}-{target}-{ts}.json` mandatory                                                                                                                   | Cross-run reuse, never overwrite                                    |
+| Deterministic aggregator | Not mentioned                                                 | Phase 3 script, no LLM                                                                                                                                      | 5–10× token cost reduction (proven in SEO Phase 3)                  |
+| Critic gates             | One gate (Phase 5, score ≥80)                                 | Gate A (strategy) + Gate B (calendar) + Gate C (per-post) + Phase 2B remediation                                                                            | Two-gate pattern catches strategy drift early                       |
+| Atomic sub-skills        | Routes to `marketing`, `blogger`, `media-content` generalists | 11 social-specific skills, each independently invocable                                                                                                     | User-requested: weekly curation must work without strategy re-run   |
+| Tooling inventory        | None                                                          | Celavii API + Apify + Brave + web_fetch + minimums per task                                                                                                 | Evidence rules require citations                                    |
+| Cost/time                | "1–2 days"                                                    | Phase-by-phase estimates, ~$3–6 / ~90–120 min                                                                                                               | Match SEO precision                                                 |
 
 ## 4. Architecture
 
@@ -166,8 +166,8 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 **Status**: Done. arch-verify 4 fails → 1 (pre-existing Phase I). Detailed audit trail in [v1/TRACKER.md](v1/TRACKER.md).
 **Goal**: Schema, scaffolding, and state-file contract. Nothing dependent on agent work yet.
 
-- [x] **A1** Read & catalog existing v2 state at [research/social/social-strategy-state.json](social-strategy-state.json) — captured 13 reusable field groups (meta, phases.research/plan, platforms, content_queue, hashtag_strategy, competitor_presence, cohort_insights, metrics, seo_sync)
-- [x] **A2** Read existing [SOCIAL-STRATEGY-STATE-SPEC.md](SOCIAL-STRATEGY-STATE-SPEC.md) — sections 1–9 (567 lines, v1.0)
+- [x] **A1** Read & catalog existing v2 state at [research/social/social-strategy-state.json](file:///Users/operator/dev/workspace/projects/celavii/research/social/social-strategy-state.json) — captured 13 reusable field groups (meta, phases.research/plan, platforms, content_queue, hashtag_strategy, competitor_presence, cohort_insights, metrics, seo_sync)
+- [x] **A2** Read existing [SOCIAL-STRATEGY-STATE-SPEC.md](file:///Users/operator/dev/workspace/projects/celavii/research/social/SOCIAL-STRATEGY-STATE-SPEC.md) — sections 1–9 (567 lines, v1.0)
 - [x] **A3** v3 schema appended — `intake`, `phases.acquire/discover/analyze/aggregate/deliver/report`, `gates` (A/B/C cross-model + iter cap), `weekly_cycles[]`, YouTube placeholder, per-platform ER formulas, raw-file convention, v2→v3 migration
 - [x] **A4** Directory skeleton created — `raw/`, `content/social/{research,briefs,scripts,shotlists}/`, `media/generated/social/`, `deliverables/handoffs/`, plus openclaw skills + features dirs
 - [x] **A5** [`openclaw/skills/social-orchestrator/SKILL.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/SKILL.md) authored — full router + 3-channel map + ER math + 5 hook archetypes + 4E framework + anti-slop rubric + cross-model critic config + `references/critic-intake-rule.md`
@@ -191,13 +191,13 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 **Goal**: Build the independent skills first. Strategy pipeline assembles them later. Order chosen so each skill can be tested standalone.
 
 - [ ] **B1** `social-research` SKILL.md — reads pillars from state, produces research packet for {week, channel, pillar}. Uses Celavii content search + web_search + Brave.
-  - References: [celavii-discover/SKILL.md](../../../../skills/celavii-discover/SKILL.md) `/content/search` endpoint
+  - References: [celavii-discover/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-discover/SKILL.md) `/content/search` endpoint
   - Output path: `content/social/research/{week}-{channel}-research.md`
 - [ ] **B2** Test `social-research` standalone with one pillar from existing v2 state
 - [ ] **B3** `social-citations` SKILL.md (or fold into research) — extracts URL+claim pairs into citation doc
   - Output: `content/social/research/{post-id}-citations.md`
 - [ ] **B4** `social-brief` SKILL.md — reads research packet, produces brief with hook, beats, CTA, hashtags, success metric
-  - Mirrors structure of [skills/blogger/blog-brief/](../../../../skills/blogger/blog-brief/)
+  - Mirrors structure of [skills/blogger/blog-brief/](file:///Users/operator/dev/workspace/skills/blogger/blog-brief/)
   - Output: `content/social/briefs/{channel}-{post-id}-brief.md`
 - [ ] **B5** Test `social-brief` against one existing pillar
 - [ ] **B6** `social-script` SKILL.md — long-form video script (TT/YT/Reels)
@@ -205,13 +205,13 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 - [ ] **B7** `social-shotlist` SKILL.md — shot list from script (camera angle, b-roll cues, on-screen text, duration)
   - Output: `content/social/shotlists/{channel}-{post-id}-shots.md`
 - [ ] **B8** `social-quality` SKILL.md — single skill, three checklists (gate-a, gate-b, gate-c-per-post)
-  - References: [.claude/rules/celavii-design-system.md](../../../../../.claude/rules/celavii-design-system.md), [skills/quality-critic/](../../../../skills/quality-critic/) (steal Gate A pattern + intake-context lesson from [DRY-RUN-TEST-FINDINGS.md](../../../../.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md))
+  - References: [.claude/rules/celavii-design-system.md](file:///Users/operator/dev/.claude/rules/celavii-design-system.md), [skills/quality-critic/](file:///Users/operator/dev/workspace/skills/quality-critic/) (steal Gate A pattern + intake-context lesson from [DRY-RUN-TEST-FINDINGS.md](file:///Users/operator/dev/workspace/.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md))
   - Sub-references: `references/social-quality-checklist.md`, `references/banned-language.md`
 - [ ] **B9** Silo-check sub-mode in `social-quality` — given a brief, verify pillar alignment with state.phases.aggregate.pillars
 - [ ] **B10** `social-trend-detect` SKILL.md — per-platform trend gathering (Apify TT trending, X explore, IG hashtag growth, YT trending)
   - Output: `raw/trend-{platform}-{topic}-{ts}.json` + summary md
 - [ ] **B11** `social-discover` + `social-competitor-scrape` SKILL.md (combined, since both lean on Celavii API)
-  - References: [celavii-data-ops/SKILL.md](../../../../skills/celavii-data-ops/SKILL.md) `/scrape/*` family
+  - References: [celavii-data-ops/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md) `/scrape/*` family
   - Always dry-run first (per data-ops convention)
   - ⚠️ **CELAVII EVAL**: before authoring, evaluate `/Users/operator/code/celavii/social_listener/src/lib/platform-adapters/` (instagram.ts, tiktok.ts, x.ts) and `scripts/adapters/` validators — wrap, don't reimplement
   - ⚠️ **CELAVII EVAL**: review `social_listener/Implementation/pipelines/scrape-dispatch-queue/` — their BullMQ queue model may already cover Phase 0 ACQUIRE
@@ -237,7 +237,7 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 - [ ] **C1** Spec the scoring rubric: relevance (0–10), differentiation (0–10), cross-pollination (0–10), effort (1–5). Document weights.
 - [ ] **C2** Write `~/dev/workspace/skills/social-aggregate/scripts/aggregate.py` — reads `raw/*.json`, scores, clusters, outputs report
-  - Reference pattern: [skills/seo/scripts/](../../../../skills/seo/scripts/) (the SEO Phase 3 aggregator)
+  - Reference pattern: [skills/seo/scripts/](file:///Users/operator/dev/workspace/skills/seo/scripts/) (the SEO Phase 3 aggregator)
 - [ ] **C3** Output: `aggregate-report-{date}.md` (LLM-readable consolidated report, ~2K tokens)
 - [ ] **C4** Update state.phases.aggregate.{pillars, scored_topics, report_path}
 - [ ] **C5** Test against a fixture set of raw JSON (use existing v2 social-strategy-state data as fixture)
@@ -252,7 +252,7 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 **Goal**: Wire atomic skills into `/social_strategy` 7-phase command.
 
-- [ ] **D1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-strategy.md` — mirror structure of [seo-strategy.md](../../../../skills/seo/commands/seo-strategy.md)
+- [ ] **D1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-strategy.md` — mirror structure of [seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md)
 - [ ] **D2** Intake flow (5 Qs, one at a time, Telegram-friendly) — channels, identities, goal, competitors, voice rules
 - [ ] **D3** Phase 0 ACQUIRE spec — calls `social-discover` + seed expansion
 - [ ] **D4** Phase 1 DISCOVER spec — calls `social-discover` + `social-competitor-scrape` + `social-trend-detect`
@@ -263,7 +263,7 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 - [ ] **D9** Phase 4 PLAN — `social-plan`
 - [ ] **D10** Gate B spec — `social-quality` mode=gate-b; cannibalization + cadence + repurposing-loop validity
 - [ ] **D11** Phase 5 DELIVER — generate per-post briefs (loop `social-brief` over top N)
-- [ ] **D12** Phase 6 REPORT — Next.js print-ready PDF (clone [deliverables/seo-report-v3/](../../deliverables/seo-report-v3/) template)
+- [ ] **D12** Phase 6 REPORT — Next.js print-ready PDF (clone [deliverables/seo-report-v3/](file:///Users/operator/dev/workspace/projects/celavii/deliverables/seo-report-v3/) template)
 - [ ] **D13** Help block (matches `/seo_strategy help` format)
 - [ ] **D14** Cost/time estimates verified empirically on first dry run
 - [ ] **D15** Adopt 15-parallel-subagent spawn pattern from claude-seo `/seo audit` for Phase 1 (DISCOVER) — one subagent per platform per channel
@@ -295,12 +295,12 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 - [ ] **F1** `/social_post post_id={id}` — runs all production skills for a single post
 - [ ] **F2** `social-repurpose` SKILL.md — given a published blog or post, produce variants for each channel/platform
-  - Mirror [skills/blogger/blog-repurpose/](../../../../skills/blogger/blog-repurpose/)
+  - Mirror [skills/blogger/blog-repurpose/](file:///Users/operator/dev/workspace/skills/blogger/blog-repurpose/)
 - [ ] **F3** Test repurpose against an existing published article (e.g., `agentic-shift-final.mdx`)
 
 ### Phase G — Dry-Run + Real Pilot (Week 3–4)
 
-**Goal**: Run the same kind of dry-run that earned [DRY-RUN-TEST-FINDINGS.md](../../../../.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md) for SEO. Find the equivalent of "Gate A had no intake context" before production use.
+**Goal**: Run the same kind of dry-run that earned [DRY-RUN-TEST-FINDINGS.md](file:///Users/operator/dev/workspace/.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md) for SEO. Find the equivalent of "Gate A had no intake context" before production use.
 
 - [ ] **G1** Pick test target: Celavii channel, IG only (Phase 1 — narrow scope)
 - [ ] **G2** Run `/social_strategy` end-to-end with verbose logging
@@ -327,10 +327,10 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 - [ ] **H2b** YouTube-specific adapter contract stub: define expected fields (channel_id, video_id, view_count, watch_time, retention curve, subscriber count, shorts vs long-form flag) so brief/script/shotlist skills can already reason about YT
 - [ ] **H2c** YouTube-specific cadence + ER rule entries (≥12 uploads/month threshold from vidIQ data, `ER = engagements / views`) — wire into `social-aggregate` rules now
 - [ ] **H2d** Add YouTube to actor-registry placeholder — note "awaiting Celavii adapter" with link to the in-flight adapter PR/spec when available
-- [ ] **H3** Extend [celavii-data-ops/SKILL.md](../../../../skills/celavii-data-ops/SKILL.md) with platform-aware endpoints based on H1 audit findings (include YouTube as documented-but-disabled)
+- [ ] **H3** Extend [celavii-data-ops/SKILL.md](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md) with platform-aware endpoints based on H1 audit findings (include YouTube as documented-but-disabled)
 - [ ] **H4** Update `social-discover` + `social-competitor-scrape` to platform-dispatch via the existing [actor-registry](file:///Users/operator/code/celavii/social_listener/src/lib/platform-adapters/actor-registry/) (apidojo-tiktok-location, apify-instagram-hashtag, sociavault-tiktok-follower, etc.)
 - [ ] **H5** Re-run dry-run with IG/TT/X; update findings doc
-- [ ] **H6** Update [PROJECT.md](../../PROJECT.md) project capabilities note ("Celavii Platforms" memory) — currently states "IG/TikTok/X coming soon" → revise to "IG/TT/X live; YouTube imminent"
+- [ ] **H6** Update [PROJECT.md](file:///Users/operator/dev/workspace/projects/celavii/PROJECT.md) project capabilities note ("Celavii Platforms" memory) — currently states "IG/TikTok/X coming soon" → revise to "IG/TT/X live; YouTube imminent"
 - [ ] **H7** Wrap Apify SEO/Social scripts as `extensions/apify-social/` (claude-seo extension pattern)
 - [ ] **H8** Wrap Celavii API as `extensions/celavii/` with install.sh + MCP merge into settings.json
 - [ ] **H9** Sync our local `~/dev/workspace/skills/celavii-*` with [social_listener/packages/mcp/skills/](file:///Users/operator/code/celavii/social_listener/packages/mcp/skills/) — they have `celavii-platforms` and `celavii-jobs` we don't have
@@ -346,18 +346,18 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 - [ ] **HYT5** Run `social-competitor-scrape --platform youtube` for one competitor channel
 - [ ] **HYT6** Verify `social-aggregate` produces YT entries with cadence/ER scoring
 - [ ] **HYT7** Generate one full YT brief + script + shotlist via `/social_post post_id={yt-test}`
-- [ ] **HYT8** Update [PROJECT.md](../../PROJECT.md) Celavii Platforms memory to "IG/TT/X/YT live"
+- [ ] **HYT8** Update [PROJECT.md](file:///Users/operator/dev/workspace/projects/celavii/PROJECT.md) Celavii Platforms memory to "IG/TT/X/YT live"
 - [ ] **HYT9** Close Q11
 
 ### Phase I — Architecture Drift Cleanup (parallelizable, anytime)
 
 **Goal**: Address the 4 failures from `arch-verify.sh` flagged in this conversation. Not blocking but should ride along.
 
-- [ ] **I1** Update [openclaw/.system/architecture/README.md](../../../../../openclaw/.system/architecture/README.md) — gateway port `49152`
-- [ ] **I2** Update [openclaw/.system/architecture/channels.md](../../../../../openclaw/.system/architecture/channels.md) — gateway port `49152`
-- [ ] **I3** Update [openclaw/.system/architecture/skills.md](../../../../../openclaw/.system/architecture/skills.md) — current count 39 (+ 11 new social skills = 50 after this work)
-- [ ] **I4** Add `CELAVII_API_KEY` to `SHELL_ENV_EXPECTED_KEYS` in [openclaw/src/config/io.ts](../../../../../openclaw/src/config/io.ts)
-- [ ] **I5** Create [openclaw/.system/architecture/VALUES.md](../../../../../openclaw/.system/architecture/VALUES.md) — single source of truth for tracked values
+- [ ] **I1** Update [openclaw/.system/architecture/README.md](../../architecture/README.md) — gateway port `49152`
+- [ ] **I2** Update [openclaw/.system/architecture/channels.md](../../architecture/channels.md) — gateway port `49152`
+- [ ] **I3** Update [openclaw/.system/architecture/skills.md](../../architecture/skills.md) — current count 39 (+ 11 new social skills = 50 after this work)
+- [ ] **I4** Add `CELAVII_API_KEY` to `SHELL_ENV_EXPECTED_KEYS` in [openclaw/src/config/io.ts](../../../src/config/io.ts)
+- [ ] **I5** Create [openclaw/.system/architecture/VALUES.md](../../architecture/VALUES.md) — single source of truth for tracked values
 - [ ] **I6** Append CHANGELOG entry: "Added social-agents skill family"
 - [ ] **I7** Re-run `arch-verify.sh` — expect 0 failures
 
@@ -385,16 +385,16 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 These come from SEO post-mortem lessons. Skipping them re-creates known failure modes.
 
-1. **Critic reads intake before scoring.** Gate A's checklist must explicitly require loading `state.meta.intake.business_concept`, `voice_rules`, `banned_language`, `competitors_per_channel`. Reference: [DRY-RUN-TEST-FINDINGS.md § Finding 1](../../../../.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md).
+1. **Critic reads intake before scoring.** Gate A's checklist must explicitly require loading `state.meta.intake.business_concept`, `voice_rules`, `banned_language`, `competitors_per_channel`. Reference: [DRY-RUN-TEST-FINDINGS.md § Finding 1](file:///Users/operator/dev/workspace/.system/features/seo-strategy/DRY-RUN-TEST-FINDINGS.md).
 2. **Phase 3 is deterministic.** No LLM in aggregation. The script consolidates raw → report. The LLM only reads the report.
 3. **Raw archive accumulates.** Every tool output saved to `raw/{tool}-{target}-{ts}.json`. Never `/tmp/`. Never overwrite. Cross-run reuse via timestamp check.
-4. **Evidence rules.** Every finding cites a tool. Every score has a source. Reports below minimum tool count are rejected (mirror [seo-orchestrator/SKILL.md § Quality Self-Check](../../../../skills/seo/seo-orchestrator/SKILL.md)).
+4. **Evidence rules.** Every finding cites a tool. Every score has a source. Reports below minimum tool count are rejected (mirror [seo-orchestrator/SKILL.md § Quality Self-Check](file:///Users/operator/dev/workspace/skills/seo/seo-orchestrator/SKILL.md)).
 5. **Atomic skills are independently invocable.** No skill may require the orchestrator. Each skill takes the state file path as arg, defaults to canonical path, and updates state on success.
-6. **Files registered in PROJECT.md.** Every save updates the File Index per [WORKSPACE.md routing](../../../../WORKSPACE.md).
+6. **Files registered in PROJECT.md.** Every save updates the File Index per [WORKSPACE.md routing](file:///Users/operator/dev/workspace/WORKSPACE.md).
 7. **Absolute paths only.** No relative paths in any skill. (WORKSPACE.md rule.)
 8. **Project alias map respected.** "social", "social media", "social-agents" all → `projects/celavii/research/social/` (or whichever project context — never create new project dir).
-9. **Always dry-run first** for scrape operations. Mirror [celavii-data-ops](../../../../skills/celavii-data-ops/SKILL.md) convention.
-10. **Banned language enforced** per [.claude/rules/celavii-design-system.md](../../../../../.claude/rules/celavii-design-system.md).
+9. **Always dry-run first** for scrape operations. Mirror [celavii-data-ops](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md) convention.
+10. **Banned language enforced** per [.claude/rules/celavii-design-system.md](file:///Users/operator/dev/.claude/rules/celavii-design-system.md).
 
 ---
 
