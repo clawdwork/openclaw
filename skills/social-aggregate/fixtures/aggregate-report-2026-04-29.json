@@ -1,0 +1,580 @@
+{
+  "version": 1,
+  "generated_at": "2026-04-29T03:14:39.026683+00:00",
+  "social_dir": "/Users/operator/dev/openclaw/skills/social-aggregate/fixtures",
+  "stats": {
+    "raw_files": 4,
+    "posts_processed": 12,
+    "own_posts": 9,
+    "competitor_posts": 3,
+    "competitors": 1
+  },
+  "scored_topics": [
+    {
+      "topic": "creator profiles agentic",
+      "score": 7.95,
+      "relevance": 9,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic",
+      "score": 6.95,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003", "tt:tt001", "tt:tt002", "tt:tt004"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "dashboards",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc002", "tt:tt001", "tt:tt002"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "about",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "audience",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "overlap",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "tutorial",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "audience overlap",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "most",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "tt:tt002"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "stop",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc002", "tt:tt004"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "using",
+      "score": 6.6,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc002", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic workflow",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["tt:tt001", "tt:tt004"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "here's agentic",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic marketing",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "night here's agentic",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "here's agentic marketing",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic marketing system",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "profiles agentic",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic system",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "profiles agentic system",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "agentic system surfaced",
+      "score": 6.55,
+      "relevance": 5,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "three",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "circles",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "method",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "three circles",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "circles method",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "three circles method",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "method audience",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "circles method audience",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "method audience overlap",
+      "score": 6.25,
+      "relevance": 3,
+      "differentiation": 10,
+      "cross_pollination": 5,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005", "tt:tt003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "here's",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "why",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "profiles",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "system",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "comment",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "biggest",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "blocker",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "creator profiles",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "comment biggest",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc003"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "nobody",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "talking",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "analysis",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "here's why",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc001", "ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "why nobody",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "nobody talking",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "talking about",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "overlap analysis",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "analysis tutorial",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "here's why nobody",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    },
+    {
+      "topic": "why nobody talking",
+      "score": 6.2,
+      "relevance": 4,
+      "differentiation": 10,
+      "cross_pollination": 3,
+      "effort": 2,
+      "supporting_post_ids": ["ig:Cabc004", "ig:Cabc005"],
+      "channel_fit": ["celaviihq"]
+    }
+  ],
+  "cannibalization_clusters": [
+    {
+      "cluster_id": "cn-001",
+      "posts": ["ig:Cabc004", "ig:Cabc005"],
+      "max_cosine": 0.894,
+      "window_days": 30,
+      "status": "hard_fail"
+    }
+  ],
+  "hook_archetype_distribution": {
+    "celaviihq": {
+      "curiosity_gap": 0.273,
+      "authority": 0.273,
+      "contrarian": 0.182,
+      "pattern_interrupt": 0.273
+    }
+  },
+  "e_mix": {
+    "celaviihq": {
+      "educate": 0.5,
+      "engage": 0.25,
+      "entertain": 0.083,
+      "empower": 0.167
+    }
+  },
+  "trend_signals": [
+    {
+      "term": "agentic",
+      "velocity": 3.429,
+      "acceleration": 0.214,
+      "z_score": -0.37,
+      "status": "rising",
+      "platform": "tiktok"
+    },
+    {
+      "term": "creator",
+      "velocity": 2.679,
+      "acceleration": 0.143,
+      "z_score": -0.52,
+      "status": "rising",
+      "platform": "tiktok"
+    }
+  ],
+  "channel_baselines": {
+    "celaviihq": {
+      "instagram": {
+        "post_count": 5,
+        "avg_er_pct": 8.7454
+      },
+      "tiktok": {
+        "post_count": 4,
+        "avg_er_pct": 92.9335
+      }
+    }
+  },
+  "runtime_sec": 0.01,
+  "state_delta": {
+    "report_path_md": "/Users/operator/dev/openclaw/skills/social-aggregate/fixtures/aggregate-report-2026-04-29.md",
+    "report_path_json": "/Users/operator/dev/openclaw/skills/social-aggregate/fixtures/aggregate-report-2026-04-29.json",
+    "scored_topics_count": 50,
+    "cannibalization_warnings": 0,
+    "cannibalization_hard_fails": 1,
+    "trend_signals_exploding": 0,
+    "ran_at": "2026-04-29T03:14:39.026683+00:00",
+    "runtime_sec": 0.01
+  }
+}

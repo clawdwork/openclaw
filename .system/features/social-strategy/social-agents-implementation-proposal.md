@@ -235,16 +235,16 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 **Goal**: The Phase 3 script. LLMs never read raw JSON. This is the cost unlock.
 
-- [ ] **C1** Spec the scoring rubric: relevance (0–10), differentiation (0–10), cross-pollination (0–10), effort (1–5). Document weights.
-- [ ] **C2** Write `~/dev/workspace/skills/social-aggregate/scripts/aggregate.py` — reads `raw/*.json`, scores, clusters, outputs report
+- [x] **C1** Spec the scoring rubric: relevance (0–10), differentiation (0–10), cross-pollination (0–10), effort (1–5). Document weights. → [`references/scoring-rubric.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/scoring-rubric.md)
+- [x] **C2** Write `~/dev/workspace/skills/social-aggregate/scripts/aggregate.py` — reads `raw/*.json`, scores, clusters, outputs report
   - Reference pattern: [skills/seo/scripts/](file:///Users/operator/dev/workspace/skills/seo/scripts/) (the SEO Phase 3 aggregator)
-- [ ] **C3** Output: `aggregate-report-{date}.md` (LLM-readable consolidated report, ~2K tokens)
-- [ ] **C4** Update state.phases.aggregate.{pillars, scored_topics, report_path}
-- [ ] **C5** Test against a fixture set of raw JSON (use existing v2 social-strategy-state data as fixture)
-- [ ] **C6** Document expected runtime (<5 sec target, per SEO precedent)
-- [ ] **C7** Implement cosine-similarity + 30-day temporal cannibalization detection (powers B15). Reference: [docs/frameworks.md § 10](docs/frameworks.md)
-- [ ] **C8** Encode 4E framework (Educate/Entertain/Engage/Empower) + 5 hook archetypes as content-type taggers. Require ≥2 E's per planned post on Celavii product channel.
-- [ ] **C9** Compute velocity + acceleration + z-score (not raw volume) for trend signals per [readikus/ramekin](https://github.com/readikus/ramekin) algorithm. Treat platform-native trend lists as lagging, not leading.
+- [x] **C3** Output: `aggregate-report-{date}.md` (LLM-readable consolidated report, ~2K tokens) — template renders 8 sections incl. cannibalization warnings + state delta
+- [x] **C4** Update state.phases.aggregate.{pillars, scored_topics, report_path} — encoded as `state_delta` in payload
+- [x] **C5** Test against a fixture set of raw JSON — bundled fixtures + `scripts/smoke-test.sh` with contract assertions; passes 12 posts / 50 scored / 1 cannib hard_fail / 0.01s
+- [x] **C6** Document expected runtime (<5 sec target, per SEO precedent) → [`references/runtime-target.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/runtime-target.md). Empirical benchmark on real Celavii v3 raw data deferred until B11.1 (`scripts/discover.py`) ships.
+- [x] **C7** Implement cosine-similarity + 30-day temporal cannibalization detection (powers B15). Reference: [docs/frameworks.md § 10](docs/frameworks.md) → [`references/cannibalization-thresholds.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/cannibalization-thresholds.md)
+- [x] **C8** Encode 4E framework (Educate/Entertain/Engage/Empower) + 5 hook archetypes as content-type taggers. Require ≥2 E's per planned post on Celavii product channel. → [`references/4e-classifier.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/4e-classifier.md), [`references/archetype-patterns.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/archetype-patterns.md)
+- [x] **C9** Compute velocity + acceleration + z-score (not raw volume) for trend signals per [readikus/ramekin](https://github.com/readikus/ramekin) algorithm. Treat platform-native trend lists as lagging, not leading. → [`references/trend-math.md`](file:///Users/operator/dev/openclaw/skills/social-aggregate/references/trend-math.md)
 
 **Exit criteria**: Running aggregator on fixture raw/ produces deterministic, LLM-readable report. Cannibalization matrix + hook archetype tags + velocity z-scores all present.
 

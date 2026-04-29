@@ -1,0 +1,25 @@
+{
+  "version": 3,
+  "domain": "celavii.com",
+  "project": "celavii-fixture",
+  "created": "2026-04-28T00:00:00Z",
+  "intake": {
+    "differentiators": [
+      "Agentic Marketing",
+      "Network Intelligence",
+      "Three Circles Method",
+      "Pay-as-you-go pricing"
+    ],
+    "content_silos": [
+      { "id": "analytics", "name": "Creator Analytics" },
+      { "id": "outreach", "name": "Creator Outreach" },
+      { "id": "agentic", "name": "Agentic Workflows" }
+    ],
+    "competitors_per_channel": {
+      "celavii": ["modaberlin", "grin", "upfluence"]
+    },
+    "channel_e_mix_targets": {
+      "celavii": { "educate": 0.5, "empower": 0.25, "engage": 0.15, "entertain": 0.1 }
+    }
+  }
+}

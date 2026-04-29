@@ -18,14 +18,14 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## Skill Counts
 
-| Key                                  | Value | Files That Reference It                                                                                                                                                                                                                                                                                                         | Last Verified |
-| ------------------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| Skill count (managed top-level dirs) | 55    | skills.md (×4)                                                                                                                                                                                                                                                                                                                  | 2026-04-28    |
-| Skill count (managed SKILL.md files) | 125   | (nested inside domain categories)                                                                                                                                                                                                                                                                                               | 2026-04-02    |
-| Skill count (bundled repo dirs)      | 65    | skills.md, README.md                                                                                                                                                                                                                                                                                                            | 2026-02-16    |
-| Skill count (celavii)                | 10    | skills.md                                                                                                                                                                                                                                                                                                                       | 2026-02-16    |
-| Skill count (social)                 | 18    | skills.md (celavii-social, social-hooks, social-orchestrator, social-persona, social-drift, social-discover, social-competitor-scrape, social-trend-detect, social-factcheck, social-cannibalization, social-sxo, social-plan, social-research, social-brief, social-script, social-shotlist, social-quality, social-repurpose) | 2026-04-28    |
-| Skill count (custom)                 | 10    | skills.md                                                                                                                                                                                                                                                                                                                       | 2026-03-31    |
+| Key                                  | Value | Files That Reference It                                                                                                                                                                                                                                                                                                                           | Last Verified |
+| ------------------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Skill count (managed top-level dirs) | 56    | skills.md (×4)                                                                                                                                                                                                                                                                                                                                    | 2026-04-29    |
+| Skill count (managed SKILL.md files) | 128   | (nested inside domain categories)                                                                                                                                                                                                                                                                                                                 | 2026-04-29    |
+| Skill count (bundled repo dirs)      | 65    | skills.md, README.md                                                                                                                                                                                                                                                                                                                              | 2026-02-16    |
+| Skill count (celavii)                | 10    | skills.md                                                                                                                                                                                                                                                                                                                                         | 2026-02-16    |
+| Skill count (social)                 | 19    | skills.md (celavii-social, social-hooks, social-orchestrator, social-persona, social-drift, social-discover, social-competitor-scrape, social-trend-detect, social-factcheck, social-cannibalization, social-sxo, social-plan, social-research, social-brief, social-script, social-shotlist, social-quality, social-repurpose, social-aggregate) | 2026-04-29    |
+| Skill count (custom)                 | 10    | skills.md                                                                                                                                                                                                                                                                                                                                         | 2026-03-31    |
 
 ## Agent Counts
 
@@ -69,18 +69,20 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## API Keys
 
-| Key                   | Location         | Status | Last Verified |
-| --------------------- | ---------------- | ------ | ------------- |
-| `ANTHROPIC_API_KEY`   | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `OPENAI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `GEMINI_API_KEY`      | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `OPENROUTER_API_KEY`  | ~/.openclaw/.env | Set    | 2026-04-25    |
-| `CELAVII_API_KEY`     | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `ELEVENLABS_API_KEY`  | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `BRAVE_API_KEY`       | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `FIRECRAWL_API_KEY`   | ~/.openclaw/.env | Set    | 2026-02-09    |
-| `REPLICATE_API_TOKEN` | ~/.openclaw/.env | Set    | 2026-02-16    |
-| `APIFY_API_TOKEN`     | ~/.openclaw/.env | Set    | 2026-02-17    |
+| Key                              | Location                                                             | Status                                    | Last Verified |
+| -------------------------------- | -------------------------------------------------------------------- | ----------------------------------------- | ------------- |
+| `ANTHROPIC_API_KEY`              | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `OPENAI_API_KEY`                 | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `GEMINI_API_KEY`                 | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `OPENROUTER_API_KEY`             | ~/.openclaw/.env                                                     | Set                                       | 2026-04-25    |
+| `CELAVII_API_KEY`                | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `ELEVENLABS_API_KEY`             | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `BRAVE_API_KEY`                  | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `FIRECRAWL_API_KEY`              | ~/.openclaw/.env                                                     | Set                                       | 2026-02-09    |
+| `REPLICATE_API_TOKEN`            | ~/.openclaw/.env                                                     | Set                                       | 2026-02-16    |
+| `APIFY_API_TOKEN`                | ~/.openclaw/.env                                                     | Set                                       | 2026-02-17    |
+| `GOOGLE_APPLICATION_CREDENTIALS` | ~/.openclaw/.env (path → ~/.config/celavii-seo/service-account.json) | Pending (Phase 1.1)                       | 2026-04-28    |
+| `GOOGLE_GSC_PROPERTY`            | ~/.openclaw/.env                                                     | Pending (Phase 1.1; value: `celavii.com`) | 2026-04-28    |
 
 ---
 

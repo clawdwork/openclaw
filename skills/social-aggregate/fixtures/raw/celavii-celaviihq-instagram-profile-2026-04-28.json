@@ -1,0 +1,11 @@
+{
+  "platform": "instagram",
+  "handle": "celaviihq",
+  "user_id": "ig:1234567890",
+  "followers": 8400,
+  "following": 412,
+  "posts_per_week": 3.5,
+  "engagement_rate_pct": 0.62,
+  "format_mix": { "reel": 0.55, "carousel": 0.3, "single": 0.15 },
+  "scraped_at": "2026-04-28T13:30:00Z"
+}
