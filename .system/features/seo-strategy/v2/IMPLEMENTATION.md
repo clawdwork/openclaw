@@ -276,14 +276,21 @@ Both pulled clean (claude-seo +96 commits, claude-blog reset to origin).
 
 #### 2C. Blog Cannibalization (with embeddings, NOT keyword matching)
 
-- [ ] **2C.1** Author `~/dev/workspace/skills/blogger/scripts/cannibalization_detector.py` — uses **`gemini-embedding-2-preview`** (768 dim) via `generativelanguage.googleapis.com/v1beta/models`, matching existing pattern in `social_listener/supabase/functions/_shared/embedding-provider.ts`
-- [ ] **2C.2** Build cosine-similarity matrix across all `published/ + intermediate/ + drafts/` MDX files (41 posts)
-- [ ] **2C.3** Set threshold: cosine ≥ 0.85 = HIGH, 0.75-0.85 = MEDIUM, <0.75 = clean
-- [ ] **2C.4** Author `~/dev/workspace/skills/blogger/blog-cannibalization/SKILL.md`
-- [ ] **2C.5** Reuse existing `GEMINI_API_KEY` in `~/.openclaw/.env` — no new key needed
-- [ ] **2C.6** Modify `blog_preflight.py` — block intermediate → published if HIGH-severity cannibalization detected
-- [ ] **2C.7** Run initial audit across all 41 posts; document findings; consolidate or differentiate flagged pairs
-- [ ] **2C.8** Acceptance: detects existing semantic overlap between `best-influencer-marketing-tools` and `content-creator-analytics-tools` (likely candidates) at MEDIUM or HIGH severity
+> **Universality introduced 2026-04-29**: Phase 2C is the first sub-phase built multi-tenant from day 1 via `skills/seo/scripts/project_config.py` + per-project `.seo-config.json`. Phase 1/2A/2B Celavii-hardcoded scripts logged for retrofit (TRACKER B8).
+
+> **Spec drift addressed 2026-04-29**: Upstream `claude-blog/skills/blog-cannibalization/SKILL.md` is keyword-based (n-gram + DataForSEO) with no Python helpers. Vendored only the MERGE/DIFFERENTIATE/CANONICAL/NO_ACTION recommendation taxonomy; embedding approach 100% Celavii-authored.
+
+- [x] **2C.0** Universality scaffolding — `skills/seo/scripts/project_config.py` (universal loader) + `projects/celavii/.seo-config.json`. Verified resolution. ✅
+- [x] **2C.1** Author `~/dev/workspace/skills/blogger/blog-cannibalization/scripts/cannibalization_detector.py` (corrected location per Phase 2B convention). Python port of `social_listener` `embedding-provider.ts` GeminiEmbeddingProvider with `SEMANTIC_SIMILARITY` task type, 768 dim, batch-100, focal-extract chunking (title + description + h1 + h2 list + first ~1400 words), JSON cache by SHA-256 content hash. ✅
+- [x] **2C.2** Build cosine matrix across corpus — actual size **30** (18 published + 12 drafts; spec said 41 was an overestimate). Matrix built; 28 distinct-slug HIGH overlaps. ✅
+- [x] **2C.3** Thresholds: ≥0.85 HIGH, 0.75-0.85 MEDIUM, <0.75 clean. CLI `--thresholds high=X,medium=Y` for tuning. ✅
+- [x] **2C.4** Author `~/dev/workspace/skills/blogger/blog-cannibalization/SKILL.md`. ✅
+- [x] **2C.5** Reuses `GEMINI_API_KEY` (Phase 1). $0 net new spend; full audit ≈ $0.16. ✅
+- [x] **2C.6** Modified `blog_preflight.py` — `run_cannibalization_gate()` + `--skip-cannibalization` flag; HIGH severity → FAIL, MEDIUM → WARN. ✅
+- [x] **2C.7** Initial audit: 30 posts, 28 distinct-slug HIGH findings. Top: `three-circles-method` vs `three-circles-method-2026-03-04` (0.96 — confirmed duplicate); `influencer-marketing-guide` vs `best-influencer-marketing-tools` (0.95); pillar `influencer-marketing-guide` overlaps 5+ neighbors. Same-slug findings tracked as B9 (corpus-dedup pass). ✅
+- [x] **2C.8** Acceptance PASSED: `best-influencer-marketing-tools` vs `content-creator-analytics-tools` cosine=0.8076 → MEDIUM. ✅
+- [x] **2C.9** `blogger/hooks/hooks.json` `_phase_2D_planned` extended with cannibalization hook entry. ✅
+- [x] **2C.10** `blog-orchestrator/SKILL.md` Sub-Skills 15→16; added `blog-cannibalization` row. ✅
 
 #### 2D. Hooks Wiring
 
