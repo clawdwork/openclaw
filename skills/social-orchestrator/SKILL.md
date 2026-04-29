@@ -65,6 +65,38 @@ Based on the task description, read the appropriate sub-skill BEFORE starting wo
 | Repurpose                          | `skills/social-repurpose/SKILL.md`                          | "turn this blog into TT/X/Reel", "split this video into shorts"          | 2+          |
 | SXO (post-fit)                     | `skills/social-sxo/SKILL.md`                                | "does this deserve to engage?", "platform fit check"                     | 2+          |
 
+## Skill Implementation Status (READ BEFORE INVOKING ANY SUB-SKILL)
+
+Most social skills are **contract-only** today — SKILL.md authored, no `scripts/*.py` yet. Per the standing decision, scripts ship on-demand during pipeline assembly. When a sub-skill has no script, fall back to underlying primitives and mark the step `implementation: stub` in `state.phases.{phase}.notes[]`.
+
+| Skill                      | Script status                                    | Fallback when no script                                                                                      |
+| -------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `social-aggregate`         | ✅ `scripts/aggregate.py` (Phase C, runs in <5s) | (none — call directly)                                                                                       |
+| `social-discover`          | 🏗️ contract-only                                 | Use `celavii-discover` skill + raw `curl` against `/api/v1/scrape/{hashtags,locations,urls}`                 |
+| `social-competitor-scrape` | 🏗️ contract-only                                 | Same as `social-discover` + `/content/search?author=...`                                                     |
+| `social-trend-detect`      | 🏗️ contract-only                                 | Compute z-score in-flight using `social-aggregate`'s `trend_signals()` over scraped hashtag JSON             |
+| `social-research`          | 🏗️ contract-only                                 | Use `web_search` (Brave) + `web_fetch` (Firecrawl) — same primitives the SEO `seo-research` uses             |
+| `social-factcheck`         | 🏗️ contract-only                                 | Use `web_search` for evidence URLs; manually classify Tier 1/2/3 per voice constitution                      |
+| `social-cannibalization`   | 🏗️ contract-only                                 | Call `social-aggregate.cannibalization_clusters()` directly — same code path                                 |
+| `social-sxo`               | 🏗️ contract-only                                 | Apply rules from SKILL.md inline (format-fit table is short; encode as if-else)                              |
+| `social-plan`              | 🏗️ contract-only                                 | Generate publication_calendar inline using cadence rules + Gary Vee fan-out                                  |
+| `social-brief`             | 🏗️ contract-only                                 | Author markdown directly per format-specific brief template in SKILL.md                                      |
+| `social-hooks`             | 🏗️ contract-only                                 | Generate variants inline using 5-archetype patterns from `social-aggregate/references/archetype-patterns.md` |
+| `social-script`            | 🏗️ contract-only                                 | Author script + apply 8-pass humanizer principles from SKILL.md                                              |
+| `social-shotlist`          | 🏗️ contract-only                                 | Author shotlist by hand using format template; ClipsAI integration deferred                                  |
+| `social-quality`           | 🏗️ contract-only                                 | Apply rubric inline (Gate A/B/C scoring tables in SKILL.md)                                                  |
+| `social-persona`           | 🏗️ contract-only                                 | Read `voice.json` + apply 4-D vector check inline                                                            |
+| `social-drift`             | 🏗️ contract-only                                 | Skip — historical baselines require SQLite that doesn't exist yet; defer to Phase G pilot                    |
+| `social-repurpose`         | 🏗️ contract-only                                 | Hand-author per `fixtures/agentic-shift-fanout.md` spec for the source pillar                                |
+
+### When falling back to primitives
+
+1. **Document the fallback in state**: `state.phases.{phase}.notes.append({"step": "...", "implementation": "stub", "reason": "social-discover scripts/discover.py not yet authored", "primitives_used": ["curl /api/v1/scrape/hashtags", "celavii-discover"]})`
+2. **Save raw outputs anyway** — `raw/celavii-{handle}-{platform}-{kind}-{ts}.json` so when `scripts/discover.py` ships, the next run can validate against the same data.
+3. **Log to DRY-RUN-TEST-FINDINGS.md** — every stub is a Phase G finding. Pattern: "Step X needed Y primitive; recommend Y as the script's first call when authored."
+
+This is the explicit "harden as we go" mode. First runs will be slower and more verbose; that's expected.
+
 ## Channel Map (3-Channel Studio)
 
 | Channel       | Identity                                         | Platforms                    | Primary Format             |
@@ -137,10 +169,10 @@ When running any gate (A, B, or per-post C):
 All artifacts MUST be saved to disk before reporting back:
 
 | Artifact         | Path                                                                       |
-| ---------------- | -------------------------------------------------------------------------- | ----- |
+| ---------------- | -------------------------------------------------------------------------- |
 | Strategy report  | `projects/celavii/deliverables/social-strategy-{date}/strategy.md`         |
 | State updates    | `projects/celavii/research/social/social-strategy-state.json`              |
-| Raw tool outputs | `projects/celavii/research/social/raw/{tool}-{target}-{ts}.{json           | csv}` |
+| Raw tool outputs | `projects/celavii/research/social/raw/{tool}-{target}-{ts}.{json\|csv}`    |
 | Research packets | `projects/celavii/content/social/research/{week}-{channel}-research.md`    |
 | Citations        | `projects/celavii/content/social/research/{post-id}-citations.md`          |
 | Briefs           | `projects/celavii/content/social/briefs/{channel}-{post-id}-brief.md`      |
@@ -166,11 +198,15 @@ If the user asks for help on a specific command:
 
 Read on-demand:
 
-- `references/critic-intake-rule.md` — why every gate must load intake first
-- `references/hook-archetypes.md` — full 5-archetype taxonomy with examples
-- `references/cadence-rules.md` — 2026 per-platform cadence empirical data
-- `references/repurposing-pyramid.md` — Gary Vee 1-to-30 model
-- `references/4e-framework.md` — Educate/Entertain/Engage/Empower with examples
+- `references/critic-intake-rule.md` — why every gate must load `state.intake` first (Article 6 verification rule)
+- `references/intake-questions.md` — 5-question Telegram-friendly intake flow (used by `/social_strategy`)
+- `references/parallel-subagent-spawn.md` — 15-parallel-subagent matrix for Phase 1 DISCOVER
+- `references/industry-aware-delegation.md` — channel-type heuristic (founder/product/utility) → subagent activation rules
+- `references/tiered-credentials.md` — Tier 0/1/2 Celavii API endpoints + cost gates
+- `references/format-as-channel.md` — every calendar entry has explicit `(channel, platform, format)` (D20)
+- `references/gary-vee-fan-out.md` — every long-form pillar must spawn ≥8 atomic outputs (D21)
+
+> Hook archetypes, 2026 cadence rules, and the 4E framework are inlined in this file (§ Hook Archetypes, § 4E Content Tags) — no separate reference reads needed for those.
 
 ## Commands Directory
 
