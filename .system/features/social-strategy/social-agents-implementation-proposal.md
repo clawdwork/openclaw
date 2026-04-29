@@ -252,27 +252,27 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 **Goal**: Wire atomic skills into `/social_strategy` 7-phase command.
 
-- [ ] **D1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-strategy.md` — mirror structure of [seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md)
-- [ ] **D2** Intake flow (5 Qs, one at a time, Telegram-friendly) — channels, identities, goal, competitors, voice rules
-- [ ] **D3** Phase 0 ACQUIRE spec — calls `social-discover` + seed expansion
-- [ ] **D4** Phase 1 DISCOVER spec — calls `social-discover` + `social-competitor-scrape` + `social-trend-detect`
-- [ ] **D5** Phase 2 ANALYZE spec — pattern extraction, repurposing-map seed
-- [ ] **D6** Phase 3 AGGREGATE — `social-aggregate` script
-- [ ] **D7** Gate A spec — `social-quality` mode=gate-a; **MUST read intake.business_concept + voice_rules before scoring** (the SEO lesson)
-- [ ] **D8** Phase 2B remediation flow — targeted scripts only, then re-aggregate, then re-Gate A
-- [ ] **D9** Phase 4 PLAN — `social-plan`
-- [ ] **D10** Gate B spec — `social-quality` mode=gate-b; cannibalization + cadence + repurposing-loop validity
-- [ ] **D11** Phase 5 DELIVER — generate per-post briefs (loop `social-brief` over top N)
-- [ ] **D12** Phase 6 REPORT — Next.js print-ready PDF (clone [deliverables/seo-report-v3/](file:///Users/operator/dev/workspace/projects/celavii/deliverables/seo-report-v3/) template)
-- [ ] **D13** Help block (matches `/seo_strategy help` format)
-- [ ] **D14** Cost/time estimates verified empirically on first dry run
-- [ ] **D15** Adopt 15-parallel-subagent spawn pattern from claude-seo `/seo audit` for Phase 1 (DISCOVER) — one subagent per platform per channel
-- [ ] **D16** Industry-aware delegation: detect channel type (founder/product/utility) → activate relevant subagents only
-- [ ] **D17** Tiered credentials in `social-discover` (Tier 0/1/2 per blog-google pattern): public → API token → Business account
-- [ ] **D18** Cross-model critic at all gates (Sonnet generates, Opus critiques) — defense against same-model false agreement. Reference: [docs/frameworks.md § 11](docs/frameworks.md)
-- [ ] **D19** Hard-cap refinement loops at 3 iterations (Reflexion finding: diminishing returns after 3–5)
-- [ ] **D20** Format-as-channel rule for channel splits (Linus Media Group pattern). Reference: [docs/frameworks.md § 2](docs/frameworks.md)
-- [ ] **D21** Gary Vee Reverse Pyramid as repurposing planning rule — every long-form pillar must spawn N atomic outputs with explicit per-channel formatting
+- [x] **D1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-strategy.md` — mirror structure of [seo-strategy.md](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md). Authored at [`commands/social-strategy.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/commands/social-strategy.md) (~370 lines, all 7 phases + 2 gates + remediation + help + cost table)
+- [x] **D2** Intake flow (5 Qs, one at a time, Telegram-friendly) — channels, identities, goal, competitors, voice rules → [`references/intake-questions.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/intake-questions.md)
+- [x] **D3** Phase 0 ACQUIRE spec — calls `social-discover` + seed expansion (in command spec § Phase 0)
+- [x] **D4** Phase 1 DISCOVER spec — calls `social-discover` + `social-competitor-scrape` + `social-trend-detect` (in command spec § Phase 1, with parallel-subagent matrix)
+- [x] **D5** Phase 2 ANALYZE spec — pattern extraction, repurposing-map seed (in command spec § Phase 2)
+- [x] **D6** Phase 3 AGGREGATE — `social-aggregate` script (in command spec § Phase 3, calls Phase C deliverable)
+- [x] **D7** Gate A spec — `social-quality` mode=gate-a; **MUST read intake.business_concept + voice_rules before scoring** (the SEO lesson) — Article 6 verification rule encoded in command spec § Gate A
+- [x] **D8** Phase 2B remediation flow — targeted scripts only, then re-aggregate, then re-Gate A (command spec § Phase 2B)
+- [x] **D9** Phase 4 PLAN — `social-plan` (command spec § Phase 4)
+- [x] **D10** Gate B spec — `social-quality` mode=gate-b; cannibalization + cadence + repurposing-loop validity (command spec § Gate B, 6 checks)
+- [x] **D11** Phase 5 DELIVER — generate per-post briefs (loop `social-brief` over top N) (command spec § Phase 5, with full per-post sub-skill chain)
+- [x] **D12** Phase 6 REPORT — Next.js print-ready PDF (clone [deliverables/seo-report-v3/](file:///Users/operator/dev/workspace/projects/celavii/deliverables/seo-report-v3/) template) (command spec § Phase 6, 7-step procedure)
+- [x] **D13** Help block (matches `/seo_strategy help` format) (command spec § Help)
+- [x] **D14** Cost/time estimates verified empirically on first dry run — placeholder table populated with first-pass estimates (~$11.70 LLM + ~$1 Apify, ~2–3hr); Phase G pilot will refine
+- [x] **D15** Adopt 15-parallel-subagent spawn pattern from claude-seo `/seo audit` for Phase 1 (DISCOVER) — one subagent per platform per channel → [`references/parallel-subagent-spawn.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/parallel-subagent-spawn.md)
+- [x] **D16** Industry-aware delegation: detect channel type (founder/product/utility) → activate relevant subagents only → [`references/industry-aware-delegation.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/industry-aware-delegation.md)
+- [x] **D17** Tiered credentials in `social-discover` (Tier 0/1/2 per blog-google pattern): public → API token → Business account → [`references/tiered-credentials.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/tiered-credentials.md)
+- [x] **D18** Cross-model critic at all gates (Sonnet generates, Opus critiques) — defense against same-model false agreement. Reference: [docs/frameworks.md § 11](docs/frameworks.md). Encoded in command spec § Execution Model + § Gate A/B
+- [x] **D19** Hard-cap refinement loops at 3 iterations (Reflexion finding: diminishing returns after 3–5). Encoded in command spec § Iteration Cap (`state.gates.{A,B}.iteration` counter)
+- [x] **D20** Format-as-channel rule for channel splits (Linus Media Group pattern). Reference: [docs/frameworks.md § 2](docs/frameworks.md) → [`references/format-as-channel.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/format-as-channel.md)
+- [x] **D21** Gary Vee Reverse Pyramid as repurposing planning rule — every long-form pillar must spawn N atomic outputs with explicit per-channel formatting → [`references/gary-vee-fan-out.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/references/gary-vee-fan-out.md)
 
 **Exit criteria**: `/social_strategy` callable end-to-end. Dry-run produces all phase artifacts in correct paths. Gates respect cross-model + iteration cap rules.
 

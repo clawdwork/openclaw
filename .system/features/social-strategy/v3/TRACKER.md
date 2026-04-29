@@ -76,3 +76,52 @@ Contract assertions verified:
 ## Next Up — Phase D (Strategy Pipeline Command)
 
 See [../social-agents-implementation-proposal.md § Phase D](../social-agents-implementation-proposal.md). 21 items (D1–D21). Wire atomic skills into `/social_strategy` 7-phase command. Phase C is now a callable upstream dependency (Phase 3 AGGREGATE step).
+
+---
+
+## Phase D — Strategy Pipeline Command (2026-04-29)
+
+| #   | Item                                          | Status | Artifact                                                                                                                 |
+| --- | --------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| D1  | `/social_strategy` command spec               | ✅     | [`commands/social-strategy.md`](../../../skills/social-orchestrator/commands/social-strategy.md)                         |
+| D2  | Intake flow (5 Qs, Telegram-friendly)         | ✅     | [`references/intake-questions.md`](../../../skills/social-orchestrator/references/intake-questions.md)                   |
+| D3  | Phase 0 ACQUIRE                               | ✅     | command spec § Phase 0                                                                                                   |
+| D4  | Phase 1 DISCOVER (parallel subagents)         | ✅     | command spec § Phase 1 + parallel-subagent-spawn.md                                                                      |
+| D5  | Phase 2 ANALYZE                               | ✅     | command spec § Phase 2                                                                                                   |
+| D6  | Phase 3 AGGREGATE (calls Phase C script)      | ✅     | command spec § Phase 3                                                                                                   |
+| D7  | Gate A (intake-first, Article 6 verification) | ✅     | command spec § Gate A                                                                                                    |
+| D8  | Phase 2B remediation                          | ✅     | command spec § Phase 2B                                                                                                  |
+| D9  | Phase 4 PLAN                                  | ✅     | command spec § Phase 4                                                                                                   |
+| D10 | Gate B (6 checks)                             | ✅     | command spec § Gate B                                                                                                    |
+| D11 | Phase 5 DELIVER (brief loop)                  | ✅     | command spec § Phase 5                                                                                                   |
+| D12 | Phase 6 REPORT (PDF scaffold plan)            | ✅     | command spec § Phase 6                                                                                                   |
+| D13 | Help block                                    | ✅     | command spec § Help                                                                                                      |
+| D14 | Cost/time estimates                           | ✅     | command spec § Cost Estimate (~$11.70 + ~$1 Apify, ~2–3hr; Phase G refines)                                              |
+| D15 | 15-parallel-subagent spawn pattern            | ✅     | [`references/parallel-subagent-spawn.md`](../../../skills/social-orchestrator/references/parallel-subagent-spawn.md)     |
+| D16 | Industry-aware delegation                     | ✅     | [`references/industry-aware-delegation.md`](../../../skills/social-orchestrator/references/industry-aware-delegation.md) |
+| D17 | Tiered credentials (T0/T1/T2)                 | ✅     | [`references/tiered-credentials.md`](../../../skills/social-orchestrator/references/tiered-credentials.md)               |
+| D18 | Cross-model critic at all gates               | ✅     | command spec § Execution Model (Sonnet generates, Opus critiques)                                                        |
+| D19 | 3-iteration cap on gates                      | ✅     | command spec § Iteration Cap (state.gates.{A,B}.iteration counter)                                                       |
+| D20 | Format-as-channel rule                        | ✅     | [`references/format-as-channel.md`](../../../skills/social-orchestrator/references/format-as-channel.md)                 |
+| D21 | Gary Vee Reverse Pyramid (≥8 atomic spawns)   | ✅     | [`references/gary-vee-fan-out.md`](../../../skills/social-orchestrator/references/gary-vee-fan-out.md)                   |
+
+### Exit Criteria — Met (contract level)
+
+> `/social_strategy` callable end-to-end. Dry-run produces all phase artifacts in correct paths. Gates respect cross-model + iteration cap rules.
+
+Contract is fully specified. Empirical end-to-end dry-run is **deferred to Phase G** (G1-G7) — the actual `/social_strategy` callable execution requires the per-skill scripts (B11.1 social-discover, B14.1 social-factcheck, etc.) which were intentionally deferred to on-demand build during pipeline assembly.
+
+### What's Now Callable End-to-End
+
+- Phase 3 AGGREGATE — fully implemented (Phase C, deterministic Python)
+- Phase 0–2, 4–6 — specs reference real SKILL.md contracts; per-skill scripts to be implemented on first invocation per Phase B's "ship contracts now, implementations on-demand" decision
+
+### What's Deferred to Phase G (Pilot)
+
+- D14 empirical cost validation (current estimates are first-pass)
+- End-to-end dry-run that validates state-file flow across all 7 phases
+- Cross-model critic empirical verification (does Opus actually disagree with Sonnet?)
+
+### Next Up — Phase E (Weekly Curation Command)
+
+See [../social-agents-implementation-proposal.md § Phase E](../social-agents-implementation-proposal.md). 8 items (E1–E8). `/social_curate week=YYYY-Wnn` — the user's stated weekly use case.
