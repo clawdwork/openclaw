@@ -280,14 +280,14 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 **Goal**: The user's stated use case — "based on this strategy, for this week we have to curate the topics, research, prepare script, citations, shot list, silo check."
 
-- [ ] **E1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-curate.md`
-- [ ] **E2** Reads `state.weekly_cycles[]` for target week, or generates a slice from `state.phases.plan.publication_calendar`
-- [ ] **E3** For each scheduled post: call `social-research` → `social-citations` → `social-brief` → (if video) `social-script` → (if video) `social-shotlist` → `social-quality` mode=silo-check → `social-quality` mode=gate-c
-- [ ] **E4** Failure handling: if silo-check fails, re-brief with explicit pillar reminder; max 1 retry per post
-- [ ] **E5** Output bundle: `deliverables/handoffs/social-week-{YYYYWW}.zip` containing all artifacts for the week + an index README
-- [ ] **E6** Append to `state.weekly_cycles[]` with status, post_count, paths
-- [ ] **E7** Help block + dry-run mode (estimates credits before executing)
-- [ ] **E8** Hook variant generation: 5+ per post, archetype-tagged (calls `social-hooks` skill from B18)
+- [x] **E1** Write `~/dev/openclaw/skills/social-orchestrator/commands/social-curate.md` → [`commands/social-curate.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/commands/social-curate.md)
+- [x] **E2** Reads `state.weekly_cycles[]` for target week, or generates a slice from `state.phases.plan.publication_calendar` (command spec § Week resolution; ISO-week math + `current`/`next` aliases + skip-already-done idempotency)
+- [x] **E3** For each scheduled post: call `social-research` → `social-citations` → `social-brief` → (if video) `social-script` → (if video) `social-shotlist` → `social-quality` mode=silo-check → `social-quality` mode=gate-c (command spec § Per-post sub-skill chain, full pseudocode)
+- [x] **E4** Failure handling: if silo-check fails, re-brief with explicit pillar reminder; max 1 retry per post (command spec § Failure handling table; no auto-iteration in production-volume command)
+- [x] **E5** Output bundle: `deliverables/handoffs/social-week-{YYYYWW}.zip` containing all artifacts for the week + an index README (command spec § Bundle assembly + index README format)
+- [x] **E6** Append to `state.weekly_cycles[]` with status, post_count, paths (command spec § State writes; per-post Gate C scoring captured)
+- [x] **E7** Help block + dry-run mode (estimates credits before executing) (command spec § Help, § Dry-run mode, § Cost estimate, § Resume)
+- [x] **E8** Hook variant generation: 5+ per post, archetype-tagged (calls `social-hooks` skill from B18) (command spec § Hook variant generation; explicit pre-brief invocation so artifact ships in bundle)
 
 **Exit criteria**: `/social_curate week=2026-W18` produces zipped weekly bundle ready for human handoff or `celavii-social` execution.
 

@@ -125,3 +125,36 @@ Contract is fully specified. Empirical end-to-end dry-run is **deferred to Phase
 ### Next Up — Phase E (Weekly Curation Command)
 
 See [../social-agents-implementation-proposal.md § Phase E](../social-agents-implementation-proposal.md). 8 items (E1–E8). `/social_curate week=YYYY-Wnn` — the user's stated weekly use case.
+
+---
+
+## Phase E — Weekly Curation Command (2026-04-29)
+
+| #   | Item                                             | Status | Artifact                                                                                     |
+| --- | ------------------------------------------------ | ------ | -------------------------------------------------------------------------------------------- |
+| E1  | `/social_curate` command spec                    | ✅     | [`commands/social-curate.md`](../../../skills/social-orchestrator/commands/social-curate.md) |
+| E2  | Week resolution + calendar slice + idempotency   | ✅     | command spec § Week resolution                                                               |
+| E3  | Per-post sub-skill chain                         | ✅     | command spec § Per-post sub-skill chain (full pseudocode)                                    |
+| E4  | Silo-check failure → re-brief × 1 (no auto-iter) | ✅     | command spec § Failure handling                                                              |
+| E5  | Zipped weekly bundle + index README              | ✅     | command spec § Bundle assembly                                                               |
+| E6  | `state.weekly_cycles[]` append                   | ✅     | command spec § State writes                                                                  |
+| E7  | Help + dry-run + resume                          | ✅     | command spec § Help, § Dry-run mode, § Resume                                                |
+| E8  | Hook variants (5+, archetype-tagged) pre-brief   | ✅     | command spec § Hook variant generation                                                       |
+
+### Exit Criteria — Met (contract level)
+
+> `/social_curate week=2026-W18` produces zipped weekly bundle ready for human handoff or `celavii-social` execution.
+
+Contract is fully specified. End-to-end execution requires the per-skill scripts (B2.1, B3.1, B4.1, B6.1, B7.1, B8/9 implementations) which were intentionally deferred per the "ship contracts now, implementations on-demand" decision. First real execution will harden them in Phase G pilot.
+
+### Key design decisions
+
+1. **No auto-iteration in production-volume command** — production weekly runs surface failures to humans rather than auto-retry. Iteration loops belong in `/social_strategy` (Gate A/B, capped at 3 per Article 8). E4's "max 1 retry per post" is the only retry loop in this command.
+2. **Skip-already-done idempotency** — re-running `/social_curate` on a partially-completed week resumes from where it left off. Posts with Gate C ≥ 7.5 are skipped.
+3. **Hook artifact shipped independently** — `social-hooks` is called explicitly before `social-brief` (rather than only as brief's sub-skill) so the variant file becomes a first-class bundle artifact.
+4. **Bundle is the deliverable** — zipped folder + index README is what hands off to `celavii-social` or human review. Not state.json (which is internal pipeline state).
+5. **Cost: ~$6.80/week typical** (5 static + 3 video posts) vs Phase D estimated ~$2/week — proposal estimate was low; per-post real cost ~$0.66 static / ~$1.16 video. Surfaced in dry-run output.
+
+### Next Up — Phase F (Single-Post + Repurpose)
+
+See [../social-agents-implementation-proposal.md § Phase F](../social-agents-implementation-proposal.md). 3 items (F1-F3). `/social_post post_id={id}` for single-post regeneration + `social-repurpose` skill SKILL.md scaffold (B19/F2 dual-cited). Mirror [`workspace/skills/blogger/blog-repurpose/`](file:///Users/operator/dev/workspace/skills/blogger/blog-repurpose/).
