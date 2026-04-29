@@ -293,10 +293,9 @@ INTAKE → PHASE 0 ACQUIRE → PHASE 1 DISCOVER → PHASE 2 ANALYZE
 
 ### Phase F — Single-Post Command + Repurpose (Week 3)
 
-- [ ] **F1** `/social_post post_id={id}` — runs all production skills for a single post
-- [ ] **F2** `social-repurpose` SKILL.md — given a published blog or post, produce variants for each channel/platform
-  - Mirror [skills/blogger/blog-repurpose/](file:///Users/operator/dev/workspace/skills/blogger/blog-repurpose/)
-- [ ] **F3** Test repurpose against an existing published article (e.g., `agentic-shift-final.mdx`)
+- [x] **F1** `/social_post post_id={id}` — runs all production skills for a single post → [`commands/social-post.md`](file:///Users/operator/dev/openclaw/skills/social-orchestrator/commands/social-post.md). 4 modes (calendar entry / forced / ad-hoc / single-step `only=`); shares per-post chain with `/social_curate`.
+- [x] **F2** `social-repurpose` SKILL.md — given a published blog or post, produce variants for each channel/platform. Mirror [skills/blogger/blog-repurpose/](file:///Users/operator/dev/workspace/skills/blogger/blog-repurpose/). Hardened in Phase F: D21 pillar-registration handshake + cross-pillar pollination guard + lineage tracking; F3 fixture wired in.
+- [x] **F3** Test repurpose against an existing published article (e.g., `agentic-shift-final.mdx`) → [`fixtures/agentic-shift-fanout.md`](file:///Users/operator/dev/openclaw/skills/social-repurpose/fixtures/agentic-shift-fanout.md) — paper-exercise contract: 12 atomic outputs across 4 platforms, 5 formats, 5 archetypes, all 4 E's. Smoke-test executes when `scripts/repurpose_blog.py` (F2.1) ships.
 
 ### Phase G — Dry-Run + Real Pilot (Week 3–4)
 

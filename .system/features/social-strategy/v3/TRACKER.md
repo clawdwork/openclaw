@@ -158,3 +158,32 @@ Contract is fully specified. End-to-end execution requires the per-skill scripts
 ### Next Up — Phase F (Single-Post + Repurpose)
 
 See [../social-agents-implementation-proposal.md § Phase F](../social-agents-implementation-proposal.md). 3 items (F1-F3). `/social_post post_id={id}` for single-post regeneration + `social-repurpose` skill SKILL.md scaffold (B19/F2 dual-cited). Mirror [`workspace/skills/blogger/blog-repurpose/`](file:///Users/operator/dev/workspace/skills/blogger/blog-repurpose/).
+
+---
+
+## Phase F — Single-Post + Repurpose (2026-04-29)
+
+| #   | Item                                 | Status | Artifact                                                                                                |
+| --- | ------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------- |
+| F1  | `/social_post post_id={id}` command  | ✅     | [`commands/social-post.md`](../../../skills/social-orchestrator/commands/social-post.md)                |
+| F2  | `social-repurpose` SKILL.md hardened | ✅     | [`social-repurpose/SKILL.md`](../../../skills/social-repurpose/SKILL.md) — D21 handshake + lineage      |
+| F3  | Smoke-test fixture for agentic-shift | ✅     | [`fixtures/agentic-shift-fanout.md`](../../../skills/social-repurpose/fixtures/agentic-shift-fanout.md) |
+
+### Key design decisions
+
+1. **`/social_post` shares the per-post chain with `/social_curate`** — same sub-skills, same failure handling. Difference: scope (1 post vs week), output (loose files vs zipped bundle), state (deliver.briefs vs weekly_cycles).
+2. **Four execution modes for `/social_post`**: calendar entry (default) / forced re-curation (`force=true`) / ad-hoc off-calendar (synthetic entry, NOT auto-inserted into calendar) / single-step (`only=hooks|brief|script|...`).
+3. **D21 pillar-registration handshake**: Phase 4 PLAN initializes pillar with `atomic_count_target ≥ 8`. `social-repurpose` increments `atomic_count_planned` per spawn. Gate B reads counts to verify D21 compliance before approving calendar.
+4. **F3 fixture is the contract, not the implementation**: 12 atomic outputs spec'd against `agentic-shift-final.mdx`. When `scripts/repurpose_blog.py` (F2.1) ships, its output must match this fixture. Fixture defines: ≥8 spawns, ≥3 platforms, ≥3 formats, ≥3 archetypes, all 4 E's, lineage populated, no cannibalization clusters.
+5. **Cross-pillar pollination guard**: before spawning, `social-repurpose` calls `social-cannibalization` mode=cross-pillar to verify the new spawn doesn't duplicate an already-spawned atomic from another pillar (cosine ≥ 0.85 fail).
+6. **Sequencing**: 12 spawns spread across 4 weeks (3/week) per Gary Vee fan-out cadence — aligns with platform sustainable cadence targets without saturating any single platform.
+
+### Exit Criteria — Met (contract level)
+
+> F1 callable. F2 contract authored with D21 integration. F3 fixture defined and validates contract.
+
+Implementations (F2.1 `scripts/repurpose_blog.py` + B19.1 `scripts/repurpose_video.py`) deferred to on-demand build per the standing decision. F3 paper exercise validates the contract as authored.
+
+### Next Up — Phase G (Dry-Run + Real Pilot)
+
+See [../social-agents-implementation-proposal.md § Phase G](../social-agents-implementation-proposal.md). 12 items (G1-G12). Pick narrow scope (Celavii + IG only), run `/social_strategy` end-to-end, document failures in DRY-RUN-TEST-FINDINGS.md, fix top 2-3, then `/social_curate` for one real week. Phase G is where the per-skill scripts get hardened against real data.

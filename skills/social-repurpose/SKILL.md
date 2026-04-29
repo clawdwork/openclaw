@@ -147,10 +147,50 @@ Every repurposed brief still goes through:
 - `references/per-format-adaptation.md` — blog → X / IG / TT / YT routing rules
 - `references/lineage-tracking.md` — state schema for repurpose_lineage
 
+## D21 Integration (Phase F hardening)
+
+This skill is the executor for the [Gary Vee Reverse Pyramid (D21) rule](../social-orchestrator/references/gary-vee-fan-out.md). Phase 4 PLAN registers a pillar with `atomic_count_target ≥ 8`; this skill spawns the atomic outputs to satisfy that target.
+
+### Pillar registration handshake
+
+Phase 4 PLAN writes:
+
+```jsonc
+state.phases.plan.pillars["p-001-agentic-marketing"] = {
+  source: "blog/agentic-shift-final.mdx",
+  source_type: "blog",
+  atomic_count_target: 12,
+  atomic_count_planned: 0,            // ← incremented as social-repurpose spawns
+  atomic_count_published: 0,
+  spawned_post_ids: []
+}
+```
+
+Each spawn call updates the pillar's `atomic_count_planned` and appends to `spawned_post_ids`. Gate B reads these counts to verify D21 compliance (≥8 atomic outputs per pillar before publication_calendar is approved).
+
+### Cross-pillar pollination guard
+
+Before spawning, this skill calls `social-cannibalization` mode=cross-pillar to verify the new spawn doesn't duplicate an already-spawned atomic from another pillar (cosine ≥ 0.85 against `state.phases.plan.pillars[*].spawned_post_ids[*].brief_text`). Hard fail → user must differentiate angle.
+
+## Phase F3 Smoke Test
+
+Target: [`agentic-shift-final.mdx`](file:///Users/operator/dev/workspace/projects/celavii/content/blog/published/agentic-shift-final.mdx) — published Celavii blog (~2200 words). Expected fan-out per [`fixtures/agentic-shift-fanout.md`](fixtures/agentic-shift-fanout.md).
+
+Smoke test runs `social-repurpose blog --source agentic-shift-final.mdx --target-channels elioth,celavii,cutmaster` and asserts:
+
+1. ≥8 atomic outputs spawned (D21 minimum)
+2. ≥3 distinct platforms covered (cross-pollination credit)
+3. ≥3 distinct formats (format-as-channel rule, D20)
+4. Each spawn carries `repurpose_lineage = ["blog/agentic-shift-final.mdx", "p-001-agentic-marketing", <post_id>]`
+5. No spawn pair has cosine ≥ 0.85 (cannibalization)
+
+Smoke test is a **paper exercise** until `scripts/repurpose_blog.py` (F2.1) ships — the fixture defines the contract; the script must produce output matching it. Hardens during Phase G pilot per the "ship contracts now, validate during pipeline assembly" decision.
+
 ## Status
 
-- [x] SKILL.md scaffold (this file) — Phase F2 + B19 contract
+- [x] SKILL.md scaffold + D21 integration (this file) — Phase F2 + B19 contract
+- [x] [`fixtures/agentic-shift-fanout.md`](fixtures/agentic-shift-fanout.md) — F3 smoke-test target spec
 - [ ] `scripts/repurpose_video.py` — ClipsAI wrapper (Phase B19.1)
 - [ ] `scripts/repurpose_blog.py` — text adapter (Phase F2.1)
 - [ ] Reactivation mode (Phase F2.1)
-- [ ] Smoke test against existing published Celavii blog post (Phase F2.2)
+- [ ] Smoke test executes against `agentic-shift-final.mdx` and matches fixture (Phase F2.2 — runs once F2.1 ships)
