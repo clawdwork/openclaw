@@ -31,7 +31,7 @@ A topic with relevance=10, differentiation=10, cross_pollination=10, effort=1 sc
 ### Cross-pollination (0–10)
 
 - +2 per distinct platform where supporting posts exist (max 4 platforms = +8)
-- - min(distinct_handles, 5) for breadth across own channels
+- Plus `min(distinct_handles, 5)` for breadth across own channels
 
 This rewards Gary Vee Reverse Pyramid fan-out: a topic that already lives on 3 platforms is cheaper to spawn 12 atomic outputs from.
 
