@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Department Model — Methodology Diagrams</title>
+    <style>
+      :root {
+        --blue: #0066ff;
+        --blue-light: #00d4ff;
+        --indigo: #6366f1;
+        --emerald: #10b981;
+        --orange: #f97316;
+        --pink: #ec4899;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --slate: #1e293b;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        background: linear-gradient(to bottom, var(--gray-50), white);
+        color: var(--gray-900);
+        min-height: 100vh;
+        padding: 2rem;
+        line-height: 1.5;
+      }
+
+      .container { max-width: 1400px; margin: 0 auto; }
+
+      /* Header */
+      .header { text-align: center; margin-bottom: 3rem; }
+      .header h1 {
+        font-size: 2.75rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.5rem;
+      }
+      .header h1 span {
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .header p {
+        color: var(--gray-500);
+        font-size: 1rem;
+        font-weight: 500;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gray-600);
+        margin-top: 0.75rem;
+      }
+
+      /* Section */
+      .section {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1.5rem;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+      .section.dark {
+        background: linear-gradient(135deg, var(--slate), #0f172a);
+        color: white;
+        border-color: transparent;
+        position: relative;
+        overflow: hidden;
+      }
+      .section.dark::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -15%;
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(circle, rgba(0, 102, 255, 0.18) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .section-num {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.35);
+        flex-shrink: 0;
+      }
+      .section.dark .section-num {
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.5);
+      }
+      .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .section-subtitle {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--gray-500);
+        margin-top: 0.15rem;
+      }
+      .section.dark .section-subtitle {
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .section p {
+        color: var(--gray-700);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+      .section.dark p {
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      /* One-paragraph callout */
+      .callout {
+        background: linear-gradient(135deg, rgba(0, 102, 255, 0.06), rgba(99, 102, 241, 0.06));
+        border-left: 4px solid var(--blue);
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--gray-800);
+      }
+
+      /* Three Studios card grid */
+      .studio-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1.25rem;
+      }
+      .studio-card {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .studio-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        border-color: var(--blue);
+      }
+      .studio-card.sculptor { border-top: 3px solid var(--orange); }
+      .studio-card.law { border-top: 3px solid var(--blue); }
+      .studio-card.newsroom { border-top: 3px solid var(--purple); }
+      .studio-card .emoji {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .studio-card h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .studio-card p {
+        font-size: 0.85rem;
+        color: var(--gray-600);
+        margin: 0;
+      }
+      .studio-card .tag {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      /* Org chart (Diagram 1) */
+      .org-chart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+      }
+      .role-box {
+        background: white;
+        border: 2px solid var(--gray-300);
+        border-radius: 12px;
+        padding: 0.85rem 1.25rem;
+        text-align: center;
+        min-width: 200px;
+        position: relative;
+        transition: all 0.2s ease;
+      }
+      .role-box.founder { border-color: var(--purple); background: rgba(168, 85, 247, 0.04); }
+      .role-box.director { border-color: var(--blue); background: rgba(0, 102, 255, 0.04); }
+      .role-box.specialist { border-color: var(--indigo); background: rgba(99, 102, 241, 0.04); }
+      .role-box.partner { border-color: var(--amber); background: rgba(245, 158, 11, 0.06); }
+      .role-box.state { border-color: var(--emerald); background: rgba(16, 185, 129, 0.04); }
+
+      .role-box .role-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gray-900);
+      }
+      .role-box .role-impl {
+        font-size: 0.7rem;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--gray-500);
+        margin-top: 0.2rem;
+      }
+      .role-box .role-job {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        margin-top: 0.25rem;
+      }
+
+      .org-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: stretch;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .org-conn {
+        width: 2px;
+        height: 24px;
+        background: var(--gray-300);
+      }
+      .org-fan {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        height: 24px;
+      }
+      .org-fan::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 2px;
+        height: 12px;
+        background: var(--gray-300);
+      }
+      .org-fan::after {
+        content: "";
+        position: absolute;
+        left: 12.5%;
+        right: 12.5%;
+        top: 12px;
+        height: 2px;
+        background: var(--gray-300);
+      }
+      .org-specs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 900px;
+      }
+      .org-specs .role-box {
+        min-width: 0;
+        padding: 0.6rem 0.5rem;
+      }
+      .org-specs .role-box .role-title { font-size: 0.75rem; }
+
+      .partner-aside {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .arrow-line {
+        height: 2px;
+        background: var(--amber);
+        position: relative;
+      }
+      .arrow-line::after {
+        content: "▶";
+        position: absolute;
+        right: -2px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--amber);
+        font-size: 0.7rem;
+      }
+      .arrow-label {
+        font-size: 0.7rem;
+        color: var(--gray-500);
+        text-align: center;
+        margin-top: 0.25rem;
+      }
+
+      /* Lifecycle diagram (Diagram 2) */
+      .lifecycle {
+        display: grid;
+        grid-template-columns: 140px 1fr 140px 1fr 140px 1fr 140px;
+        gap: 0.75rem;
+        align-items: center;
+        margin: 1.5rem 0;
+      }
+      .lc-step {
+        background: white;
+        border: 2px solid var(--blue);
+        border-radius: 12px;
+        padding: 0.75rem;
+        text-align: center;
+      }
+      .lc-step.gate { border-color: var(--amber); background: rgba(245, 158, 11, 0.05); }
+      .lc-step.delivery { border-color: var(--emerald); background: rgba(16, 185, 129, 0.05); }
+      .lc-step .lc-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .lc-step .lc-detail {
+        font-size: 0.65rem;
+        color: var(--gray-500);
+        margin-top: 0.2rem;
+      }
+      .lc-arrow {
+        position: relative;
+        height: 2px;
+        background: var(--gray-300);
+      }
+      .lc-arrow::after {
+        content: "▶";
+        position: absolute;
+        right: -2px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        font-size: 0.7rem;
+      }
+      .lc-loop-row {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+        gap: 1rem;
+        align-items: center;
+      }
+      .lc-loop-label {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px dashed var(--amber);
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        color: var(--amber);
+        font-weight: 600;
+      }
+
+      .lifecycle-foot {
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        background: rgba(16, 185, 129, 0.05);
+        border-left: 4px solid var(--emerald);
+        border-radius: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--gray-700);
+      }
+      .lifecycle-foot strong { color: var(--emerald); }
+
+      /* Per-post chain (Diagram 3) */
+      .chain {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .chain-step {
+        background: white;
+        border: 1px solid var(--gray-200);
+        border-radius: 10px;
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+        position: relative;
+      }
+      .chain-step::after {
+        content: "→";
+        position: absolute;
+        right: -0.7rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        font-weight: 700;
+        font-size: 0.85rem;
+        z-index: 1;
+      }
+      .chain-step:last-child::after { display: none; }
+
+      .chain-step .step-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--gray-400);
+        font-weight: 700;
+      }
+      .chain-step .step-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-top: 0.2rem;
+      }
+      .chain-step .step-output {
+        font-size: 0.65rem;
+        color: var(--gray-500);
+        margin-top: 0.35rem;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .chain-step.video { background: rgba(168, 85, 247, 0.05); border-color: rgba(168, 85, 247, 0.3); }
+      .chain-step.gate { background: rgba(245, 158, 11, 0.06); border-color: rgba(245, 158, 11, 0.4); }
+
+      /* Floor plan (Diagram 4) */
+      .floor-plan {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.78rem;
+        line-height: 1.65;
+        background: var(--gray-900);
+        color: var(--gray-100);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+      }
+      .floor-plan .fp-comment { color: var(--gray-400); font-style: italic; }
+      .floor-plan .fp-dir { color: var(--blue-light); font-weight: 600; }
+      .floor-plan .fp-file { color: var(--gray-100); }
+      .floor-plan .fp-link { color: var(--purple); }
+      .floor-plan .fp-key { color: var(--amber); }
+      .floor-plan .fp-state { color: var(--emerald); }
+
+      .floor-plan-legend {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .legend-item {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .legend-swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        flex-shrink: 0;
+      }
+
+      /* Gate mechanism (Diagram 5) */
+      .gate-mech {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        max-width: 920px;
+        margin: 0 auto;
+      }
+      .gate-step-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .gate-step {
+        flex: 1;
+        background: white;
+        border: 2px solid var(--gray-200);
+        border-radius: 0.75rem;
+        padding: 0.85rem 1.25rem;
+      }
+      .gate-step.preflight { border-color: var(--blue); background: rgba(0, 102, 255, 0.03); }
+      .gate-step.scoring { border-color: var(--amber); background: rgba(245, 158, 11, 0.04); }
+      .gate-step.verdict { border-color: var(--emerald); background: rgba(16, 185, 129, 0.04); }
+      .gate-step.escalate { border-color: var(--red); background: rgba(239, 68, 68, 0.04); }
+      .gate-step .gate-step-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+      .gate-step .gate-step-detail {
+        font-size: 0.75rem;
+        color: var(--gray-600);
+        margin-top: 0.25rem;
+      }
+      .gate-arrow {
+        font-size: 1.5rem;
+        color: var(--gray-400);
+        flex-shrink: 0;
+        text-align: center;
+        width: 24px;
+      }
+
+      .iter-loop {
+        margin-top: 0.5rem;
+        padding: 0.85rem 1.25rem;
+        background: rgba(245, 158, 11, 0.06);
+        border: 1px dashed var(--amber);
+        border-radius: 0.75rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--gray-700);
+      }
+      .iter-counter {
+        display: inline-flex;
+        gap: 0.35rem;
+        margin: 0 0.5rem;
+        vertical-align: middle;
+      }
+      .iter-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--gray-200);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--gray-500);
+      }
+      .iter-dot.active {
+        background: var(--amber);
+        color: white;
+      }
+      .iter-dot.fail {
+        background: var(--red);
+        color: white;
+      }
+
+      /* Decision matrix (Diagram 6) */
+      .matrix {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.85rem;
+      }
+      .matrix th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        background: var(--gray-100);
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--gray-700);
+        border-bottom: 2px solid var(--gray-200);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .matrix th:first-child { border-radius: 0.5rem 0 0 0; }
+      .matrix th:last-child { border-radius: 0 0.5rem 0 0; }
+      .matrix td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--gray-100);
+      }
+      .matrix tr:last-child td { border-bottom: none; }
+      .matrix tr:hover td { background: rgba(0, 102, 255, 0.02); }
+
+      .fit-pill {
+        display: inline-block;
+        padding: 0.15rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+      .fit-dept { background: rgba(0, 102, 255, 0.1); color: var(--blue); }
+      .fit-langgraph { background: rgba(16, 185, 129, 0.1); color: var(--emerald); }
+      .fit-crewai { background: rgba(168, 85, 247, 0.1); color: var(--purple); }
+      .fit-autogen { background: rgba(99, 102, 241, 0.1); color: var(--indigo); }
+      .fit-autogpt { background: rgba(245, 158, 11, 0.1); color: var(--amber); }
+      .fit-mcp { background: rgba(236, 72, 153, 0.1); color: var(--pink); }
+      .fit-none { background: var(--gray-100); color: var(--gray-500); }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--gray-200);
+      }
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .footer-link {
+        color: var(--blue);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .footer-link:hover { text-decoration: underline; }
+      .footer-meta {
+        font-size: 0.75rem;
+        color: var(--gray-500);
+      }
+
+      code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85em;
+        padding: 0.1em 0.35em;
+        background: var(--gray-100);
+        border-radius: 4px;
+        color: var(--gray-800);
+      }
+      .section.dark code {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* Responsive */
+      @media (max-width: 1100px) {
+        .lifecycle {
+          grid-template-columns: 1fr;
+        }
+        .lc-arrow { display: none; }
+        .chain { grid-template-columns: repeat(3, 1fr); }
+        .chain-step::after { display: none; }
+        .org-specs { grid-template-columns: repeat(2, 1fr); }
+        .studio-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <h1>The <span>Department Model</span></h1>
+        <p>How a long-horizon agentic system is organized like a small, specialized firm</p>
+        <div class="badge">Methodology · Visual Companion · v1 · 2026-04-29</div>
+      </header>
+
+      <!-- The Methodology in One Paragraph -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">¶</div>
+          <div>
+            <div class="section-title">The Department Model in one paragraph</div>
+            <div class="section-subtitle">Read this first. Everything else is detail.</div>
+          </div>
+        </div>
+        <div class="callout">
+          The Department Model is a way to build agentic systems where each agent acts like a department
+          in a small, specialized firm. The firm has a <strong>studio</strong> (a domain), staffed by
+          <strong>specialists</strong> (atomic skills with one job each), coordinated by a
+          <strong>studio director</strong> (an orchestrator that routes work and holds the firm's
+          vocabulary), governed by <strong>partners</strong> (critic skills that review specialist
+          output against the firm's values), and organized around <strong>engagements</strong>
+          (long-running projects with intake, phases, gates, and deliverables) whose state lives in a
+          <strong>filing system</strong> (a state file plus a <code>raw/</code> directory) that any
+          specialist can read and write. The firm's identity, voice, ethics, and quality bar live in a
+          <strong>constitution</strong> that every partner consults before approving any work.
+          Communication between the firm and the outside world happens through <strong>briefs</strong>
+          (commands), written in markdown and executed by the model itself. The whole system runs on
+          prose: every artifact — orchestrator, specialist, brief, constitution, gate — is a markdown
+          file the model reads and acts on.
+        </div>
+      </section>
+
+      <!-- Three Studios -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">3×</div>
+          <div>
+            <div class="section-title">Three Studios, One Pattern</div>
+            <div class="section-subtitle">Three illustrative organizations that already work this way</div>
+          </div>
+        </div>
+        <p>
+          The Department Model isn't only a sculptor's pattern. Three real kinds of organization
+          already use most of its conventions; the methodology borrows vocabulary from each.
+        </p>
+        <div class="studio-grid">
+          <div class="studio-card sculptor">
+            <div class="emoji">🗿</div>
+            <h4>The Sculpting Studio</h4>
+            <p>
+              A senior sculptor takes commissions; juniors specialize; a manager schedules; sales closes
+              briefs; finishing polishes. Every commission is a project file with drafts, photographs,
+              and client correspondence.
+            </p>
+            <div class="tag">Visceral spine</div>
+          </div>
+          <div class="studio-card law">
+            <div class="emoji">⚖️</div>
+            <h4>The Law Firm</h4>
+            <p>
+              Practice groups, engagement letters, partner review, conflicts checks, knowledge management,
+              partnership agreement (constitution). A hundred years of vocabulary for coordinating
+              skilled knowledge workers.
+            </p>
+            <div class="tag">Rigor + governance</div>
+          </div>
+          <div class="studio-card newsroom">
+            <div class="emoji">📰</div>
+            <h4>The Newsroom</h4>
+            <p>
+              Reporter, fact-checker, copy editor, section editor, editor-in-chief. The stylebook is a
+              constitution; the correction policy is partner review; the sourcing standard is a
+              constitutional article.
+            </p>
+            <div class="tag">Quality + fact-checking</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Diagram 1: Studio Org Chart -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">1</div>
+          <div>
+            <div class="section-title">The Studio Org Chart</div>
+            <div class="section-subtitle">Who reports to whom · Hierarchical, not lateral</div>
+          </div>
+        </div>
+        <p>
+          A studio is a tree: one director at the root, specialists at the leaves. Specialists never
+          call each other directly; coordination flows through the director. A senior partner runs
+          quality reviews on the side, before output is delivered.
+        </p>
+
+        <div class="org-chart">
+          <!-- Founder -->
+          <div class="role-box founder">
+            <div class="role-title">Studio Founder</div>
+            <div class="role-impl">human / repo maintainer</div>
+            <div class="role-job">Authors constitution, voice, state schema</div>
+          </div>
+          <div class="org-conn"></div>
+          <!-- Director -->
+          <div class="role-box director">
+            <div class="role-title">Studio Director</div>
+            <div class="role-impl">{studio}-orchestrator/SKILL.md</div>
+            <div class="role-job">Routes work · holds firm vocabulary · pre-flight loader</div>
+          </div>
+          <div class="org-fan"></div>
+          <!-- Specialists row -->
+          <div class="org-specs">
+            <div class="role-box specialist">
+              <div class="role-title">Specialist A</div>
+              <div class="role-impl">social-research</div>
+            </div>
+            <div class="role-box specialist">
+              <div class="role-title">Specialist B</div>
+              <div class="role-impl">social-brief</div>
+            </div>
+            <div class="role-box specialist">
+              <div class="role-title">Specialist C</div>
+              <div class="role-impl">social-script</div>
+            </div>
+            <div class="role-box specialist">
+              <div class="role-title">Specialist N</div>
+              <div class="role-impl">…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Senior Partner aside -->
+        <div class="partner-aside">
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--gray-500); font-style: italic;">
+              specialist draft →
+            </div>
+          </div>
+          <div class="role-box partner" style="min-width: 240px;">
+            <div class="role-title">Senior Partner</div>
+            <div class="role-impl">social-quality (modes: A | B | C | silo)</div>
+            <div class="role-job">Reads constitution + intake · scores against values · 3-iteration cap</div>
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 0.75rem; color: var(--gray-500); font-style: italic;">
+              ← pass / fail + remediation findings
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Manager / State -->
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+          <div class="role-box state" style="min-width: 320px;">
+            <div class="role-title">Project Manager</div>
+            <div class="role-impl">{studio}-strategy-state.json</div>
+            <div class="role-job">
+              Single JSON file · every specialist reads + writes · resumability + audit fall out for free
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Diagram 2: Engagement Lifecycle -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">2</div>
+          <div>
+            <div class="section-title">The Engagement Lifecycle</div>
+            <div class="section-subtitle">Intake · phases · gates · delivery — with iteration on gate failure</div>
+          </div>
+        </div>
+        <p>
+          Phases run linearly. Gates iterate (capped at three). A gate failure routes back to the most
+          recent producing phase, not back to the start of the engagement.
+        </p>
+
+        <div class="lifecycle">
+          <div class="lc-step">
+            <div class="lc-name">INTAKE</div>
+            <div class="lc-detail">5 questions<br />one at a time</div>
+          </div>
+          <div class="lc-arrow"></div>
+          <div class="lc-step">
+            <div class="lc-name">PHASE n</div>
+            <div class="lc-detail">specialist work</div>
+          </div>
+          <div class="lc-arrow"></div>
+          <div class="lc-step gate">
+            <div class="lc-name">GATE k</div>
+            <div class="lc-detail">partner review<br />cross-model</div>
+          </div>
+          <div class="lc-arrow"></div>
+          <div class="lc-step delivery">
+            <div class="lc-name">DELIVERY</div>
+            <div class="lc-detail">bundle / PDF /<br />state handoff</div>
+          </div>
+        </div>
+
+        <div class="lc-loop-row">
+          <span style="font-size: 0.8rem; color: var(--gray-500);">on Gate fail:</span>
+          <span class="lc-loop-label">↻ re-do producing phase · max 3 iterations · then escalate to human</span>
+        </div>
+
+        <div class="lifecycle-foot">
+          <strong>Every artifact</strong> is written to the engagement file (the project manager) plus
+          the <code>raw/</code> directory (the filing cabinet). State references files; files are
+          timestamped and never overwritten. The engagement is fully resumable from any point by
+          reading <code>state.phases.{phase}.status</code>.
+        </div>
+      </section>
+
+      <!-- Diagram 3: Per-Post Sub-Skill Chain -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">3</div>
+          <div>
+            <div class="section-title">A Worked Example — Per-Post Sub-Skill Chain</div>
+            <div class="section-subtitle">/social_curate's per-post chain · what runs, in what order, producing what</div>
+          </div>
+        </div>
+        <p>
+          The director routes one calendar entry through specialists. Each step reads its inputs from
+          the workspace (or from the previous step's output) and writes its artifact to <code>briefs/</code>.
+          Total time: ~4 minutes static, ~7 minutes video. Total cost: $0.66 static, $1.16 video.
+        </p>
+
+        <div class="chain">
+          <div class="chain-step">
+            <div class="step-num">1</div>
+            <div class="step-name">Research</div>
+            <div class="step-output">research.md</div>
+          </div>
+          <div class="chain-step">
+            <div class="step-num">2</div>
+            <div class="step-name">Citations</div>
+            <div class="step-output">citations.md</div>
+          </div>
+          <div class="chain-step">
+            <div class="step-num">3</div>
+            <div class="step-name">Hooks ×5</div>
+            <div class="step-output">hooks.md</div>
+          </div>
+          <div class="chain-step">
+            <div class="step-num">4</div>
+            <div class="step-name">Brief</div>
+            <div class="step-output">brief.md</div>
+          </div>
+          <div class="chain-step video">
+            <div class="step-num">5a</div>
+            <div class="step-name">Script</div>
+            <div class="step-output">if video<br />script.md</div>
+          </div>
+          <div class="chain-step video">
+            <div class="step-num">5b</div>
+            <div class="step-name">Shotlist</div>
+            <div class="step-output">if video<br />shots.md</div>
+          </div>
+          <div class="chain-step gate">
+            <div class="step-num">6/7</div>
+            <div class="step-name">Silo + Gate C</div>
+            <div class="step-output">gate-c.md<br />score ≥ 7.5</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem;">
+          <div style="padding: 1rem; background: rgba(168, 85, 247, 0.04); border-left: 4px solid var(--purple); border-radius: 0.5rem;">
+            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Video lane (purple)</div>
+            <div style="font-size: 0.8rem; color: var(--gray-600);">
+              Steps 5a/5b run only when <code>format ∈ {reel, tiktok-video, yt-short, yt-long}</code>.
+              Static formats (carousel, thread, single) skip them.
+            </div>
+          </div>
+          <div style="padding: 1rem; background: rgba(245, 158, 11, 0.04); border-left: 4px solid var(--amber); border-radius: 0.5rem;">
+            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.35rem;">Quality lane (amber)</div>
+            <div style="font-size: 0.8rem; color: var(--gray-600);">
+              Silo-check is cheap and runs first. If it fails, one re-brief with pillar reminder. Gate C
+              applies the firm's eight-axis rubric. Below 7.5: flag for human review, no auto-iterate.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Diagram 4: Studio Floor Plan -->
+      <section class="section dark">
+        <div class="section-header">
+          <div class="section-num">4</div>
+          <div>
+            <div class="section-title" style="color: white;">The Studio Floor Plan</div>
+            <div class="section-subtitle">Where everything lives on disk · two repos meet at the symlink layer</div>
+          </div>
+        </div>
+        <p style="position: relative; z-index: 1;">
+          The directory tree of one studio. <code>openclaw/skills/</code> is the source of truth;
+          <code>workspace/</code> is where work happens. Skills are symlinked between them so changes
+          propagate instantly without deployment.
+        </p>
+
+        <div class="floor-plan" style="position: relative; z-index: 1;">
+<span class="fp-comment">~/dev/workspace/                                # the firm's building</span>
+├── <span class="fp-dir">projects/celavii/</span>                          <span class="fp-comment"># one client</span>
+│   ├── <span class="fp-dir">research/social/</span>
+│   │   ├── <span class="fp-state">social-strategy-state.json</span>      <span class="fp-comment"># engagement file (project manager)</span>
+│   │   ├── <span class="fp-dir">raw/</span>                              <span class="fp-comment"># filing cabinet (every tool output, timestamped)</span>
+│   │   ├── <span class="fp-dir">briefs/</span>                           <span class="fp-comment"># per-post deliverables</span>
+│   │   └── <span class="fp-file">aggregate-report-{date}.md</span>      <span class="fp-comment"># intermediate artifact (~2K tokens, LLM-readable)</span>
+│   ├── <span class="fp-dir">content/social/</span>                      <span class="fp-comment"># finished work</span>
+│   └── <span class="fp-dir">deliverables/handoffs/</span>                <span class="fp-comment"># shipped engagements</span>
+│       └── <span class="fp-file">social-week-2026W18.zip</span>          <span class="fp-comment"># the deliverable</span>
+├── <span class="fp-dir">.styles/celavii/</span>
+│   ├── <span class="fp-key">voice.json</span>                            <span class="fp-comment"># brand voice (NN/g 4-D vector)</span>
+│   └── <span class="fp-key">brand.json</span>                            <span class="fp-comment"># visual identity tokens</span>
+└── <span class="fp-dir">skills/</span>                                    <span class="fp-comment"># who works here</span>
+    └── <span class="fp-link">social-orchestrator</span> ──┐               <span class="fp-comment"># symlink → openclaw source</span>
+
+<span class="fp-comment">~/dev/openclaw/skills/                          # source of truth for skills</span>
+├── <span class="fp-dir">social-orchestrator/</span> ◄────┘             <span class="fp-comment"># Studio Director</span>
+│   ├── <span class="fp-file">SKILL.md</span>
+│   ├── <span class="fp-dir">commands/</span>                           <span class="fp-comment"># briefs (engagement letters)</span>
+│   │   ├── <span class="fp-file">social-strategy.md</span>
+│   │   ├── <span class="fp-file">social-curate.md</span>
+│   │   ├── <span class="fp-file">social-post.md</span>
+│   │   └── <span class="fp-file">social-help.md</span>
+│   └── <span class="fp-dir">references/</span>                         <span class="fp-comment"># knowledge management</span>
+│       ├── <span class="fp-file">intake-questions.md</span>
+│       ├── <span class="fp-file">parallel-subagent-spawn.md</span>
+│       └── <span class="fp-file">…</span>
+├── <span class="fp-dir">social-aggregate/</span>                       <span class="fp-comment"># a specialist (with a script)</span>
+│   ├── <span class="fp-file">SKILL.md</span>
+│   ├── <span class="fp-dir">scripts/</span><span class="fp-file">aggregate.py</span>             <span class="fp-comment"># the specialist's tool</span>
+│   ├── <span class="fp-dir">references/</span><span class="fp-file">scoring-rubric.md</span>
+│   └── <span class="fp-dir">fixtures/</span>                           <span class="fp-comment"># frozen contracts</span>
+├── <span class="fp-dir">social-brief/</span>                           <span class="fp-comment"># another specialist (contract-only)</span>
+├── <span class="fp-dir">social-quality/</span>                         <span class="fp-comment"># Senior Partner (multi-mode critic)</span>
+└── <span class="fp-dir">…</span>                                       <span class="fp-comment"># 17 atomic skills total</span>
+
+<span class="fp-comment">~/dev/openclaw/.claude/rules/</span>
+└── <span class="fp-key">social-constitution.md</span>                   <span class="fp-comment"># the firm's values (10 articles)</span>
+        </div>
+
+        <div class="floor-plan-legend">
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--blue-light);"></span>
+            <span>Directory</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--purple);"></span>
+            <span>Symlink (openclaw → workspace)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--emerald);"></span>
+            <span>Engagement state</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--amber);"></span>
+            <span>Firm identity (voice / brand / constitution)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--gray-300);"></span>
+            <span>Markdown file (read by the model)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: var(--gray-500);"></span>
+            <span>Comment / explanation</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Diagram 5: Gate Mechanism -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">5</div>
+          <div>
+            <div class="section-title">The Gate Mechanism</div>
+            <div class="section-subtitle">How a quality review actually runs · the firm's governance pattern</div>
+          </div>
+        </div>
+        <p>
+          Every gate (A, B, C, silo) follows the same shape: pre-flight load → cross-model scoring →
+          verdict → iterate-or-escalate. Pre-flight is non-negotiable; same-model self-critique fails
+          before scoring; iteration caps at three.
+        </p>
+
+        <div class="gate-mech">
+          <!-- Pre-flight -->
+          <div class="gate-step-row">
+            <div class="gate-step preflight">
+              <div class="gate-step-title">① Pre-flight load</div>
+              <div class="gate-step-detail">
+                Load constitution (10 articles) · Load <code>state.intake</code> (the brief) ·
+                Load voice spec · <strong>Article 6:</strong> verify intake citations
+              </div>
+            </div>
+          </div>
+          <div class="gate-arrow">▼</div>
+          <!-- Generator vs Critic -->
+          <div class="gate-step-row">
+            <div class="gate-step" style="border-color: var(--indigo); background: rgba(99, 102, 241, 0.04);">
+              <div class="gate-step-title">② Generator</div>
+              <div class="gate-step-detail">
+                Default: <strong>Sonnet</strong> · produces the work (brief, plan, post)
+              </div>
+            </div>
+            <div class="gate-arrow">→</div>
+            <div class="gate-step scoring">
+              <div class="gate-step-title">③ Critic — different model</div>
+              <div class="gate-step-detail">
+                Default: <strong>Opus</strong> · <strong>Article 7:</strong> hard-fails if same model ·
+                scores against constitution articles
+              </div>
+            </div>
+          </div>
+          <div class="gate-arrow">▼</div>
+          <!-- Verdict -->
+          <div class="gate-step-row">
+            <div class="gate-step verdict">
+              <div class="gate-step-title">④ Verdict</div>
+              <div class="gate-step-detail">
+                Score ≥ threshold + every Hard-Fail article passed → <strong>PASS</strong>, advance to next phase ·
+                else → fail with cited findings
+              </div>
+            </div>
+          </div>
+          <!-- Iteration loop -->
+          <div class="iter-loop">
+            <strong>Article 8 — Iteration cap:</strong> on fail, re-do producing phase
+            <span class="iter-counter">
+              <span class="iter-dot active">1</span>
+              <span class="iter-dot">2</span>
+              <span class="iter-dot">3</span>
+            </span>
+            then escalate to human.
+            <em style="display: block; margin-top: 0.4rem; color: var(--gray-500); font-size: 0.75rem;">
+              Reflexion (Shinn et al., 2023): diminishing returns past 3–5 iterations.
+              We choose conservative.
+            </em>
+          </div>
+
+          <div class="gate-arrow">▼</div>
+          <div class="gate-step-row">
+            <div class="gate-step escalate">
+              <div class="gate-step-title">⑤ Escalation (after iteration 3)</div>
+              <div class="gate-step-detail">
+                Engagement halts · findings surfaced to the user with full audit trail · human decides
+                whether to revise the brief, accept partial output, or kill the engagement.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Diagram 6: Decision Matrix -->
+      <section class="section">
+        <div class="section-header">
+          <div class="section-num">6</div>
+          <div>
+            <div class="section-title">When to use which framework</div>
+            <div class="section-subtitle">The Department Model vs LangGraph, CrewAI, AutoGen, AutoGPT, MCP</div>
+          </div>
+        </div>
+        <p>
+          No framework wins on every dimension. The Department Model is best for
+          <strong>long-horizon, document-driven, file-based, briefed creative knowledge work</strong>.
+          For other shapes, choose differently.
+        </p>
+
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th style="width: 55%;">If your work is…</th>
+              <th>Best fit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Long-horizon document work (hours to weeks)</td>
+              <td><span class="fit-pill fit-dept">Department Model</span></td>
+            </tr>
+            <tr>
+              <td>Telegram or chat-driven engagement intake</td>
+              <td><span class="fit-pill fit-dept">Department Model</span></td>
+            </tr>
+            <tr>
+              <td>Pipelines that need to be legible to non-engineers</td>
+              <td><span class="fit-pill fit-dept">Department Model</span></td>
+            </tr>
+            <tr>
+              <td>Iteration speed on the pipeline itself matters</td>
+              <td><span class="fit-pill fit-dept">Department Model</span></td>
+            </tr>
+            <tr>
+              <td>Production reliability + type-safe state required</td>
+              <td><span class="fit-pill fit-langgraph">LangGraph</span></td>
+            </tr>
+            <tr>
+              <td>Hierarchical pipeline with explicit graph branching</td>
+              <td>
+                <span class="fit-pill fit-dept">Department Model</span>
+                or <span class="fit-pill fit-langgraph">LangGraph</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Emergent multi-agent collaboration (creative debate, exploration)</td>
+              <td><span class="fit-pill fit-crewai">CrewAI</span></td>
+            </tr>
+            <tr>
+              <td>Conversation-as-coordination is the primary primitive</td>
+              <td><span class="fit-pill fit-autogen">AutoGen</span></td>
+            </tr>
+            <tr>
+              <td>Open-ended autonomous task generation (research, exploration)</td>
+              <td><span class="fit-pill fit-autogpt">AutoGPT-class</span></td>
+            </tr>
+            <tr>
+              <td>Tool integration only (not orchestration)</td>
+              <td><span class="fit-pill fit-mcp">MCP</span> + plain function calling</td>
+            </tr>
+            <tr>
+              <td>Real-time low-latency responses (sub-second)</td>
+              <td><span class="fit-pill fit-none">None of the above</span></td>
+            </tr>
+            <tr>
+              <td>Heavy concurrent state mutation (live trading, RTB)</td>
+              <td><span class="fit-pill fit-none">Use a proper database</span></td>
+            </tr>
+            <tr>
+              <td>Strict transactional guarantees (medical, financial settlements)</td>
+              <td><span class="fit-pill fit-none">Domain-specific infra</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 1.5rem; padding: 1rem 1.25rem; background: rgba(0, 102, 255, 0.04); border-left: 4px solid var(--blue); border-radius: 0.5rem; font-size: 0.85rem; color: var(--gray-700);">
+          <strong style="color: var(--blue);">The underlying disagreement:</strong>
+          The agentic-AI ecosystem splits between
+          <em>"agents are software, organize them with frameworks"</em>
+          (LangGraph, CrewAI, AutoGen) and
+          <em>"agents are knowledge workers, organize them with conventions"</em>
+          (Department Model, just-prompts schools). Neither is wrong. Choose the camp whose philosophy
+          fits the work.
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-links">
+          <a class="footer-link" href="README.md">README — full methodology</a>
+          <a class="footer-link" href="principles.md">Principles & anti-patterns</a>
+          <a class="footer-link" href="comparison.md">Framework comparison</a>
+        </div>
+        <div class="footer-meta">
+          The Department Model · v1 · 2026-04-29 · Living document<br />
+          Visual companion to <code>openclaw/.system/architecture/methodology/</code>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

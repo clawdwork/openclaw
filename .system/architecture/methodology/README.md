@@ -6,12 +6,13 @@
 
 This is the methodology document. It explains _why_ the system is structured the way it is, _what vocabulary_ the team uses to talk about it, and _how_ a new joiner — human or agent — can be productive on day one.
 
-It has two companion files in this directory:
+It has three companion files in this directory:
 
 - [`principles.md`](principles.md) — the decision rationales behind every architectural choice, including dated anti-patterns
 - [`comparison.md`](comparison.md) — how the Department Model relates to (and differs from) LangGraph, CrewAI, AutoGen, AutoGPT, and other agentic frameworks
+- [`department-model-diagrams.html`](department-model-diagrams.html) — visual companion: org chart, engagement lifecycle, per-post sub-skill chain, studio floor plan, gate mechanism, decision matrix. Open in any browser.
 
-Read this README first. The other two are reference material.
+Read this README first. The other three are reference material.
 
 ---
 
