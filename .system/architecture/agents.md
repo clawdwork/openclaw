@@ -11,11 +11,11 @@
 > Only agents with main sessions (`agent:{id}:main`) can spawn.
 
 ```
-Flash (coordinator) receives user message
+DeepSeek V4 Pro (coordinator) receives user message
         │
         ├── Marketing task? ──▶ Spawn Marketing Agent (Flash)
         │
-        ├── SEO task? ──▶ Spawn SEO Agent (Pro, high)
+        ├── SEO task? ──▶ Spawn SEO Agent (DeepSeek V4 Pro, medium)
         │   (technical audit, content quality, schema, GEO,
         │    strategic planning, programmatic SEO, hreflang)
         │
@@ -44,7 +44,7 @@ Flash (coordinator) receives user message
         ├── Review creative output? ──▶ Spawn Quality Critic (GPT-5.4, xhigh)
         │   (proposals, images, decks — feedback loop after generation)
         │
-        ├── Everyday coding? ──▶ Spawn Dev Coder (Flash, high)
+        ├── Everyday coding? ──▶ Spawn Dev Coder (DeepSeek V4 Flash, high)
         │
         ├── Complex/prod code? ──▶ Spawn Prod Coder (GPT-5.4, xhigh)
         │
@@ -59,15 +59,15 @@ Flash (coordinator) receives user message
 
 ### Spawning Depth Limits
 
-| Level | Agent               | Can Spawn?                               | Session Key Pattern          |
-| ----- | ------------------- | ---------------------------------------- | ---------------------------- |
-| 0     | Flash (coordinator) | ✅ All domain agents + GPT-5.4 (planner) | `agent:main:main`            |
-| 0     | Team coordinators   | ✅ Per `subagents.allowAgents` config    | `agent:{id}:main`            |
-| 1     | Domain sub-agents   | ❌ Cannot spawn (sub-agent session)      | `agent:{id}:subagent:{uuid}` |
-| 1     | GPT-5.2/utility     | ❌ Cannot spawn (sub-agent session)      | `agent:main:subagent:{uuid}` |
+| Level | Agent                         | Can Spawn?                               | Session Key Pattern          |
+| ----- | ----------------------------- | ---------------------------------------- | ---------------------------- |
+| 0     | DeepSeek V4 Pro (coordinator) | ✅ All domain agents + GPT-5.4 (planner) | `agent:main:main`            |
+| 0     | Team coordinators             | ✅ Per `subagents.allowAgents` config    | `agent:{id}:main`            |
+| 1     | Domain sub-agents             | ❌ Cannot spawn (sub-agent session)      | `agent:{id}:subagent:{uuid}` |
+| 1     | GPT-5.2/utility               | ❌ Cannot spawn (sub-agent session)      | `agent:main:subagent:{uuid}` |
 
-> **Multi-step workflows** (domain research → coding): Flash orchestrates sequentially.
-> Flash spawns marketing agent, waits for results, then spawns prod-coder with findings.
+> **Multi-step workflows** (domain research → coding): the Coordinator orchestrates sequentially.
+> Coordinator spawns marketing agent, waits for results, then spawns prod-coder with findings.
 
 ---
 
@@ -92,26 +92,26 @@ Flash (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent                 | ID                  | Model    | Thinking | Role Summary                                                                        | Session Type   |
-| --------------------- | ------------------- | -------- | -------- | ----------------------------------------------------------------------------------- | -------------- |
-| **Coordinator**       | `main`              | Flash    | medium   | User conversations, routing, web search, synthesis                                  | Main session   |
-| Marketing             | `marketing`         | Flash    | high     | Content, campaigns, brand voice, analytics, intel-ingest                            | Ephemeral      |
-| SEO                   | `seo`               | Pro      | high     | Technical audits, content quality, schema, GEO, strategic planning                  | Ephemeral      |
-| Sales                 | `sales`             | 5.4-Mini | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                      | Ephemeral      |
-| Product               | `product`           | Flash    | low      | Specs, roadmaps, competitive analysis, user stories                                 | Ephemeral      |
-| Support               | `support`           | Flash    | low      | Ticket triage, KB management, escalation                                            | Ephemeral      |
-| Enterprise Search     | `search`            | Flash    | medium   | Query decomposition, multi-source synthesis                                         | **Persistent** |
-| Legal                 | `legal`             | Pro      | medium   | Contracts, compliance, risk assessment                                              | Ephemeral      |
-| Finance               | `finance`           | Pro      | medium   | Budgets, forecasting, reconciliation                                                | Ephemeral      |
-| Data                  | `data`              | Pro      | medium   | SQL, visualization, ETL, data quality                                               | Ephemeral      |
-| Media Content         | `media-content`     | Pro      | low      | Image/video/audio prompt crafting, visual assets                                    | Ephemeral      |
-| Blogger               | `blogger`           | Pro      | high     | Blog content production, coupled with SEO agent for briefs/KWs                      | Ephemeral      |
-| Quality Critic        | `quality-critic`    | GPT-5.4  | xhigh    | Reviews creative outputs against specs (proposals, images, decks)                   | Ephemeral      |
-| **Dev Coder**         | `dev-coder`         | Flash    | high     | Everyday coding, automations, scripts, simple deploys, CI/CD                        | Ephemeral      |
-| **Prod Coder**        | `prod-coder`        | GPT-5.4  | xhigh    | Complex integrations, APIs, backends, prod-critical refactors (57.7% SWE-Bench Pro) | Ephemeral      |
-| **Planner**           | `planner`           | GPT-5.4  | xhigh    | Architecture review, validation, expert advisor (1M ctx)                            | Ephemeral      |
-| **Grunt**             | `grunt`             | 5.4-Nano | off      | File ops, tests, cleanup, bulk operations, scaffolding                              | Ephemeral      |
-| **Workspace Auditor** | `workspace-auditor` | Pro      | high     | MWF workspace integrity audits (structural, registry, semantic)                     | Ephemeral      |
+| Agent                 | ID                  | Model             | Thinking | Role Summary                                                                        | Session Type   |
+| --------------------- | ------------------- | ----------------- | -------- | ----------------------------------------------------------------------------------- | -------------- |
+| **Coordinator**       | `main`              | DeepSeek V4 Pro   | high     | User conversations, routing, web search, synthesis (1M ctx)                         | Main session   |
+| Marketing             | `marketing`         | Flash             | high     | Content, campaigns, brand voice, analytics, intel-ingest                            | Ephemeral      |
+| SEO                   | `seo`               | DeepSeek V4 Pro   | medium   | Technical audits, content quality, schema, GEO, strategic planning (1M ctx)         | Ephemeral      |
+| Sales                 | `sales`             | 5.4-Mini          | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                      | Ephemeral      |
+| Product               | `product`           | Flash             | low      | Specs, roadmaps, competitive analysis, user stories                                 | Ephemeral      |
+| Support               | `support`           | Flash             | low      | Ticket triage, KB management, escalation                                            | Ephemeral      |
+| Enterprise Search     | `search`            | Flash             | medium   | Query decomposition, multi-source synthesis                                         | **Persistent** |
+| Legal                 | `legal`             | Pro               | medium   | Contracts, compliance, risk assessment                                              | Ephemeral      |
+| Finance               | `finance`           | Pro               | medium   | Budgets, forecasting, reconciliation                                                | Ephemeral      |
+| Data                  | `data`              | Pro               | medium   | SQL, visualization, ETL, data quality                                               | Ephemeral      |
+| Media Content         | `media-content`     | Pro               | low      | Image/video/audio prompt crafting, visual assets                                    | Ephemeral      |
+| Blogger               | `blogger`           | Pro               | high     | Blog content production, coupled with SEO agent for briefs/KWs                      | Ephemeral      |
+| Quality Critic        | `quality-critic`    | GPT-5.4           | xhigh    | Reviews creative outputs against specs (proposals, images, decks)                   | Ephemeral      |
+| **Dev Coder**         | `dev-coder`         | DeepSeek V4 Flash | high     | Everyday coding, automations, scripts, simple deploys, CI/CD (1M ctx)               | Ephemeral      |
+| **Prod Coder**        | `prod-coder`        | GPT-5.4           | xhigh    | Complex integrations, APIs, backends, prod-critical refactors (57.7% SWE-Bench Pro) | Ephemeral      |
+| **Planner**           | `planner`           | GPT-5.4           | xhigh    | Architecture review, validation, expert advisor (1M ctx)                            | Ephemeral      |
+| **Grunt**             | `grunt`             | 5.4-Nano          | off      | File ops, tests, cleanup, bulk operations, scaffolding                              | Ephemeral      |
+| **Workspace Auditor** | `workspace-auditor` | Pro               | high     | MWF workspace integrity audits (structural, registry, semantic)                     | Ephemeral      |
 
 ---
 
@@ -161,7 +161,7 @@ Layer 3: Task field (per-spawn instructions from Flash)
 
 ```
 1. IDENTIFY
-   Flash identifies domain: "Draft SEO content" → marketing
+   Coordinator identifies domain: "Draft SEO content" → marketing
                     │
                     ▼
 2. SPAWN (via agentId routing)
@@ -194,7 +194,7 @@ Layer 3: Task field (per-spawn instructions from Flash)
                     │
                     ▼
 5. DELIVER
-   Flash relays results to user with minimal transformation
+   Coordinator relays results to user with minimal transformation
                     │
                     ▼
 6. ARCHIVE (after 60 minutes)
@@ -206,7 +206,7 @@ Layer 3: Task field (per-spawn instructions from Flash)
 ```
 User: "Do marketing AND legal work for Max Kick"
 
-Flash (coordinator):
+Coordinator (DeepSeek V4 Pro):
   ├── Spawn Marketing Agent (Flash) ──→ SEO audit
   └── Spawn Legal Agent (Pro) ──→ Contract review
        │                                  │
@@ -216,40 +216,40 @@ Flash (coordinator):
        │                                  │
        └──────────────┬───────────────────┘
                       ▼
-              Flash synthesizes and delivers both
+              Coordinator synthesizes and delivers both
 ```
 
 ---
 
 ## When to Use Sub-Agents
 
-| Task Type             | Use Sub-Agent? | Which Agent                              |
-| --------------------- | -------------- | ---------------------------------------- |
-| Marketing content/SEO | ✅ Yes         | Marketing (Flash)                        |
-| Creator discovery     | ✅ Yes         | Marketing (Flash)                        |
-| Campaign analytics    | ✅ Yes         | Marketing (Flash)                        |
-| CRM pipeline check    | ✅ Yes         | Marketing (Flash)                        |
-| Account research      | ✅ Yes         | Sales (5.4-Mini)                         |
-| Contract review       | ✅ Yes         | Legal (Pro)                              |
-| Financial analysis    | ✅ Yes         | Finance (Pro)                            |
-| SQL / data work       | ✅ Yes         | Data (Pro)                               |
-| Product specs         | ✅ Yes         | Product (Flash)                          |
-| Ticket handling       | ✅ Yes         | Support (Flash)                          |
-| Cross-tool search     | ✅ Yes         | Enterprise Search (Flash)                |
-| Code implementation   | ✅ Yes         | Dev Coder (Flash) / Prod Coder (GPT-5.4) |
-| Architecture planning | ✅ Yes         | GPT-5.4 (planner, xhigh)                 |
-| File ops / grunt work | ✅ Yes         | Grunt (5.4-Nano, thinking off)           |
-| Image generation      | ✅ Yes         | Media Content (Pro)                      |
-| Video prompting       | ✅ Yes         | Media Content (Pro)                      |
-| Mood board / brand ID | ✅ Yes         | Media Content (Pro)                      |
-| Product shot          | ✅ Yes         | Media Content (Pro)                      |
-| Character design      | ✅ Yes         | Media Content (Pro)                      |
-| Blog writing/rewrite  | ✅ Yes         | Blogger (Pro)                            |
-| Blog quality analysis | ✅ Yes         | Blogger (Pro)                            |
-| Blog research/outline | ✅ Yes         | Blogger (Pro)                            |
-| Review proposal/image | ✅ Yes         | Quality Critic (GPT-5.4, xhigh)          |
-| Web search            | ❌ No          | Flash handles directly                   |
-| Simple conversation   | ❌ No          | Flash handles directly                   |
+| Task Type             | Use Sub-Agent? | Which Agent                                          |
+| --------------------- | -------------- | ---------------------------------------------------- |
+| Marketing content/SEO | ✅ Yes         | Marketing (Flash)                                    |
+| Creator discovery     | ✅ Yes         | Marketing (Flash)                                    |
+| Campaign analytics    | ✅ Yes         | Marketing (Flash)                                    |
+| CRM pipeline check    | ✅ Yes         | Marketing (Flash)                                    |
+| Account research      | ✅ Yes         | Sales (5.4-Mini)                                     |
+| Contract review       | ✅ Yes         | Legal (Pro)                                          |
+| Financial analysis    | ✅ Yes         | Finance (Pro)                                        |
+| SQL / data work       | ✅ Yes         | Data (Pro)                                           |
+| Product specs         | ✅ Yes         | Product (Flash)                                      |
+| Ticket handling       | ✅ Yes         | Support (Flash)                                      |
+| Cross-tool search     | ✅ Yes         | Enterprise Search (Flash)                            |
+| Code implementation   | ✅ Yes         | Dev Coder (DeepSeek V4 Flash) / Prod Coder (GPT-5.4) |
+| Architecture planning | ✅ Yes         | GPT-5.4 (planner, xhigh)                             |
+| File ops / grunt work | ✅ Yes         | Grunt (5.4-Nano, thinking off)                       |
+| Image generation      | ✅ Yes         | Media Content (Pro)                                  |
+| Video prompting       | ✅ Yes         | Media Content (Pro)                                  |
+| Mood board / brand ID | ✅ Yes         | Media Content (Pro)                                  |
+| Product shot          | ✅ Yes         | Media Content (Pro)                                  |
+| Character design      | ✅ Yes         | Media Content (Pro)                                  |
+| Blog writing/rewrite  | ✅ Yes         | Blogger (Pro)                                        |
+| Blog quality analysis | ✅ Yes         | Blogger (Pro)                                        |
+| Blog research/outline | ✅ Yes         | Blogger (Pro)                                        |
+| Review proposal/image | ✅ Yes         | Quality Critic (GPT-5.4, xhigh)                      |
+| Web search            | ❌ No          | Flash handles directly                               |
+| Simple conversation   | ❌ No          | Flash handles directly                               |
 
 ---
 
@@ -491,7 +491,7 @@ Agent routing is controlled via workspace files that are injected into the syste
 1. Gateway starts session → loads ALL workspace files (SOUL.md, TOOLS.md, USER.md, etc.)
 2. Skills auto-loaded into system prompt (full `promptMode`)
 3. Flash reads routing instructions from SOUL.md
-4. Flash identifies domain and spawns via `sessions_spawn({ agentId, task, label })`
+4. Coordinator identifies domain and spawns via `sessions_spawn({ agentId, task, label })`
 
 **Sub-Agent (Domain Agent):**
 

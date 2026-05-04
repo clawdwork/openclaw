@@ -39,11 +39,11 @@ This architecture is split into focused modules. Each file is self-contained.
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │               COORDINATOR (Kimi K2.6 via OpenRouter)                │   │
+│  │             COORDINATOR (DeepSeek V4 Pro via OpenRouter)            │   │
 │  │                                                                      │   │
-│  │  Model: openrouter/moonshotai/kimi-k2.6 (thinkingDefault: medium)    │   │
+│  │  Model: deepseek/deepseek-v4-pro (thinking: high)                    │   │
 │  │  Role: Conversation, routing, web search, coordination              │   │
-│  │  Context: 1M tokens, native Google grounding                        │   │
+│  │  Context: 1M tokens, native tool calling + structured output        │   │
 │  │                                                                      │   │
 │  │  Capabilities:                                                       │   │
 │  │  • Handles user conversations (thin router)                         │   │
@@ -68,7 +68,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  │  5 skills    │ │  3 skills†   │           † persistent        │      │
 │  │  └──────────────┘ └──────────────┘             memory             │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
-│  │  │     SEO      │ │    Legal     │ │   Finance    │  (Kimi/Pro)  │      │
+│  │  │     SEO      │ │    Legal     │ │   Finance    │ (DSV4Pro/Pro)│      │
 │  │  │  18 skills   │ │  6 skills    │ │  6 skills    │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
@@ -76,17 +76,16 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  │  7 skills    │ │  5 skills    │ │  SEO-coupled │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐                               │      │
-│  │  │  Workspace   │ │Quality Critic│               (Pro / GPT-5.2) │      │
+│  │  │  Workspace   │ │Quality Critic│                 (Pro / GPT-5.4) │      │
 │  │  │   Auditor 🏗️ │ │  1 skill 🔍  │                               │      │
 │  │  └──────────────┘ └──────────────┘                               │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
-│  Flash also spawns these directly (domain agents CANNOT spawn):             │
+│  Coordinator also spawns these directly (domain agents CANNOT spawn):       │
 │  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐   │
-│  │ DeepSeek V4   │   │ DeepSeek V4   │   │  5.4-NANO     │   │
+│  │  GPT-5.4      │   │  GPT-5.4      │   │  5.4-NANO     │   │
 │  │  (planner)    │   │ (prod-coder)  │   │  (grunt work) │   │
-│  │ thinking:high │   │ thinking:high │   │  thinking:off │   │
-│  │ 1.6T MoE      │   │ 1.6T MoE      │   │               │   │
+│  │ thinking:xhigh│   │thinking:xhigh │   │  thinking:off │   │
 │  │ Architecture  │   │ Code impl.    │   │ File ops      │   │
 │  │ Deep reason.  │   │ Refactors     │   │ Organization  │   │
 │  └───────────────┘   └───────────────┘   └───────────────┘   │
@@ -108,35 +107,35 @@ This architecture is split into focused modules. Each file is self-contained.
 
 ## Model Hierarchy
 
-| Role               | Model                                 | Alias           | Cost/1M Tokens                                        | Use Case                                                                                                                                                                             |
-| ------------------ | ------------------------------------- | --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Coordinator**    | `openrouter/moonshotai/kimi-k2.6`     | Kimi-K2.6       | $0.80 in / $3.50 out (cache-read 0.20x)               | Conversation, routing, web search, coordination (thinking=medium; replaced Gemini 3 Flash 2026-04-25, downshifted from high 2026-04-25 since routing decisions don't need MoE depth) |
-| **Sales**          | `openai/gpt-5.4-mini`                 | 5.4-Mini        | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                                                                            |
-| **Dev Coder**      | `google/gemini-3-flash-preview`       | Flash           | $0.50 in / $3 out                                     | Everyday coding, scripts, simple deploys, CI/CD                                                                                                                                      |
-| **Prod Coder**     | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Complex integrations, APIs, prod-critical code (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced GPT-5.4 2026-04-25)                                                           |
-| **Planner**        | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Architecture, strategy, SOTA reasoning (thinking=high, 1.6T MoE, 1M ctx; replaced GPT-5.4 2026-04-25)                                                                                |
-| **Precision**      | `google/gemini-3.1-pro-preview`       | Pro             | $2 in / $12 out                                       | Legal, finance, data, media content (1M ctx)                                                                                                                                         |
-| **Quality Critic** | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Review creative outputs (thinking=high, native reasoning + tools + structured output; replaced GPT-5.4 2026-04-25)                                                                   |
-| **Grunt**          | `openai/gpt-5.4-nano`                 | 5.4-Nano        | TBD                                                   | File ops, bulk operations, cheapest model                                                                                                                                            |
-| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1       | —               | varies                                                | Multi-provider resilience                                                                                                                                                            |
+| Role               | Model                           | Alias             | Cost/1M Tokens                                        | Use Case                                                                                                                                |
+| ------------------ | ------------------------------- | ----------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Coordinator**    | `deepseek/deepseek-v4-pro`      | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Conversation, routing, web search, coordination (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7) |
+| **Sales**          | `openai/gpt-5.4-mini`           | 5.4-Mini          | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                               |
+| **Dev Coder**      | `deepseek/deepseek-v4-flash`    | DeepSeek-V4-Flash | $0.140 in / $0.280 out (cache-read 0.20x, write free) | Everyday coding, scripts, simple deploys, CI/CD (thinking=high, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7)                        |
+| **Prod Coder**     | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Complex integrations, APIs, prod-critical code (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                         |
+| **Planner**        | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Architecture, strategy, SOTA reasoning (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                                 |
+| **Precision**      | `google/gemini-3.1-pro-preview` | Pro               | $2 in / $12 out                                       | Legal, finance, data, media content (1M ctx)                                                                                            |
+| **Quality Critic** | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Review creative outputs (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                                                |
+| **Grunt**          | `openai/gpt-5.4-nano`           | 5.4-Nano          | TBD                                                   | File ops, bulk operations, cheapest model                                                                                               |
+| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1 | —                 | varies                                                | Multi-provider resilience                                                                                                               |
 
 ### Domain Sub-Agent Models
 
-| Domain Agent          | Model              | Why                                                                                                  | Skills                                       |
-| --------------------- | ------------------ | ---------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **Marketing**         | Flash              | Speed, volume, web search                                                                            | 6 + 10 Celavii skills                        |
-| **Sales**             | 5.4-Mini           | Research, synthesis, outreach, lead gen, pipeline                                                    | 9 skills, 10 commands, 6 scripts, 1 template |
-| **Product**           | Flash              | Specs, roadmaps                                                                                      | 6 skills, 6 commands                         |
-| **Support**           | Flash              | Triage, responses                                                                                    | 5 skills, 5 commands                         |
-| **Enterprise Search** | Flash              | Native Google grounding                                                                              | 3 skills, 2 commands                         |
-| **SEO**               | Kimi K2.6 (medium) | Strategy reasoning at 60% lower input cost than Pro (replaced Pro 2026-04-25)                        | 18 skills                                    |
-| **Legal**             | Pro                | Precision, risk                                                                                      | 6 skills, 1+ commands                        |
-| **Finance**           | Pro                | Accuracy, compliance                                                                                 | 6 skills, 5 commands                         |
-| **Data**              | Pro                | SQL, code generation                                                                                 | 7 skills, varies                             |
-| **Media Content**     | Pro                | Prompt crafting, visuals                                                                             | 5 skills, 6 commands                         |
-| **Blogger**           | Kimi K2.6 (medium) | Long-form writing benefits from MoE reasoning at lower input cost than Pro (replaced Pro 2026-04-25) | 1 skill (SEO handoff)                        |
-| **Quality Critic**    | DeepSeek V4 Pro    | SOTA review (thinking=high; 17× cheaper output than GPT-5.4)                                         | 1 skill (agnostic)                           |
-| **Workspace Auditor** | Pro                | Semantic drift detection                                                                             | 1 skill (MWF audit)                          |
+| Domain Agent          | Model                    | Why                                                                                                                      | Skills                                       |
+| --------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| **Marketing**         | Flash                    | Speed, volume, web search                                                                                                | 6 + 10 Celavii skills                        |
+| **Sales**             | 5.4-Mini                 | Research, synthesis, outreach, lead gen, pipeline                                                                        | 9 skills, 10 commands, 6 scripts, 1 template |
+| **Product**           | Flash                    | Specs, roadmaps                                                                                                          | 6 skills, 6 commands                         |
+| **Support**           | Flash                    | Triage, responses                                                                                                        | 5 skills, 5 commands                         |
+| **Enterprise Search** | Flash                    | Native Google grounding                                                                                                  | 3 skills, 2 commands                         |
+| **SEO**               | DeepSeek V4 Pro (medium) | Reasoning + 1M context for technical/strategic SEO; ~50% cheaper than Pro (replaced Pro 2026-05-04 — V7)                 | 18 skills                                    |
+| **Legal**             | Pro                      | Precision, risk                                                                                                          | 6 skills, 1+ commands                        |
+| **Finance**           | Pro                      | Accuracy, compliance                                                                                                     | 6 skills, 5 commands                         |
+| **Data**              | Pro                      | SQL, code generation                                                                                                     | 7 skills, varies                             |
+| **Media Content**     | Pro                      | Prompt crafting, visuals                                                                                                 | 5 skills, 6 commands                         |
+| **Blogger**           | Pro (high)               | Creative voice + research synthesis; reasoning-trained models (Kimi/DeepSeek) underperform on long-form creative writing | 1 skill (SEO handoff)                        |
+| **Quality Critic**    | GPT-5.4 (xhigh)          | xhigh reasoning for cross-model critique; pending A/B vs DeepSeek V4 Pro                                                 | 1 skill (agnostic)                           |
+| **Workspace Auditor** | Pro                      | Semantic drift detection                                                                                                 | 1 skill (MWF audit)                          |
 
 ### Model Selection Logic (Fallback Chain)
 
@@ -198,9 +197,10 @@ REQUEST 2-N (Cache Hit, within 5 min)
 ```json
 {
   "models": {
-    "openrouter/moonshotai/kimi-k2.6": {}, // Coordinator (high) + SEO + Blogger (medium) — Moonshot caching 0.20x cache-read
-    "openrouter/deepseek/deepseek-v4-pro": {}, // Prod coder + Quality critic + Planner (high) — DeepSeek caching 0.08x cache-read, write free
-    "google/gemini-3-flash-preview": {}, // Dev coder + most volume domain agents (Google caching)
+    "deepseek/deepseek-v4-pro": {}, // Coordinator (high) + SEO (medium) — DeepSeek caching 0.08x cache-read, write free
+    "deepseek/deepseek-v4-flash": {}, // Dev coder (high) — DeepSeek caching 0.20x cache-read, write free
+    "openai/gpt-5.4": {}, // Prod coder + Quality critic + Planner (xhigh)
+    "google/gemini-3-flash-preview": {}, // Most volume domain agents (Google caching)
     "google/gemini-3.1-pro-preview": {}, // Precision domains: Legal, Finance, Data, Media Content, Workspace Auditor (Google caching)
     "openai/gpt-5-mini": {} // Fallback
   }
@@ -243,7 +243,7 @@ Every 30 Minutes
         │
         ▼
 ┌───────────────────────────────────────┐
-│  Flash reads HEARTBEAT.md             │
+│  Heartbeat (Gemini 2.5 Flash) reads HEARTBEAT.md │
 └───────────────────────────────────────┘
         │
         ├──── File empty ──────▶ Reply "HEARTBEAT_OK"
