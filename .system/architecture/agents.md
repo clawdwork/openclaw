@@ -41,6 +41,15 @@ DeepSeek V4 Pro (coordinator) receives user message
         │   (blog writing, rewriting, analysis, research, outlines,
         │    schema, repurpose, GEO optimization — coupled with SEO)
         │
+        ├── Social analysis (drift, cannibalization, trend, factcheck,
+        │   competitor scrape, persona, brief, plan, sxo, aggregate)?
+        │   ──▶ Spawn Social Research Agent (DeepSeek V4 Pro, medium)
+        │
+        ├── Social production (orchestrator, hooks, script, shotlist,
+        │   repurpose, celavii-social copy)?
+        │   ──▶ Spawn Social Writer Agent (Pro, high)
+        │   (cross-model boundary per social-constitution Article 7)
+        │
         ├── Review creative output? ──▶ Spawn Quality Critic (GPT-5.4, xhigh)
         │   (proposals, images, decks — feedback loop after generation)
         │
@@ -92,26 +101,28 @@ DeepSeek V4 Pro (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent                 | ID                  | Model             | Thinking | Role Summary                                                                        | Session Type   |
-| --------------------- | ------------------- | ----------------- | -------- | ----------------------------------------------------------------------------------- | -------------- |
-| **Coordinator**       | `main`              | DeepSeek V4 Pro   | high     | User conversations, routing, web search, synthesis (1M ctx)                         | Main session   |
-| Marketing             | `marketing`         | Flash             | high     | Content, campaigns, brand voice, analytics, intel-ingest                            | Ephemeral      |
-| SEO                   | `seo`               | DeepSeek V4 Pro   | medium   | Technical audits, content quality, schema, GEO, strategic planning (1M ctx)         | Ephemeral      |
-| Sales                 | `sales`             | 5.4-Mini          | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                      | Ephemeral      |
-| Product               | `product`           | Flash             | low      | Specs, roadmaps, competitive analysis, user stories                                 | Ephemeral      |
-| Support               | `support`           | Flash             | low      | Ticket triage, KB management, escalation                                            | Ephemeral      |
-| Enterprise Search     | `search`            | Flash             | medium   | Query decomposition, multi-source synthesis                                         | **Persistent** |
-| Legal                 | `legal`             | Pro               | medium   | Contracts, compliance, risk assessment                                              | Ephemeral      |
-| Finance               | `finance`           | Pro               | medium   | Budgets, forecasting, reconciliation                                                | Ephemeral      |
-| Data                  | `data`              | Pro               | medium   | SQL, visualization, ETL, data quality                                               | Ephemeral      |
-| Media Content         | `media-content`     | Pro               | low      | Image/video/audio prompt crafting, visual assets                                    | Ephemeral      |
-| Blogger               | `blogger`           | Pro               | high     | Blog content production, coupled with SEO agent for briefs/KWs                      | Ephemeral      |
-| Quality Critic        | `quality-critic`    | GPT-5.4           | xhigh    | Reviews creative outputs against specs (proposals, images, decks)                   | Ephemeral      |
-| **Dev Coder**         | `dev-coder`         | DeepSeek V4 Flash | high     | Everyday coding, automations, scripts, simple deploys, CI/CD (1M ctx)               | Ephemeral      |
-| **Prod Coder**        | `prod-coder`        | GPT-5.4           | xhigh    | Complex integrations, APIs, backends, prod-critical refactors (57.7% SWE-Bench Pro) | Ephemeral      |
-| **Planner**           | `planner`           | GPT-5.4           | xhigh    | Architecture review, validation, expert advisor (1M ctx)                            | Ephemeral      |
-| **Grunt**             | `grunt`             | 5.4-Nano          | off      | File ops, tests, cleanup, bulk operations, scaffolding                              | Ephemeral      |
-| **Workspace Auditor** | `workspace-auditor` | Pro               | high     | MWF workspace integrity audits (structural, registry, semantic)                     | Ephemeral      |
+| Agent                 | ID                  | Model             | Thinking | Role Summary                                                                             | Session Type   |
+| --------------------- | ------------------- | ----------------- | -------- | ---------------------------------------------------------------------------------------- | -------------- |
+| **Coordinator**       | `main`              | DeepSeek V4 Pro   | high     | User conversations, routing, web search, synthesis (1M ctx)                              | Main session   |
+| Marketing             | `marketing`         | Flash             | high     | Content, campaigns, brand voice, analytics, intel-ingest                                 | Ephemeral      |
+| SEO                   | `seo`               | DeepSeek V4 Pro   | medium   | Technical audits, content quality, schema, GEO, strategic planning (1M ctx)              | Ephemeral      |
+| Sales                 | `sales`             | 5.4-Mini          | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                           | Ephemeral      |
+| Product               | `product`           | Flash             | low      | Specs, roadmaps, competitive analysis, user stories                                      | Ephemeral      |
+| Support               | `support`           | Flash             | low      | Ticket triage, KB management, escalation                                                 | Ephemeral      |
+| Enterprise Search     | `search`            | Flash             | medium   | Query decomposition, multi-source synthesis                                              | **Persistent** |
+| Legal                 | `legal`             | Pro               | medium   | Contracts, compliance, risk assessment                                                   | Ephemeral      |
+| Finance               | `finance`           | Pro               | medium   | Budgets, forecasting, reconciliation                                                     | Ephemeral      |
+| Data                  | `data`              | Pro               | medium   | SQL, visualization, ETL, data quality                                                    | Ephemeral      |
+| Media Content         | `media-content`     | Pro               | low      | Image/video/audio prompt crafting, visual assets                                         | Ephemeral      |
+| Blogger               | `blogger`           | Pro               | high     | Blog content production, coupled with SEO agent for briefs/KWs                           | Ephemeral      |
+| **Social Research**   | `social-research`   | DeepSeek V4 Pro   | medium   | Discover, brief, plan, drift, cannibalization, factcheck, sxo, persona, trend (1M ctx)   | Ephemeral      |
+| **Social Writer**     | `social-writer`     | Pro               | high     | Orchestrator, hooks, script, shotlist, repurpose, celavii-social copy production         | Ephemeral      |
+| Quality Critic        | `quality-critic`    | DeepSeek V4 Pro   | high     | Reviews creative outputs against specs (proposals, images, decks); cross-model critic    | Ephemeral      |
+| **Dev Coder**         | `dev-coder`         | DeepSeek V4 Flash | high     | Everyday coding, automations, scripts, simple deploys, CI/CD (1M ctx)                    | Ephemeral      |
+| **Prod Coder**        | `prod-coder`        | DeepSeek V4 Pro   | high     | Complex integrations, APIs, backends, prod-critical refactors (1M ctx, native reasoning) | Ephemeral      |
+| **Planner**           | `planner`           | DeepSeek V4 Pro   | high     | Architecture review, validation, expert advisor (1M ctx, native reasoning)               | Ephemeral      |
+| **Grunt**             | `grunt`             | 5.4-Nano          | off      | File ops, tests, cleanup, bulk operations, scaffolding                                   | Ephemeral      |
+| **Workspace Auditor** | `workspace-auditor` | Pro               | high     | MWF workspace integrity audits (structural, registry, semantic)                          | Ephemeral      |
 
 ---
 

@@ -9,12 +9,12 @@ When updating architecture docs, check this file first. If a value here is stale
 
 ## Runtime Values
 
-| Key             | Value                  | Files That Reference It | Last Verified |
-| --------------- | ---------------------- | ----------------------- | ------------- |
-| Gateway port    | 49152                  | README.md, channels.md  | 2026-04-27    |
-| WebSocket URL   | ws://127.0.0.1:49152   | README.md, channels.md  | 2026-04-27    |
-| WebChat URL     | http://127.0.0.1:49152 | README.md               | 2026-04-27    |
-| Gateway version | 2026.2.12              | README.md               | 2026-02-12    |
+| Key             | Value                 | Files That Reference It                  | Last Verified |
+| --------------- | --------------------- | ---------------------------------------- | ------------- |
+| Gateway port    | 9173                  | README.md, channels.md, SETUP-TRACKER.md | 2026-05-04    |
+| WebSocket URL   | ws://127.0.0.1:9173   | README.md, channels.md                   | 2026-05-04    |
+| WebChat URL     | http://127.0.0.1:9173 | README.md                                | 2026-05-04    |
+| Gateway version | 2026.4.25             | README.md                                | 2026-05-04    |
 
 ## Skill Counts
 
@@ -31,8 +31,8 @@ When updating architecture docs, check this file first. If a value here is stale
 
 | Key                                    | Value | Files That Reference It | Last Verified |
 | -------------------------------------- | ----- | ----------------------- | ------------- |
-| **Agent count (domain)**               | 13    | README.md, agents.md    | 2026-02-25    |
-| **Agent count (total in agents.list)** | 18    | agents.md               | 2026-02-25    |
+| **Agent count (domain)**               | 15    | README.md, agents.md    | 2026-05-04    |
+| **Agent count (total in agents.list)** | 20    | agents.md               | 2026-05-04    |
 
 ## Provider Distribution
 

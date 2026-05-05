@@ -7,7 +7,9 @@
 
 ## Current Implementation: V7 — "DeepSeek Reasoning Core + Gemini Backbone"
 
-As of 2026-05-04 the architecture deploys **DeepSeek V4 Pro for the Coordinator and SEO agents** (reasoning + 1M context for orchestration and research), **DeepSeek V4 Flash for Dev Coder** (cheap reasoning-capable codegen), and **Gemini 3.1 Pro retained for Blogger** (creative voice — reasoning-trained models like DeepSeek/Kimi underperform on long-form creative writing). Volume agents stay on Gemini 3 Flash; precision domains (Legal, Finance, Data, Media Content, Workspace Auditor) stay on Gemini 3.1 Pro. Quality Critic, Prod Coder, and Planner remain on GPT-5.4 `xhigh` for now (planned migration to DeepSeek V4 Pro deferred — see V6 note below). Zero Anthropic primary agents.
+As of 2026-05-04 the architecture deploys **DeepSeek V4 Pro for the Coordinator, SEO, Quality Critic, Prod Coder, and Planner** (reasoning + 1M context, with native tool calling and structured output); **DeepSeek V4 Flash for Dev Coder** (cheap reasoning-capable codegen at 1M ctx); and **Gemini 3.1 Pro retained for Blogger** (creative voice — reasoning-trained models like DeepSeek/Kimi underperform on long-form creative writing). New as of V7: **two social agents** — `social-research` on DeepSeek V4 Pro `medium` (analytical: discover, brief, plan, drift, cannibalization, factcheck, sxo, persona, trend, competitor-scrape, aggregate, research, quality) and `social-writer` on Gemini 3.1 Pro `high` (creative: orchestrator, hooks, script, shotlist, repurpose, celavii-social). The cross-model boundary enforces `.claude/rules/social-constitution.md` Article 7 structurally. Volume agents stay on Gemini 3 Flash (marketing, product, support, search). Precision domains (Legal, Finance, Data, Media Content, Workspace Auditor) stay on Gemini 3.1 Pro. Zero Anthropic primary agents.
+
+Gateway port migrated **49152 → 9173** on 2026-05-04. The "first ephemeral slot" choice for 49152 collided with macOS handing the same port to Windsurf's plugin host whenever the gateway briefly dropped its bind during restart. 9173 is in the registered range and stable.
 
 ### Active OpenRouter aliases
 
@@ -19,9 +21,9 @@ As of 2026-05-04 the architecture deploys **DeepSeek V4 Pro for the Coordinator 
 | `Kimi-K2.6`         | `moonshotai/kimi-k2.6`       | (benchmark candidate; demoted from primary — degrades on long-form creative) | —            |
 | `MiniMax-M2.7`      | `minimax/minimax-m2.7`       | (benchmark candidate)                                                        | configurable |
 
-### V6 (planned, never shipped)
+### V6 (correction — was actually shipped)
 
-V6 — "OpenRouter Reasoning Core" (Kimi K2.6 on Coordinator/SEO/Blogger; DeepSeek V4 Pro on Critic/Prod-Coder/Planner) — was documented 2026-04-25 but never deployed to `~/dev/config/openclaw.json`. V7 supersedes it and corrects course on the Blogger assignment based on creative-writing evidence (Kimi K2-class reasoning models produce template-y prose past ~3K words; see _Comparison: Kimi K2.6 vs Gemini 3 Flash_ below).
+V6 — "OpenRouter Reasoning Core" (Kimi K2.6 on Coordinator/SEO/Blogger; DeepSeek V4 Pro on Critic/Prod-Coder/Planner) — was deployed 2026-04-25 to `~/.openclaw/openclaw.json` (the live config). It was NOT mirrored to `~/dev/config/openclaw.json` (the stale workspace copy), creating the appearance during the V7 audit on 2026-05-04 that V6 had never shipped. **V6 did ship; the doc audit was reading the wrong file.** V7 supersedes V6 by reverting the Coordinator/SEO/Blogger assignments — Coordinator and SEO move to DeepSeek V4 Pro (cheaper than Kimi at higher reasoning depth), and Blogger reverts to Gemini 3.1 Pro for creative voice (Kimi K2-class reasoning models produce template-y prose past ~3K words). Critic/Prod-Coder/Planner stay on DeepSeek V4 Pro. The two configs were re-synced and re-symlinked on 2026-05-04 to prevent recurrence.
 
 ### Prior implementation: Option A — "Google Backbone + GPT-5.2 Precision" (deprecated 2026-04-25)
 
@@ -111,74 +113,77 @@ Source: [OpenAI — GPT-5.1-Codex-Max](https://openai.com/index/gpt-5-1-codex-ma
 
 ### Agent Assignments
 
-| Agent             | Primary                    | Context | Thinking   | Fallback 1 | Fallback 2 |
-| ----------------- | -------------------------- | ------- | ---------- | ---------- | ---------- |
-| **Coordinator**   | **DeepSeek V4 Pro** (OR)   | **1M**  | **high**   | Pro (1M)   | GPT-5.4    |
-| Marketing         | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
-| **SEO**           | **DeepSeek V4 Pro** (OR)   | **1M**  | **medium** | Pro (1M)   | Flash      |
-| Blogger           | Pro (1M)                   | 1M      | high       | GPT-5.4    | Flash      |
-| Sales             | 5.4-Mini                   | 391K    | low        | GPT-5 Mini | —          |
-| Product           | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
-| Support           | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
-| Search            | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
-| Legal             | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
-| Finance           | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
-| Data              | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
-| Media Content     | Pro (1M)                   | 1M      | low        | GPT-5.1    | —          |
-| Workspace Auditor | Pro (1M)                   | 1M      | medium     | Flash      | —          |
-| Quality Critic    | GPT-5.4                    | 266K    | xhigh      | Pro (1M)   | GPT-5.1    |
-| **Dev Coder**     | **DeepSeek V4 Flash** (OR) | **1M**  | **high**   | Flash (1M) | 5.4-Mini   |
-| Prod Coder        | GPT-5.4                    | 266K    | xhigh      | Pro (1M)   | GPT-5.1    |
-| Planner           | GPT-5.4                    | 266K    | xhigh      | Pro (1M)   | GPT-5.1    |
-| Grunt             | 5.4-Nano                   | 391K    | off        | GPT-5 Nano | —          |
+| Agent               | Primary                    | Context | Thinking   | Fallback 1 | Fallback 2 |
+| ------------------- | -------------------------- | ------- | ---------- | ---------- | ---------- |
+| **Coordinator**     | **DeepSeek V4 Pro** (OR)   | **1M**  | **high**   | Pro (1M)   | GPT-5.4    |
+| Marketing           | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
+| **SEO**             | **DeepSeek V4 Pro** (OR)   | **1M**  | **medium** | Pro (1M)   | Flash      |
+| Blogger             | Pro (1M)                   | 1M      | high       | GPT-5.4    | Flash      |
+| Sales               | 5.4-Mini                   | 391K    | low        | GPT-5 Mini | —          |
+| Product             | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
+| Support             | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
+| Search              | Flash (1M)                 | 1M      | low        | GPT-5 Mini | —          |
+| Legal               | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
+| Finance             | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
+| Data                | Pro (1M)                   | 1M      | medium     | GPT-5.1    | Flash      |
+| Media Content       | Pro (1M)                   | 1M      | low        | GPT-5.1    | —          |
+| Workspace Auditor   | Pro (1M)                   | 1M      | medium     | Flash      | —          |
+| Quality Critic      | DeepSeek V4 Pro (OR)       | **1M**  | **high**   | Pro (1M)   | GPT-5.4    |
+| **Dev Coder**       | **DeepSeek V4 Flash** (OR) | **1M**  | **high**   | Flash (1M) | 5.4-Mini   |
+| Prod Coder          | DeepSeek V4 Pro (OR)       | **1M**  | **high**   | Pro (1M)   | GPT-5.4    |
+| Planner             | DeepSeek V4 Pro (OR)       | **1M**  | **high**   | Pro (1M)   | GPT-5.4    |
+| **Social Research** | **DeepSeek V4 Pro** (OR)   | **1M**  | **medium** | Pro (1M)   | Flash      |
+| **Social Writer**   | **Pro**                    | **1M**  | **high**   | GPT-5.4    | Flash      |
+| Grunt               | 5.4-Nano                   | 391K    | off        | GPT-5 Nano | —          |
 
-> Quality Critic, Prod Coder, and Planner remain on GPT-5.4 `xhigh`. Migration to DeepSeek V4 Pro `high` (per V6 plan) is deferred pending live A/B comparison on critique quality and structured-output reliability.
+> Quality Critic, Prod Coder, and Planner have been on DeepSeek V4 Pro `high` since V6 (deployed 2026-04-25). The 2026-05-04 doc audit incorrectly thought they were still on GPT-5.4 (audit was reading stale `~/dev/config/openclaw.json`); the live `~/.openclaw/openclaw.json` always had DeepSeek V4 Pro for these three. V7 retains the DeepSeek V4 Pro assignment.
 
 ### Per-Agent Cost Estimate (V7, no caching applied)
 
 Tokens/req split assumed 80% input / 20% output. Heartbeat at full volume.
 
-| Agent             | Model                 | Reqs/Day | Tokens/Req | Daily $   | Monthly $                                    |
-| ----------------- | --------------------- | -------- | ---------- | --------- | -------------------------------------------- |
-| **Coordinator**   | **DeepSeek V4 Pro**   | 100      | 5,000      | $0.070    | **$2.10**                                    |
-| Marketing         | Flash                 | 8        | 5,000      | $0.020    | $0.59                                        |
-| **SEO**           | **DeepSeek V4 Pro**   | 10       | 8,000      | $0.042    | **$1.25**                                    |
-| Blogger           | Pro                   | 5        | 8,000      | $0.080    | $2.40                                        |
-| Sales             | 5.4-Mini              | 5        | 5,000      | TBD       | TBD                                          |
-| Product           | Flash                 | 5        | 5,000      | $0.013    | $0.38                                        |
-| Support           | Flash                 | 5        | 5,000      | $0.013    | $0.38                                        |
-| Search            | Flash                 | 10       | 5,000      | $0.025    | $0.75                                        |
-| Legal             | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
-| Finance           | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
-| Data              | Pro                   | 8        | 5,000      | $0.080    | $2.40                                        |
-| Media Content     | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
-| Workspace Auditor | Pro                   | 1        | 8,000      | $0.016    | $0.48                                        |
-| Quality Critic    | GPT-5.4               | 5        | 3,000      | $0.054    | $1.62                                        |
-| **Dev Coder**     | **DeepSeek V4 Flash** | 15       | 10,000     | $0.025    | **$0.76**                                    |
-| Prod Coder        | GPT-5.4               | 10       | 10,000     | $0.360    | $10.80                                       |
-| Planner           | GPT-5.4               | 3        | 10,000     | $0.108    | $3.24                                        |
-| Grunt             | 5.4-Nano              | 50       | 2,000      | TBD       | TBD                                          |
-| Heartbeat         | Gemini 2.5 Flash      | 48       | 500        | $0.003    | $0.09                                        |
-|                   |                       |          |            | **Total** | **~$31.74/mo** (excluding Sales + Grunt TBD) |
+| Agent               | Model                 | Reqs/Day | Tokens/Req | Daily $   | Monthly $                                    |
+| ------------------- | --------------------- | -------- | ---------- | --------- | -------------------------------------------- |
+| **Coordinator**     | **DeepSeek V4 Pro**   | 100      | 5,000      | $0.070    | **$2.10**                                    |
+| Marketing           | Flash                 | 8        | 5,000      | $0.020    | $0.59                                        |
+| **SEO**             | **DeepSeek V4 Pro**   | 10       | 8,000      | $0.042    | **$1.25**                                    |
+| Blogger             | Pro                   | 5        | 8,000      | $0.080    | $2.40                                        |
+| Sales               | 5.4-Mini              | 5        | 5,000      | TBD       | TBD                                          |
+| Product             | Flash                 | 5        | 5,000      | $0.013    | $0.38                                        |
+| Support             | Flash                 | 5        | 5,000      | $0.013    | $0.38                                        |
+| Search              | Flash                 | 10       | 5,000      | $0.025    | $0.75                                        |
+| Legal               | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
+| Finance             | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
+| Data                | Pro                   | 8        | 5,000      | $0.080    | $2.40                                        |
+| Media Content       | Pro                   | 5        | 5,000      | $0.050    | $1.50                                        |
+| Workspace Auditor   | Pro                   | 1        | 8,000      | $0.016    | $0.48                                        |
+| Quality Critic      | DeepSeek V4 Pro       | 5        | 3,000      | $0.0058   | $0.18                                        |
+| **Dev Coder**       | **DeepSeek V4 Flash** | 15       | 10,000     | $0.025    | **$0.76**                                    |
+| Prod Coder          | DeepSeek V4 Pro       | 10       | 10,000     | $0.0639   | $1.92                                        |
+| Planner             | DeepSeek V4 Pro       | 3        | 10,000     | $0.0192   | $0.58                                        |
+| **Social Research** | **DeepSeek V4 Pro**   | 5        | 8,000      | $0.0210   | **$0.62**                                    |
+| **Social Writer**   | **Pro**               | 5        | 8,000      | $0.0800   | **$2.40**                                    |
+| Grunt               | 5.4-Nano              | 50       | 2,000      | TBD       | TBD                                          |
+| Heartbeat           | Gemini 2.5 Flash      | 48       | 500        | $0.003    | $0.09                                        |
+|                     |                       |          |            | **Total** | **~$31.74/mo** (excluding Sales + Grunt TBD) |
 
-V7 vs documented-but-unshipped V6: Coordinator/SEO migrate to DeepSeek V4 Pro (cheaper than Kimi K2.6 _and_ better-suited to orchestration); Blogger stays on Pro (creative voice priority); Dev Coder migrates to DeepSeek V4 Flash (3× cheaper than Gemini 3 Flash with native reasoning); Critic/Prod-Coder/Planner stay on GPT-5.4 `xhigh` pending A/B against DeepSeek V4 Pro `high`.
+V7 vs V6 (V6 was actually shipped, contrary to earlier misread): Coordinator/SEO migrate from Kimi K2.6 → DeepSeek V4 Pro (cheaper, better orchestration); Blogger reverts Kimi K2.6 → Gemini 3.1 Pro (creative voice priority); Dev Coder migrates Gemini 3 Flash → DeepSeek V4 Flash (3× cheaper with native reasoning); Critic/Prod-Coder/Planner stay on DeepSeek V4 Pro (already there since V6). Two new agents added: `social-research` (DeepSeek V4 Pro `medium`) and `social-writer` (Gemini 3.1 Pro `high`) to enforce social-constitution Article 7 cross-model boundary structurally.
 
 ### Provider Distribution (V7)
 
-| Provider                  | Primary Agents                                     | Est. Monthly | % of Spend |
-| ------------------------- | -------------------------------------------------- | ------------ | ---------- |
-| **OpenRouter (DeepSeek)** | 3 (Coordinator, SEO, Dev Coder)                    | $4.11        | 13%        |
-| **Google Flash**          | 5 (Marketing, Product, Support, Search, Heartbeat) | $2.19        | 7%         |
-| **Google Pro**            | 6 (Blogger, Legal, Finance, Data, Media, Auditor)  | $9.78        | 31%        |
-| **OpenAI GPT-5.4**        | 3 (Critic, Prod Coder, Planner)                    | $15.66       | 49%        |
-| **OpenAI GPT-5.4-Mini**   | 1 (Sales)                                          | TBD          | —          |
-| **OpenAI GPT-5.4-Nano**   | 1 (Grunt)                                          | TBD          | —          |
-| **Anthropic**             | 0                                                  | $0.00        | 0%         |
-|                           | **19**                                             | **~$31.74**  |            |
+| Provider                  | Primary Agents                                                          | Est. Monthly | % of Spend |
+| ------------------------- | ----------------------------------------------------------------------- | ------------ | ---------- |
+| **OpenRouter (DeepSeek)** | 7 (Coord, SEO, Critic, Prod-Coder, Planner, Dev Coder, Social Research) | $7.39        | 39%        |
+| **Google Flash**          | 5 (Marketing, Product, Support, Search, Heartbeat)                      | $2.19        | 7%         |
+| **Google Pro**            | 6 (Blogger, Legal, Finance, Data, Media, Auditor)                       | $9.78        | 31%        |
+| **OpenAI GPT-5.4-Mini**   | 1 (Sales)                                                               | TBD          | —          |
+| **OpenAI GPT-5.4-Nano**   | 1 (Grunt)                                                               | TBD          | —          |
+| **Anthropic**             | 0                                                                       | $0.00        | 0%         |
+|                           | **19**                                                                  | **~$31.74**  |            |
 
 ### Cost notes
 
-DeepSeek free cache-writes + 0.08× cache-read on Coordinator likely cut the live monthly bill 30–50% once warm. The largest single line is Prod Coder on GPT-5.4 ($10.80); migrating it to DeepSeek V4 Pro `high` after A/B validation would drop total to ~$23/mo.
+DeepSeek free cache-writes + 0.08× cache-read on Coordinator likely cut the live monthly bill 30–50% once warm. Total is now anchored by Pro-tier domain agents (Legal/Finance/Data/Media/Auditor at $5.25/mo) and the new Social Writer ($2.40/mo). Cost dropped substantially from V6's GPT-5.4-anchored estimate (~$32/mo) once the V6 audit was corrected and Critic/Prod-Coder/Planner were confirmed on DeepSeek V4 Pro.
 
 ---
 
@@ -212,17 +217,17 @@ Documented for future reference. Uses GPT-5.2 for 7 agents (all precision + code
 
 ## Architecture History
 
-| Version | Date           | Architecture                                                                            | Monthly Est.  | Savings vs V1 |
-| ------- | -------------- | --------------------------------------------------------------------------------------- | ------------- | ------------- |
-| V1      | 2026-02        | Sonnet main + Opus planner                                                              | ~$140/mo      | —             |
-| V2      | 2026-02        | Flash + Sonnet domains + Haiku grunt                                                    | ~$31/mo       | 78%           |
-| V3      | 2026-02-12     | Flash + Pro domains, no Anthropic domains                                               | ~$24/mo       | 83%           |
-| V4      | 2026-02-12     | Flash + Pro + GPT-5.2 precision (Option A)                                              | ~$22/mo       | 84%           |
-| V5      | 2026-04-02     | V4 + GPT-5.4 flagship, 5.4-Mini Sales, 5.4-Nano Grunt                                   | ~$25/mo       | 82%           |
-| V6      | 2026-04-25     | OpenRouter reasoning core (Kimi K2.6 + DeepSeek V4 Pro) — **planned, never shipped**    | ~$29/mo (est) | —             |
-| **V7**  | **2026-05-04** | **DeepSeek V4 Pro on Coordinator+SEO; V4 Flash on Dev Coder; Pro retained for Blogger** | **~$32/mo**   | **77%**       |
+| Version | Date           | Architecture                                                                                                                                                                                    | Monthly Est. | Savings vs V1 |
+| ------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------- |
+| V1      | 2026-02        | Sonnet main + Opus planner                                                                                                                                                                      | ~$140/mo     | —             |
+| V2      | 2026-02        | Flash + Sonnet domains + Haiku grunt                                                                                                                                                            | ~$31/mo      | 78%           |
+| V3      | 2026-02-12     | Flash + Pro domains, no Anthropic domains                                                                                                                                                       | ~$24/mo      | 83%           |
+| V4      | 2026-02-12     | Flash + Pro + GPT-5.2 precision (Option A)                                                                                                                                                      | ~$22/mo      | 84%           |
+| V5      | 2026-04-02     | V4 + GPT-5.4 flagship, 5.4-Mini Sales, 5.4-Nano Grunt                                                                                                                                           | ~$25/mo      | 82%           |
+| V6      | 2026-04-25     | OpenRouter reasoning core — Kimi K2.6 on Coord/SEO/Blogger; DeepSeek V4 Pro on Critic/Prod-Coder/Planner. **Did ship to live config; missed by 2026-05-04 audit reading stale workspace copy.** | ~$29/mo      | 79%           |
+| **V7**  | **2026-05-04** | **DeepSeek V4 Pro on Coord/SEO/Critic/Prod-Coder/Planner; V4 Flash on Dev Coder; Pro on Blogger; +`social-research` (DeepSeek V4 Pro) and `social-writer` (Pro). Port 49152 → 9173.**           | **~$19/mo**  | **86%**       |
 
-V7 supersedes the unshipped V6. Key reversal: Blogger stays on Gemini 3.1 Pro (creative voice) instead of Kimi K2.6 — research evidence shows reasoning-trained models (Kimi, DeepSeek) underperform on long-form creative writing past ~3K words. DeepSeek V4 Pro `high` is the new orchestrator: 1M context, native tool-calling, and dramatically cheaper than Kimi K2.6 at the same volume ($2.10/mo vs $11.10/mo for 100 reqs/day). Dev Coder gets DeepSeek V4 Flash for cheap reasoning-capable codegen. Critic/Prod-Coder/Planner held on GPT-5.4 `xhigh` until A/B validates DeepSeek V4 Pro on critique surface.
+V7 reverts V6's Blogger on Kimi (research evidence shows reasoning-trained models underperform on long-form creative writing past ~3K words → use Gemini 3.1 Pro). Coord/SEO migrate from Kimi K2.6 → DeepSeek V4 Pro (cheaper at higher reasoning depth). Critic/Prod-Coder/Planner stay on DeepSeek V4 Pro (already there since V6). Dev Coder gets DeepSeek V4 Flash for cheap reasoning-capable codegen at 1M ctx. Two new agents enforce the social-constitution Article 7 cross-model critic boundary structurally: `social-research` (analytical, DeepSeek V4 Pro `medium`) and `social-writer` (creative, Gemini 3.1 Pro `high`).
 
 ---
 

@@ -133,34 +133,37 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 
 ## Creator Intelligence Skills (Celavii API)
 
-| Skill                           | Status                           | Purpose                                                                                                                                                                         | Credits   |
-| ------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| 🔍 **celavii-discover**         | ✅ Ready                         | Search creators by keyword, niche, affinities, hashtags                                                                                                                         | 1/query   |
-| 👤 **celavii-profiles**         | ✅ Ready                         | Full profile detail, affinities, posts, network, contact                                                                                                                        | 0 (free)  |
-| 📊 **celavii-campaigns**        | ✅ Ready                         | Campaign list, metrics, creators, matched content                                                                                                                               | 0–1       |
-| 🤝 **celavii-crm**              | ✅ Ready                         | CRM pipeline, managed profiles, lists, org stats                                                                                                                                | 0 (free)  |
-| 📈 **celavii-analytics**        | ✅ Ready                         | Demographics, locations, niches, overlap, affinity posts                                                                                                                        | 1/query   |
-| 📚 **celavii-knowledge**        | ✅ Ready                         | Knowledge base CRUD, semantic search for AI context                                                                                                                             | 0 (free)  |
-| ⚡ **celavii-data-ops**         | ✅ Ready                         | Profile enhancement, follower/hashtag/URL scrapes, job ops                                                                                                                      | 1-2+Apify |
-| 📱 **celavii-social**           | ✅ Ready                         | Social content orchestration — copy, media prompts, state                                                                                                                       | 0 (local) |
-| 🎣 **social-hooks**             | ✅ B18 (5-archetype layer added) | Hook generation library — 6 categories + 5-archetype foundation + 4-axis scoring rubric (B18)                                                                                   | 0 (local) |
-| 📣 **social-orchestrator**      | 🚧 Phase A                       | Multi-channel social pipeline router (`/social_strategy`, `/social_curate`, `/social_post`). Source-of-truth: [.system/features/social-strategy/](../features/social-strategy/) | 0 (local) |
-| 🗣️ **social-persona**           | 🚧 Phase B13                     | NN/g 4-D voice extraction + enforcement (CLI fleshed out). Voice spec at `~/dev/workspace/.styles/celavii/voice.json`                                                           | 0 (local) |
-| 📉 **social-drift**             | 🚧 Phase B16                     | SQLite baseline + drift detection — full schema + 17 rules documented. Cache at `~/.cache/claude-social/drift/`                                                                 | 0 (local) |
-| 🔭 **social-discover**          | 🚧 Phase B11                     | Profile/hashtag/location discovery wrapping Celavii public scrape API                                                                                                           | 0 (local) |
-| 🥷 **social-competitor-scrape** | 🚧 Phase B11                     | Competitor baselines + top-posts + cross-platform link extraction                                                                                                               | 0 (local) |
-| 📈 **social-trend-detect**      | 🚧 Phase B10                     | Velocity + acceleration + z-score over time-series; trendsmcp + ramekin math                                                                                                    | 0 (local) |
-| 🔍 **social-factcheck**         | 🚧 Phase B14                     | Claim decomposition → verification (Loki) + RefChecker AI-fabricated stat detection                                                                                             | 0 (local) |
-| 🎯 **social-cannibalization**   | 🚧 Phase B15                     | Cosine similarity + 30d temporal window; auto Gate B check                                                                                                                      | 0 (local) |
-| 🎚️ **social-sxo**               | 🚧 Phase B17                     | Platform-fit analyzer ("does this post deserve to engage?")                                                                                                                     | 0 (local) |
-| 🗓️ **social-plan**              | 🚧 Phase B12                     | Calendar + Gary Vee Reverse Pyramid + 2026 cadence rules                                                                                                                        | 0 (local) |
-| 📚 **social-research**          | 🚧 Phase B1+B3                   | Per-week research packets + per-post citation extraction                                                                                                                        | 0 (local) |
-| 📝 **social-brief**             | 🚧 Phase B4                      | Per-post briefs (hook variants, beats, CTA, hashtags, e_tags, success metrics)                                                                                                  | 0 (local) |
-| 🎬 **social-script**            | 🚧 Phase B6                      | Long-form video script writer + 8-pass humanizer                                                                                                                                | 0 (local) |
-| 🎥 **social-shotlist**          | 🚧 Phase B7                      | Shot list from script (camera, b-roll, on-screen text); ClipsAI backbone                                                                                                        | 0 (local) |
-| 🛂 **social-quality**           | 🚧 Phase B8/B9/B20/B21           | Critic gates A/B/C + silo-check + 8-pass humanizer hook + RefChecker hook                                                                                                       | 0 (local) |
-| ♻️ **social-repurpose**         | 🚧 Phase F2/B19                  | Cross-channel adaptation; ClipsAI for video lane                                                                                                                                | 0 (local) |
-| 📊 **social-aggregate**         | ✅ Phase C (script + smoke)      | Phase 3 deterministic aggregator — scoring, cosine cannibalization, 4E + archetype taggers, velocity/acceleration/z-score; <5s on 1000 posts                                    | 0 (local) |
+| Skill                    | Status   | Purpose                                                    | Credits   |
+| ------------------------ | -------- | ---------------------------------------------------------- | --------- |
+| 🔍 **celavii-discover**  | ✅ Ready | Search creators by keyword, niche, affinities, hashtags    | 1/query   |
+| 👤 **celavii-profiles**  | ✅ Ready | Full profile detail, affinities, posts, network, contact   | 0 (free)  |
+| 📊 **celavii-campaigns** | ✅ Ready | Campaign list, metrics, creators, matched content          | 0–1       |
+| 🤝 **celavii-crm**       | ✅ Ready | CRM pipeline, managed profiles, lists, org stats           | 0 (free)  |
+| 📈 **celavii-analytics** | ✅ Ready | Demographics, locations, niches, overlap, affinity posts   | 1/query   |
+| 📚 **celavii-knowledge** | ✅ Ready | Knowledge base CRUD, semantic search for AI context        | 0 (free)  |
+| ⚡ **celavii-data-ops**  | ✅ Ready | Profile enhancement, follower/hashtag/URL scrapes, job ops | 1-2+Apify |
+
+> **Social skills (19) are owned by two agents** as of 2026-05-04 (V7): the analytical 13 (`social-discover`, `social-brief`, `social-plan`, `social-drift`, `social-cannibalization`, `social-factcheck`, `social-sxo`, `social-persona`, `social-trend-detect`, `social-competitor-scrape`, `social-aggregate`, `social-research`, `social-quality`) live on the **`social-research`** agent (DeepSeek V4 Pro `medium`). The creative 6 (`social-orchestrator`, `social-hooks`, `social-script`, `social-shotlist`, `social-repurpose`, `celavii-social`) live on **`social-writer`** (Gemini 3.1 Pro `high`). This split enforces the cross-model critic boundary required by `.claude/rules/social-constitution.md` Article 7.
+
+| 📱 **celavii-social** | ✅ Ready | Social content orchestration — copy, media prompts, state | 0 (local) |
+| 🎣 **social-hooks** | ✅ B18 (5-archetype layer added) | Hook generation library — 6 categories + 5-archetype foundation + 4-axis scoring rubric (B18) | 0 (local) |
+| 📣 **social-orchestrator** | 🚧 Phase A | Multi-channel social pipeline router (`/social_strategy`, `/social_curate`, `/social_post`). Source-of-truth: [.system/features/social-strategy/](../features/social-strategy/) | 0 (local) |
+| 🗣️ **social-persona** | 🚧 Phase B13 | NN/g 4-D voice extraction + enforcement (CLI fleshed out). Voice spec at `~/dev/workspace/.styles/celavii/voice.json` | 0 (local) |
+| 📉 **social-drift** | 🚧 Phase B16 | SQLite baseline + drift detection — full schema + 17 rules documented. Cache at `~/.cache/claude-social/drift/` | 0 (local) |
+| 🔭 **social-discover** | 🚧 Phase B11 | Profile/hashtag/location discovery wrapping Celavii public scrape API | 0 (local) |
+| 🥷 **social-competitor-scrape** | 🚧 Phase B11 | Competitor baselines + top-posts + cross-platform link extraction | 0 (local) |
+| 📈 **social-trend-detect** | 🚧 Phase B10 | Velocity + acceleration + z-score over time-series; trendsmcp + ramekin math | 0 (local) |
+| 🔍 **social-factcheck** | 🚧 Phase B14 | Claim decomposition → verification (Loki) + RefChecker AI-fabricated stat detection | 0 (local) |
+| 🎯 **social-cannibalization** | 🚧 Phase B15 | Cosine similarity + 30d temporal window; auto Gate B check | 0 (local) |
+| 🎚️ **social-sxo** | 🚧 Phase B17 | Platform-fit analyzer ("does this post deserve to engage?") | 0 (local) |
+| 🗓️ **social-plan** | 🚧 Phase B12 | Calendar + Gary Vee Reverse Pyramid + 2026 cadence rules | 0 (local) |
+| 📚 **social-research** | 🚧 Phase B1+B3 | Per-week research packets + per-post citation extraction | 0 (local) |
+| 📝 **social-brief** | 🚧 Phase B4 | Per-post briefs (hook variants, beats, CTA, hashtags, e_tags, success metrics) | 0 (local) |
+| 🎬 **social-script** | 🚧 Phase B6 | Long-form video script writer + 8-pass humanizer | 0 (local) |
+| 🎥 **social-shotlist** | 🚧 Phase B7 | Shot list from script (camera, b-roll, on-screen text); ClipsAI backbone | 0 (local) |
+| 🛂 **social-quality** | 🚧 Phase B8/B9/B20/B21 | Critic gates A/B/C + silo-check + 8-pass humanizer hook + RefChecker hook | 0 (local) |
+| ♻️ **social-repurpose** | 🚧 Phase F2/B19 | Cross-channel adaptation; ClipsAI for video lane | 0 (local) |
+| 📊 **social-aggregate** | ✅ Phase C (script + smoke) | Phase 3 deterministic aggregator — scoring, cosine cannibalization, 4E + archetype taggers, velocity/acceleration/z-score; <5s on 1000 posts | 0 (local) |
 
 **Base URL**: `https://www.celavii.com/api/v1`  
 **Auth**: `CELAVII_API_KEY` (shared across all agents, stored in `~/.openclaw/.env`)  
@@ -214,7 +217,7 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 | Channel      | Status            | Config                                |
 | ------------ | ----------------- | ------------------------------------- |
 | **Telegram** | ✅ Active         | Bot: `@maxious_bot`, Allowlist policy |
-| **WebChat**  | ✅ Active         | `ws://127.0.0.1:49152`                |
+| **WebChat**  | ✅ Active         | `ws://127.0.0.1:9173`                 |
 | **WhatsApp** | ✅ Plugin enabled | Requires phone setup                  |
 | **Signal**   | ✅ Plugin enabled | Requires setup                        |
 

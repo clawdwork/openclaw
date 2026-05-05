@@ -55,11 +55,11 @@
 ## Phase 5: Verification ✅
 
 | Task               | Status  | Command                   |
-| ------------------ | ------- | ------------------------- | ------------------------------- |
-| Run doctor         | ✅ Done | `openclaw doctor`         | Created dirs, built UI          |
-| Run security audit | ✅ Done | `openclaw security audit` | 0 critical, fixed perms         |
-| Verify binding     | ✅ Done | `lsof -i :49152`          | localhost only ✓                |
-| Test gateway       | ✅ Done | `openclaw gateway run`    | Started on ws://127.0.0.1:49152 |
+| ------------------ | ------- | ------------------------- | ------------------------------ |
+| Run doctor         | ✅ Done | `openclaw doctor`         | Created dirs, built UI         |
+| Run security audit | ✅ Done | `openclaw security audit` | 0 critical, fixed perms        |
+| Verify binding     | ✅ Done | `lsof -i :9173`           | localhost only ✓               |
+| Test gateway       | ✅ Done | `openclaw gateway run`    | Started on ws://127.0.0.1:9173 |
 
 ---
 
@@ -68,11 +68,11 @@
 ### Planned Port Configuration
 
 ```
-Gateway:     49152 (custom ephemeral)
-Bridge:      49153 (gateway + 1)
-Browser:     49154 (gateway + 2)
-Canvas:      49156 (gateway + 4)
-CDP Range:   49163-49262
+Gateway:     9173 (registered range, stable; was 49152 — moved 2026-05-04 due to macOS ephemeral collision with Windsurf)
+Bridge:      9174 (gateway + 1)
+Browser:     9175 (gateway + 2)
+Canvas:      9177 (gateway + 4)
+CDP Range:   9183-9282
 ```
 
 ### Security Layers
@@ -92,7 +92,7 @@ CDP Range:   49163-49262
 ```bash
 # OpenClaw
 export OPENCLAW_GATEWAY_TOKEN=""  # Generate with: openssl rand -base64 48
-export OPENCLAW_GATEWAY_PORT="49152"
+export OPENCLAW_GATEWAY_PORT="9173"
 export OPENCLAW_DISABLE_BONJOUR=1
 
 # Web search (optional)
@@ -174,7 +174,7 @@ export BRAVE_API_KEY=""  # Get from brave.com/search/api
 | 2026-02-04 | Set permissions                                | ✅ 700/600                                                                                      |
 | 2026-02-04 | Ran openclaw doctor                            | ✅ Built UI, created dirs                                                                       |
 | 2026-02-04 | Security audit                                 | ✅ 0 critical                                                                                   |
-| 2026-02-04 | Gateway test                                   | ✅ ws://127.0.0.1:49152                                                                         |
+| 2026-02-04 | Gateway test                                   | ✅ ws://127.0.0.1:49152 (port migrated to 9173 on 2026-05-04)                                   |
 | 2026-02-04 | Codebase architecture review                   | ✅ Sessions, memory, heartbeat, tools                                                           |
 | 2026-02-04 | Created ~/.openclaw/.env                       | ✅ 600 perms, API key template                                                                  |
 | 2026-02-04 | Tested model via CLI                           | ✅ Anthropic Claude Opus 4.5                                                                    |

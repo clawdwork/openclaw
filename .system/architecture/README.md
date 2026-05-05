@@ -35,7 +35,7 @@ This architecture is split into focused modules. Each file is self-contained.
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           OPENCLAW GATEWAY                                  │
-│                        ws://127.0.0.1:49152                                 │
+│                        ws://127.0.0.1:9173                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
@@ -57,7 +57,7 @@ This architecture is split into focused modules. Each file is self-contained.
 │      │                       │                       │                      │
 │      ▼                       ▼                       ▼                      │
 │  ┌──────────────────────────────────────────────────────────────────┐      │
-│  │              DOMAIN SUB-AGENTS (13 Specialists)                   │      │
+│  │              DOMAIN SUB-AGENTS (15 Specialists)                   │      │
 │  │                                                                   │      │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │      │
 │  │  │  Marketing   │ │    Sales     │ │   Product    │  (Flash)     │      │
@@ -76,18 +76,23 @@ This architecture is split into focused modules. Each file is self-contained.
 │  │  │  7 skills    │ │  5 skills    │ │  SEO-coupled │              │      │
 │  │  └──────────────┘ └──────────────┘ └──────────────┘              │      │
 │  │  ┌──────────────┐ ┌──────────────┐                               │      │
-│  │  │  Workspace   │ │Quality Critic│                 (Pro / GPT-5.4) │      │
+│  │  │ Social       │ │Social Writer │   (DSV4Pro / Pro)             │      │
+│  │  │ Research 🔬  │ │ 🎬 6 skills  │                               │      │
+│  │  │ 13 skills    │ └──────────────┘                               │      │
+│  │  └──────────────┘                                                 │      │
+│  │  ┌──────────────┐ ┌──────────────┐                               │      │
+│  │  │  Workspace   │ │Quality Critic│                (Pro / DSV4Pro)│      │
 │  │  │   Auditor 🏗️ │ │  1 skill 🔍  │                               │      │
 │  │  └──────────────┘ └──────────────┘                               │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 │  Coordinator also spawns these directly (domain agents CANNOT spawn):       │
 │  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐   │
-│  │  GPT-5.4      │   │  GPT-5.4      │   │  5.4-NANO     │   │
+│  │ DeepSeek V4Pro│   │ DeepSeek V4Pro│   │  5.4-NANO     │   │
 │  │  (planner)    │   │ (prod-coder)  │   │  (grunt work) │   │
-│  │ thinking:xhigh│   │thinking:xhigh │   │  thinking:off │   │
+│  │ thinking:high │   │ thinking:high │   │  thinking:off │   │
+│  │ 1.6T MoE      │   │ 1.6T MoE      │   │               │   │
 │  │ Architecture  │   │ Code impl.    │   │ File ops      │   │
-│  │ Deep reason.  │   │ Refactors     │   │ Organization  │   │
 │  └───────────────┘   └───────────────┘   └───────────────┘   │
 │  Anthropic: 0 primary agents (fallback only)                                │
 │                                                                             │
@@ -107,17 +112,17 @@ This architecture is split into focused modules. Each file is self-contained.
 
 ## Model Hierarchy
 
-| Role               | Model                           | Alias             | Cost/1M Tokens                                        | Use Case                                                                                                                                |
-| ------------------ | ------------------------------- | ----------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Coordinator**    | `deepseek/deepseek-v4-pro`      | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Conversation, routing, web search, coordination (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7) |
-| **Sales**          | `openai/gpt-5.4-mini`           | 5.4-Mini          | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                               |
-| **Dev Coder**      | `deepseek/deepseek-v4-flash`    | DeepSeek-V4-Flash | $0.140 in / $0.280 out (cache-read 0.20x, write free) | Everyday coding, scripts, simple deploys, CI/CD (thinking=high, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7)                        |
-| **Prod Coder**     | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Complex integrations, APIs, prod-critical code (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                         |
-| **Planner**        | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Architecture, strategy, SOTA reasoning (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                                 |
-| **Precision**      | `google/gemini-3.1-pro-preview` | Pro               | $2 in / $12 out                                       | Legal, finance, data, media content (1M ctx)                                                                                            |
-| **Quality Critic** | `openai/gpt-5.4`                | 5.4               | $2.50 in / $15 out                                    | Review creative outputs (thinking=xhigh; pending A/B vs DeepSeek V4 Pro)                                                                |
-| **Grunt**          | `openai/gpt-5.4-nano`           | 5.4-Nano          | TBD                                                   | File ops, bulk operations, cheapest model                                                                                               |
-| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1 | —                 | varies                                                | Multi-provider resilience                                                                                                               |
+| Role               | Model                                 | Alias             | Cost/1M Tokens                                        | Use Case                                                                                                                                |
+| ------------------ | ------------------------------------- | ----------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Coordinator**    | `deepseek/deepseek-v4-pro`            | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Conversation, routing, web search, coordination (thinking=high, 1.6T MoE / 49B active, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7) |
+| **Sales**          | `openai/gpt-5.4-mini`                 | 5.4-Mini          | TBD                                                   | Research synthesis, qualification, pipeline orchestration                                                                               |
+| **Dev Coder**      | `deepseek/deepseek-v4-flash`          | DeepSeek-V4-Flash | $0.140 in / $0.280 out (cache-read 0.20x, write free) | Everyday coding, scripts, simple deploys, CI/CD (thinking=high, 1M ctx; replaced Gemini 3 Flash 2026-05-04 — V7)                        |
+| **Prod Coder**     | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Complex integrations, APIs, prod-critical code (thinking=high, 1.6T MoE / 49B active, 1M ctx)                                           |
+| **Planner**        | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Architecture, strategy, SOTA reasoning (thinking=high, 1.6T MoE, 1M ctx)                                                                |
+| **Precision**      | `google/gemini-3.1-pro-preview`       | Pro               | $2 in / $12 out                                       | Legal, finance, data, media content, social-writer (1M ctx)                                                                             |
+| **Quality Critic** | `openrouter/deepseek/deepseek-v4-pro` | DeepSeek-V4-Pro   | $0.435 in / $0.870 out (cache-read 0.08x, write free) | Review creative outputs (thinking=high, native reasoning + tools + structured output)                                                   |
+| **Grunt**          | `openai/gpt-5.4-nano`                 | 5.4-Nano          | TBD                                                   | File ops, bulk operations, cheapest model                                                                                               |
+| **Fallback Chain** | Pro → 5.4-Mini → 5.4-Nano → 5.1       | —                 | varies                                                | Multi-provider resilience                                                                                                               |
 
 ### Domain Sub-Agent Models
 
@@ -134,7 +139,9 @@ This architecture is split into focused modules. Each file is self-contained.
 | **Data**              | Pro                      | SQL, code generation                                                                                                     | 7 skills, varies                             |
 | **Media Content**     | Pro                      | Prompt crafting, visuals                                                                                                 | 5 skills, 6 commands                         |
 | **Blogger**           | Pro (high)               | Creative voice + research synthesis; reasoning-trained models (Kimi/DeepSeek) underperform on long-form creative writing | 1 skill (SEO handoff)                        |
-| **Quality Critic**    | GPT-5.4 (xhigh)          | xhigh reasoning for cross-model critique; pending A/B vs DeepSeek V4 Pro                                                 | 1 skill (agnostic)                           |
+| **Social Research**   | DeepSeek V4 Pro (medium) | Reasoning + 1M context for discover/brief/plan/drift/cannibalization/factcheck/sxo/persona/trend (analytical)            | 13 social-\* skills                          |
+| **Social Writer**     | Pro (high)               | Creative voice for hook/script/shotlist/repurpose/copy production. Cross-model boundary vs Social Research per Article 7 | 6 skills (orchestrator + 5 production)       |
+| **Quality Critic**    | DeepSeek V4 Pro (high)   | SOTA review (1.6T MoE, structured output, ~17× cheaper output than GPT-5.4)                                              | 1 skill (agnostic)                           |
 | **Workspace Auditor** | Pro                      | Semantic drift detection                                                                                                 | 1 skill (MWF audit)                          |
 
 ### Model Selection Logic (Fallback Chain)
@@ -197,10 +204,10 @@ REQUEST 2-N (Cache Hit, within 5 min)
 ```json
 {
   "models": {
-    "deepseek/deepseek-v4-pro": {}, // Coordinator (high) + SEO (medium) — DeepSeek caching 0.08x cache-read, write free
-    "deepseek/deepseek-v4-flash": {}, // Dev coder (high) — DeepSeek caching 0.20x cache-read, write free
-    "openai/gpt-5.4": {}, // Prod coder + Quality critic + Planner (xhigh)
-    "google/gemini-3-flash-preview": {}, // Most volume domain agents (Google caching)
+    "openrouter/deepseek/deepseek-v4-pro": {}, // Coordinator (high) + SEO (medium) + Social Research (medium) + Quality Critic (high) + Prod Coder (high) + Planner (high) — DeepSeek caching 0.08x cache-read, write free
+    "openrouter/deepseek/deepseek-v4-flash": {}, // Dev coder (high) — DeepSeek caching 0.20x cache-read, write free
+    "google/gemini-3-flash-preview": {}, // Marketing, product, support, search (Google caching)
+    "google/gemini-3.1-pro-preview": {}, // Blogger, Social Writer, Legal, Finance, Data, Media Content, Workspace Auditor (Google caching)
     "google/gemini-3.1-pro-preview": {}, // Precision domains: Legal, Finance, Data, Media Content, Workspace Auditor (Google caching)
     "openai/gpt-5-mini": {} // Fallback
   }
@@ -341,13 +348,13 @@ _"✅ Cron job X completed after N run(s) and has been auto-disabled."_
 ```bash
 kill $(pgrep -f "openclaw.*gateway")
 cd /path/to/openclaw
-nohup node dist/index.js gateway run --port 49152 &
+nohup node dist/index.js gateway run --port 9173 &
 ```
 
 ### WebChat URL
 
 ```
-http://127.0.0.1:49152/?token=<encoded_token>
+http://127.0.0.1:9173/?token=<encoded_token>
 ```
 
 ---
