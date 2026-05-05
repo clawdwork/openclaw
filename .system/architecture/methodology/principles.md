@@ -435,7 +435,7 @@ The two stores serve different purposes: memory is the firm's _persistent knowle
 
 **The reasoning.** Each studio has its own conventions, vocabulary, and concerns. A `cadence-rules.md` for Social Studio is about TikTok / IG / X / YouTube cadence; a hypothetical `cadence-rules.md` for Sales Studio would be about outreach cadence. They share a name but nothing else. Putting them in a shared location would force one to live where it doesn't belong.
 
-When two studios genuinely need the same content (the social constitution and the SEO constitution share an Article 6 — the critic-reads-intake rule), refactor _upward_: a `.claude/rules/critic-intake-rule.md` becomes shared infrastructure, with each studio's constitution citing it. But only do this once the duplication is real.
+When two studios genuinely need the same content (the social constitution and the SEO constitution share an Article 6 — the critic-reads-intake rule), refactor _upward_: a shared `references/critic-intake-rule.md` (or a top-level `references/` directory if multiple studios cite it) becomes shared infrastructure, with each studio's constitution citing it. But only do this once the duplication is real.
 
 **Alternatives considered.**
 
@@ -687,5 +687,5 @@ When you update this document, **date the change** at the top of the affected en
 
 - [`README.md`](README.md) — the methodology itself
 - [`comparison.md`](comparison.md) — how the Department Model differs from other agentic frameworks
-- [`../../../.claude/rules/social-constitution.md`](../../../.claude/rules/social-constitution.md) — example of a constitution
+- [`../../../skills/social-orchestrator/references/social-constitution.md`](../../../skills/social-orchestrator/references/social-constitution.md) — example of a constitution
 - [`../skills.md`](../skills.md) — current skill inventory

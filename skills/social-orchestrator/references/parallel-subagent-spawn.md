@@ -40,6 +40,28 @@ Output exactly the JSON slice; no preamble.
 
 Spawn all (channel × platform) tuples in a single message with multiple Agent tool uses (the harness runs them concurrently per the parent prompt's "if there are no dependencies between them" rule).
 
+## Single-channel fast path (D15.1)
+
+Surfaced from cutmasterai dry-run (2026-05-04, Finding 19): when the spawn matrix after D16 pruning has **≤2 (channel × platform) tuples**, skip the parallel-spawn infrastructure entirely. Run the work inline in the orchestrator's main context.
+
+Rationale: parallel-spawn pays for itself by amortizing harness coordination overhead across many concurrent subagents. With 1 tuple, the orchestrator pays setup cost (spawning, prompt construction, JSON merge) for zero parallelism benefit. With 2 tuples, the breakeven is borderline; defer to inline as the simpler path.
+
+```
+matrix_size = sum(1 for ch in channels for p in platforms_per_channel[ch] if not pruned_by_d16(ch, p))
+
+if matrix_size <= 2:
+  # Inline path — no Agent spawns
+  for ch, p in matrix:
+    discover_inline(ch, p)  # run the same logic as the subagent prompt, in main context
+else:
+  # Parallel path — original D15
+  spawn_all(matrix)
+```
+
+State writes are identical between paths; the inline path just skips the spawn/merge ceremony. Findings logged from inline runs use the same shape.
+
+When `len(channels) == 1` AND `len(platforms_per_channel[ch]) == 1` AND the channel is `pre_launch=true`, an additional simplification applies: the inline run draws **all** signal from competitor + hashtag-seed data (per Patch A pre-launch branch), so the per-tuple subagent prompt's "read profile + posts JSONs" tasks are skipped — there are no profile/posts JSONs.
+
 ## Industry-aware filtering (D16 dovetail)
 
 Before spawning, prune the spawn matrix per `intake.channel_types[]`:

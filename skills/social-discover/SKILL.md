@@ -68,6 +68,86 @@ social-discover resolve --platform x --handles celaviihq,grin,modaberlin
 # Sequential /profiles/search calls + state hydration
 ```
 
+### Mode F — Competitor discovery (intake-driven)
+
+Used when `intake.competitors_per_channel[ch].status ∈ {research_needed, research_needed_partial}`. Searches for candidate competitor handles based on the user's differentiators + identity + goal, scores them, returns top 20.
+
+```bash
+social-discover competitor-discover --channel cutmaster --platform youtube
+# Reads state.intake.differentiators, identities, goal, channel_types
+# Tier 0 search across hashtag/topic seeds derived from differentiators
+# Returns: raw/{channel}-competitor-candidates-{platform}-{ts}.json
+```
+
+#### Inputs (from state.intake)
+
+- `differentiators[]` → search seeds (e.g., "AI video editing", "open-source video tools")
+- `identities[ch].identity_line` → semantic anchor for relevance scoring
+- `goal` (verb + noun) → de-prioritises candidates whose goal mismatch is high
+- `channel_types[ch]` → utility/founder/product → tunes scoring (utility prefers utility peers)
+- `competitors_per_channel[ch].hypotheses[]` (optional) → priors merged into candidate pool but not auto-confirmed
+
+#### Scoring (4-factor)
+
+| Factor              | Weight | Source                                                    |
+| ------------------- | ------ | --------------------------------------------------------- |
+| Topic overlap       | 0.40   | Embedding cosine: candidate description ↔ differentiators |
+| Audience size proxy | 0.20   | log10(subs or followers); platform-normalised             |
+| Posting recency     | 0.20   | 1.0 if last post ≤30 days; linear decay to 0 at 180 days  |
+| Channel-type match  | 0.20   | utility↔utility = 1.0; cross-type ≤ 0.5                   |
+
+#### Off-platform competitors
+
+Mode F also surfaces strategically-relevant competitors that don't live on the target platform — typically GitHub projects, newsletters, podcasts, or Discord communities operating in the same problem space. Two cases:
+
+- A GitHub project that's a direct product competitor but has no YouTube channel (e.g., davinci-resolve-mcp for cutmaster.ai)
+- A podcast or newsletter that owns the audience attention the target channel wants to capture
+
+These are returned in a separate `off_platform_competitors[]` array in the output, NOT in the main `candidates[]` list (which is for on-platform peers only). The user confirmation step (Phase 0.5a Step 4) does NOT require off-platform competitors to be confirmed individually — they're carried into state automatically with `monitor: true` so they get re-checked at every refresh cycle.
+
+Off-platform competitors do NOT count toward the 3-handle minimum that Gate A's Article 6 verification requires — those handles must be on-platform, scrapeable, and citeable in the critic's verification step.
+
+#### Output
+
+```json
+{
+  "channel": "cutmaster",
+  "platform": "youtube",
+  "ran_at": "<iso>",
+  "search_seeds": ["AI video editing", "AI shorts editor", ...],
+  "candidates": [
+    {
+      "handle": "@CapCutOfficial",
+      "channel_id": "UCxxx",
+      "subscribers": 1200000,
+      "last_post_days_ago": 2,
+      "description_excerpt": "...",
+      "channel_type_inferred": "utility",
+      "scores": { "topic": 0.78, "audience": 0.91, "recency": 1.0, "type_match": 1.0, "total": 0.85 },
+      "rank": 1
+    }
+  ],
+  "top_5_for_user_review": ["@h1", "@h2", "@h3", "@h4", "@h5"],
+  "off_platform_competitors": [
+    {
+      "name": "davinci-resolve-mcp",
+      "platform": "github",
+      "url": "https://github.com/samuelgursky/davinci-resolve-mcp",
+      "target_platform_channel": null,
+      "threat_level": "high",
+      "monitor": true,
+      "rationale": "Direct product competitor (Resolve MCP); no YouTube channel today; created 3+ months ago"
+    }
+  ]
+}
+```
+
+#### Anti-patterns
+
+- ❌ Calling Mode F without intake.differentiators populated — produces generic results
+- ❌ Tier 1+ calls (followers/affinities) at discovery stage — defer to Phase 1 after user confirms shortlist
+- ❌ Auto-confirming top 3 — Mode F surfaces candidates; user confirmation lives in the orchestrator (Phase 0.5a step 5)
+
 ## Always Dry-Run First
 
 Mirrors [`celavii-data-ops`](file:///Users/operator/dev/workspace/skills/celavii-data-ops/SKILL.md) convention. Every mutating call sends `dry_run: true` first → cost estimate → user confirmation → real run.
@@ -148,3 +228,4 @@ Implementation lives at `scripts/discover.py` (Phase B11.1). For now this scaffo
 - [ ] Tier-0 smoke test against celaviihq TikTok (Phase B11.2)
 - [ ] Tier-1 followers test against a sample creator (Phase B11.2)
 - [ ] YouTube dispatch stub returns clean error (Phase H-YT activation flips this)
+- [ ] Mode F (competitor-discover) implementation — Phase B11.3 (added 2026-05-04 from cutmasterai dry-run)

@@ -34,33 +34,67 @@ See [`social-orchestrator/references/critic-intake-rule.md`](file:///Users/opera
 
 Run after Phase 3 (Aggregate). Validates:
 
-| Check                     | Pass criteria                                                                        |
-| ------------------------- | ------------------------------------------------------------------------------------ |
-| `channel_distinctiveness` | Cross-channel pillar overlap < 20%                                                   |
-| `voice_alignment`         | Each channel's pillars align with `voice.json#channel_overrides` 4-D vector          |
-| `differentiator_coverage` | ≥4 of `state.intake.competitors_per_channel` differentiator items present in pillars |
-| `competitor_coverage`     | Top 3 competitors per channel have ≥1 counter-positioning pillar                     |
-| `e_tag_distribution`      | Celavii channel: ≥80% of pillars have ≥2 E-tags incl. educate                        |
+| Check                        | Pass criteria                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `channel_distinctiveness`    | Cross-channel pillar overlap < 20%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `voice_alignment`            | Each channel's pillars align with `voice.json#channel_overrides` 4-D vector                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `differentiator_coverage`    | ≥4 of `state.intake.competitors_per_channel` differentiator items present in pillars                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `competitor_coverage`        | Top 3 competitors per channel have ≥1 counter-positioning pillar                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `e_tag_distribution`         | Each channel: ≥80% of pillars have ≥2 E-tags incl. educate, AND aggregate report's e_tag percentages match `intake.voice_rules.4e_mix_targets` ±5%                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `numeric_claim_verification` | (Patch I-2) Every numerical claim in aggregate-report-{date}.md that names a state.intake field MUST match that field's current value within ±0.5%                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `state_freshness`            | (Patch I-1, hardened by Patch K-1) `state.phases.aggregate.state_version_at_read` must be ≥ `max(intake_last_modified_version, advisories_last_modified_version)`. **NO research-mode exception** — versioning is run metadata, not data quality. Mode does not excuse missing/stale versioning. **NO backfill (Patch K-2)**: if `state_version_at_read` was set after `phases.{n}.ran_at`, the field is invalid; gate fails.                                                                                                                                           |
+| `skill_freshness`            | (Patch I-5, hardened by Patch K-1) `state.phases.{aggregate, plan}.skill_versions_at_read` must be present AND mtimes must match current on-disk skill mtimes within 60 sec. **NO research-mode exception** — same reasoning as `state_freshness`. **NO backfill (Patch K-2)**: if any `skill_versions_at_read[file].mtime > phases.{name}.ran_at`, the field was populated post-run with current mtimes (not phase-time mtimes); gate fails with reason "backfilled skill_versions_at_read is invalid for the phase block; rebuild phase to capture true skill state." |
 
 ```bash
 social-quality gate-a --state social-strategy-state.json
 ```
 
+#### `numeric_claim_verification` (Patch I-2, added 2026-05-04 from cutmasterai dry-run F35b)
+
+For every numerical claim in `aggregate-report-{date}.md` that references a field also present in `state.intake` or `state.phases.discover.projections`:
+
+1. Extract the field name + claimed value from the report (e.g., "Educate target: 70%")
+2. Look up the same field in current state (`intake.voice_rules.4e_mix_targets.educate`)
+3. Compare numeric values; tolerate ±0.5% rounding drift
+4. If mismatch: gate fails with reason `"aggregate report value {field}={report_value} does not match current state {field}={state_value}; aggregate report is stale and must be regenerated against current state"`
+
+The check primarily catches the bug where state was edited (manually or by another phase) between aggregate-report generation and gate execution. Combined with `state_freshness`, it closes the staleness loophole that surfaced in cutmasterai dry-run.
+
+#### `state_freshness` (Patch I-1, hardened by K-1 + K-2)
+
+Reads `state.phases.aggregate.state_version_at_read` and compares to highest version_counter at which any field consumed by aggregate was last modified. If aggregate was generated before the latest intake/advisories edit, gate fails with `"aggregate report generated against stale intake (read v{X}, current v{Y}); regenerate aggregate before re-running Gate A"`.
+
+**No research-mode exception (Patch K-1)**: versioning is run metadata, not data quality. Research mode legitimately exempts cannibalization (no historical data) and format-diversity (single-format launch); it does NOT exempt versioning. A research-mode run can produce qualitative outputs against fresh state — it cannot produce ANY outputs against unrecorded versioning.
+
+**No backfill (Patch K-2)**: if `state_version_at_read` was added to a phase block AFTER that phase's `ran_at` timestamp, the field is invalid. Detect by checking the phase block's `notes[]` or git history for retroactive edits, OR by comparing the field's introduction time to `ran_at`. Gate fails with reason `"state_version_at_read was backfilled after phase ran; field does not reflect phase-time state. Rebuild phase to capture true read-version."`
+
+#### `skill_freshness` (Patch I-5, hardened by K-1 + K-2)
+
+Reads `state.phases.{aggregate, plan}.skill_versions_at_read` and compares to current on-disk skill file mtimes. Within 60 sec = pass; outside = stale-skill warning OR fail.
+
+**No research-mode exception (K-1)**: same reasoning as state_freshness. Skill versioning is run metadata; mode never excuses it.
+
+**Backfill detection (K-2) — primary defense**: for every entry in `skill_versions_at_read[file]`, check `mtime ≤ phases.{name}.ran_at`. If `mtime > ran_at`, the file was modified AFTER the phase claimed to run — meaning the agent populated `skill_versions_at_read` with current mtimes (not phase-time mtimes) AFTER the spec changed. This is worse than a missing field because it lies about what the phase actually read.
+
+Fail with: `"skill_versions_at_read.{file}.mtime ({mtime}) > phases.{name}.ran_at ({ran_at}). Field was backfilled post-run; cannot represent phase-time skill state. Rebuild phase {name} to capture skill versions as they are read."`
+
 PASS → proceed to Phase 4 (Plan)
-FAIL → trigger Phase 2B remediation (targeted re-runs of specific aggregator inputs)
+FAIL → trigger Phase 2B remediation (for content gaps), OR rebuild affected phase (for staleness/backfill fails). NEVER pass-with-caveat for staleness or backfill.
 
 ### Mode `gate-b` — Calendar + Cannibalization
 
 Run after Phase 4 (Plan). Validates:
 
-| Check                     | Pass criteria                                                           |
-| ------------------------- | ----------------------------------------------------------------------- |
-| `cadence_target_met`      | Each channel meets per-platform cadence floor (per `social-plan` rules) |
-| `no_cannibalization`      | `social-cannibalization audit` returns 0 hard fails                     |
-| `all_pillars_covered`     | Every pillar has ≥1 atomic post in calendar                             |
-| `repurposing_loops_wired` | Every long-form pillar has ≥1 spawned post per active channel           |
-| `cta_distribution`        | Each channel: ≤30% of posts share the same CTA                          |
-| `format_diversity`        | No channel has >70% of posts in single format                           |
+| Check                     | Pass criteria                                                                                                                                                                                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cadence_target_met`      | Each channel meets per-platform cadence floor (per `social-plan` rules)                                                                                                                                                                                                |
+| `no_cannibalization`      | `social-cannibalization audit` returns 0 hard fails                                                                                                                                                                                                                    |
+| `all_pillars_covered`     | Every pillar has ≥1 atomic post in calendar                                                                                                                                                                                                                            |
+| `repurposing_loops_wired` | Every long-form pillar has ≥1 spawned post per active channel                                                                                                                                                                                                          |
+| `cta_distribution`        | Each channel: ≤30% of posts share the same CTA                                                                                                                                                                                                                         |
+| `format_diversity`        | No channel has >70% of posts in single format                                                                                                                                                                                                                          |
+| `advisories_surfaced`     | (Patch M) Every `state.advisories[]` entry with `user_response == "deferred"` (or null) AND `re_surface_at_phases` including `plan` MUST appear in `calendar-{date}.md` AND `state.phases.plan.advisories_resurfaced[]`                                                |
+| `brief_tier_consistency`  | (Patch L) Every brief in `state.phases.deliver.briefs[]` has a `brief_type ∈ {full, skeletal}`. Posts tagged `phase: launch` (or first 10 calendar entries) MUST be `full`; posts tagged `phase: steady_state` MAY be `skeletal`. Mixing within launch sequence = fail |
 
 ```bash
 social-quality gate-b --state social-strategy-state.json

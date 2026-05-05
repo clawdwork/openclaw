@@ -32,10 +32,14 @@ modeling (NNGroup 4-dimension framework), and Anthropic's evaluator-optimizer ag
 
 1. **State file**: `~/dev/workspace/projects/celavii/research/social/social-strategy-state.json` (v3)
 2. **Voice spec**: `~/dev/workspace/.styles/celavii/voice.json` (NNGroup 4-D vector + tone-by-context)
-3. **Constitution**: `~/dev/openclaw/.claude/rules/social-constitution.md` (anti-slop rubric, banned language, gate principles)
+3. **Constitution**: [`references/social-constitution.md`](references/social-constitution.md) (anti-slop rubric, banned language, gate principles — 10 articles, runtime-loadable)
 4. **Intake**: `state.intake` — channels, identities, goal, competitors, voice rules. Critic gates that score without reading intake **fail**. (See `references/critic-intake-rule.md`.)
 
 If any of those are missing, **stop and report the missing artifact**. Do not guess.
+
+**State versioning (Patch I-1)**: every phase MUST re-read the state file at phase entry and record `state.phases.{name}.state_version_at_read = state.version_counter`. After the phase's final write, record `state_version_at_write`. The orchestrator does NOT trust cached values from prior phase contexts. Manual state edits, parallel-subagent writes, and refresh runs all bump the counter — re-reading at phase entry is the only way to catch them. See `commands/social-strategy.md` § State Versioning for the full contract.
+
+**Skill versioning (Patch I-5)**: every phase MUST also re-read (via the Read tool) the skill files it depends on, AND capture `state.phases.{name}.skill_versions_at_read[file] = {mtime, size_bytes}`. State versioning catches data staleness; skill versioning catches _spec staleness_ — when SKILL.md / references / commands are edited mid-session, the agent's working memory has the pre-edit content cached and re-reading state.json won't surface the change. The Read tool is the only reliable refresh mechanism (openclaw skill cache loads once per invocation; mid-session reload isn't automatic). See `commands/social-strategy.md` § Skill Versioning for the per-phase mandatory file list.
 
 ## Task Routing
 
@@ -161,7 +165,7 @@ When running any gate (A, B, or per-post C):
 
 1. **Cross-model rule**: generator and critic MUST be different models. Default: Sonnet generates, Opus critiques. Same-model self-critique = false agreement.
 2. **Iteration cap**: max 3 iterations per gate. Reflexion shows diminishing returns past 3–5.
-3. **Constitution-anchored**: critic's checklist references `~/dev/openclaw/.claude/rules/social-constitution.md` principles, not just thresholds.
+3. **Constitution-anchored**: critic's checklist references [`references/social-constitution.md`](references/social-constitution.md) principles, not just thresholds.
 4. **Intake-aware**: critic loads `state.intake.business_concept`, `state.intake.voice_rules_ref`, `state.intake.banned_language` before scoring. (SEO Gate-A failure lesson.)
 
 ## Output Standards
@@ -197,6 +201,18 @@ If the user asks for help on a specific command:
 ## Reference Files
 
 Read on-demand:
+
+- `references/social-constitution.md` — the firm's 10 articles (anti-slop, sourced claims, distinctive POV, banned language, critic-reads-intake, cross-model critic, iteration cap, save-rate-over-likes). Runtime-loadable — every gate cites by article number
+- `references/status-semantics.md` — when each step flips to `complete`. Defines `pending | in_progress | awaiting_user | complete`, the cascade rule (parent = min of children), and the cardinal sin (writing `complete` while user input still pending)
+- `references/research-mode.md` — fallback mode when Celavii API / platform adapters are unavailable. Documents per-phase behavior changes, mandatory state metadata (`research_mode_metadata.confidence`), and report caveats. Activates automatically on missing `CELAVII_API_KEY` or adapter gates
+
+## Dry-run findings convention
+
+When running a strategy as a dry-run (typically the first run for a new project, or any run where spec gaps are expected), all findings — across ALL phases — append to a single file at `projects/{project}/research/social/DRY-RUN-TEST-FINDINGS.MD`. Each phase's section uses the header pattern `## PHASE N: NAME — DRY-RUN RESULTS (timestamp ET)`. Findings number sequentially across phases (Finding 1 in Phase 0 pre-flight, Finding 30 might be in Phase 2, etc.) — never restart numbering per phase.
+
+Anti-pattern: writing per-phase findings to separate files (`phase2-analyze-findings.md`, `phase3-aggregate-findings.md`, etc.). It fragments the dry-run record, breaks numbering traceability, and makes spec-gap audits painful.
+
+Spec patches discovered during a dry-run get a dedicated section per patch group: `## SPEC PATCHES X–Y APPLIED (timestamp)` with each patch as a sub-section explaining the change + why + files touched. These sections interleave with phase findings in chronological order.
 
 - `references/critic-intake-rule.md` — why every gate must load `state.intake` first (Article 6 verification rule)
 - `references/intake-questions.md` — 5-question Telegram-friendly intake flow (used by `/social_strategy`)

@@ -127,9 +127,42 @@ If any sub-skill returns hard fail, brief generation halts with the specific fai
 
 If two briefs in the same week have cosine >0.85 on hook + body, `social-cannibalization check` fires (called automatically). On hard fail, brief generation refuses with a "differentiate or reschedule" prompt.
 
+## Brief Tiers (Patch L, added 2026-05-05 from cutmasterai dry-run F55)
+
+Briefs come in two tiers. The orchestrator MUST tag each brief's `brief_type` in `state.phases.deliver.briefs[i].brief_type`.
+
+| Tier       | Contents                                                                                                                                              | When to use                                                                                                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `full`     | Frontmatter + context + 3 hook variants (with 3s-hold scores) + beats (Hook/Reveal/Depth/Stakes/Loop) + shot list + caption text + CTA + format notes | Posts tagged `phase: launch` (pre-launch first-N posts per Patch A). High production attention warranted.  |
+| `skeletal` | Frontmatter + context + 1 hook + abbreviated beats + CTA. ~30% the bytes of `full`.                                                                   | Posts tagged `phase: steady_state` (after launch sequence). Cadence-driven; full briefs would be overkill. |
+
+### Selection rule
+
+```
+brief_type = "full" if post.phase == "launch" or post.calendar_index < 10 else "skeletal"
+```
+
+The literal first-10 rule covers Patch A's launch sequence. Posts 11+ get skeletal unless explicitly upgraded by user request (e.g., a high-stakes feature-launch post mid-cadence).
+
+### Override
+
+User can override per-post via Telegram: `/upgrade_brief cutmaster-yt-007 full` flips a skeletal brief to full and triggers regeneration. State records `brief_type_override = {post_id, from, to, by_user, at}`.
+
+### Anti-patterns
+
+- ❌ Writing all skeletal because "we don't have full content yet" — full briefs for the launch sequence are the dry-run's most important deliverable, NOT optional
+- ❌ Writing all full at scale — 50+ briefs full per quarter is unsustainable; skeletal is the steady-state mode
+- ❌ Mixing tiers within the launch sequence (some launch posts full, others skeletal) — entire launch sequence should be one tier (full)
+- ❌ Skipping `brief_type` field on the state entry — Phase 6 REPORT renders the two tiers differently and will misrender or crash without the tag
+
+### Auto-derivation cutmasterai dry-run
+
+cutmasterai Phase 5 produced 3 full + 9 skeletal. Per the rule, posts 1–10 should have been full and 11–12 skeletal. Agent's choice (1, 5, 8 full) was an undocumented economy. Post-Patch-L, this would re-run and produce 10 full + 2 skeletal.
+
 ## References
 
 - `references/brief-template.md` — full markdown template per format
+- `references/skeletal-brief-template.md` — skeletal markdown template (Patch L addition; abbreviated beats + 1 hook)
 - `references/voice-context-map.md` — when to use each tone-by-context entry
 - `references/success-metric-defaults.md` — channel-median targets
 

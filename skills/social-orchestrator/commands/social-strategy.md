@@ -58,7 +58,7 @@ Per [`references/intake-questions.md`](../references/intake-questions.md). Ask e
 4. **Competitors** — "Top 3 competitors per channel (handles, any platform)."
 5. **Voice rules** — "Forbidden phrases + required terms. (Pulls defaults from `~/dev/workspace/.styles/celavii/voice.json`; this layers project-specific overrides on top.)"
 
-After Q5: write `state.intake = { channels, identities, goal, competitors_per_channel, voice_rules, channel_e_mix_targets, locked: true }`.
+After the final question (Q5 for founder channels, Q5 with Q2.5 also asked for product/utility channels): write `state.intake = { channels, identities, product_description?, goal, competitors_per_channel, voice_rules, channel_e_mix_targets, differentiators, business_concept, banned_language, channel_types, locked: true }`.
 
 ### Step 3: Auto-derive
 
@@ -96,11 +96,53 @@ State file is the single source of truth. Every phase writes to it; every phase 
 
 ```jsonc
 {
-  "version": 3,
+  "version": 3,                            // schema version (only changes when state shape changes)
+  "version_counter": 47,                   // increments by 1 on EVERY write — see § State Versioning below
   "project": "celavii",
-  "intake": { ... },
+  "intake": {
+    // ...
+    "competitors_per_channel": {
+      "{channel}": {
+        "handles": [],                  // confirmed competitor handles; empty until research_complete
+        "status": "research_needed",    // user_provided | research_needed | research_needed_partial | research_complete
+        "confirmed_at": null,           // iso when status flipped to research_complete
+        "hypotheses": []                // optional priors from intake; not authoritative
+      }
+    }
+  },
   "phases": {
-    "acquire":   { "status": "complete", "raw_files": [...] },
+    "acquire": {
+      "status": "complete",                 // see § Status Semantics below
+      "state_version_at_read": 12,          // version_counter when this phase started reading state (Patch I-1)
+      "state_version_at_write": 15,         // version_counter immediately after this phase finished writing (Patch I-1)
+      "skill_versions_at_read": {           // file mtimes captured at phase entry (Patch I-5)
+        "social-orchestrator/SKILL.md":      { "mtime": "2026-05-04T22:13:00Z", "size_bytes": 8421 },
+        "references/social-constitution.md": { "mtime": "2026-05-04T22:14:00Z", "size_bytes": 5102 },
+        "commands/social-strategy.md":       { "mtime": "2026-05-04T23:50:00Z", "size_bytes": 32014 },
+        "references/intake-questions.md":    { "mtime": "2026-05-04T22:30:00Z", "size_bytes": 4200 }
+      },
+      "raw_files": [],
+      "pre_launch": {                       // map of (channel × platform) booleans
+        "{channel}": { "{platform}": false }
+      },
+      "competitor_discovery": {             // present only if Phase 0.5a ran
+        "status": "research_complete",      // pending | research_in_progress | research_complete (user-confirmed)
+        "candidates_surveyed": 20,
+        "candidates_surfaced": 5,
+        "candidates_confirmed": ["@h1", "@h2", "@h3"],   // populated ONLY after user confirms
+        "off_platform_competitors": [       // see Patch B — competitors that don't live on the target platform
+          {
+            "name": "davinci-resolve-mcp",
+            "platform": "github",
+            "url": "https://github.com/...",
+            "threat_level": "high",
+            "youtube_channel": null,
+            "monitor": true,                // re-check next refresh cycle
+            "rationale": "..."
+          }
+        ]
+      }
+    },
     "discover":  { "status": "complete", "baselines": {...} },
     "analyze":   { "status": "complete", "patterns": {...} },
     "aggregate": { "status": "complete", "report_path_md": "...", "scored_topics_count": 73 },
@@ -137,11 +179,176 @@ State file is the single source of truth. Every phase writes to it; every phase 
 
 ### Cross-model critic rule (D18)
 
-Generator and critic MUST be different models. Hard fail if same. Default: Sonnet generates, Opus critiques. Per [social-constitution Article 7](../../../.claude/rules/social-constitution.md).
+Generator and critic MUST be different models. Hard fail if same. Default: Sonnet generates, Opus critiques. Per [social-constitution Article 7](../references/social-constitution.md).
 
 ### Iteration cap (D19)
 
-Each gate caps at **3 iterations**. After third fail → escalate to human review; do not auto-iterate. Per [Article 8](../../../.claude/rules/social-constitution.md). Iteration counter lives in `state.gates.{A,B}.iteration`.
+Each gate caps at **3 iterations**. After third fail → escalate to human review; do not auto-iterate. Per [Article 8](../references/social-constitution.md). Iteration counter lives in `state.gates.{A,B}.iteration`.
+
+---
+
+## Advisory Re-Surfacing (Patch M, added 2026-05-05 from cutmasterai dry-run F47/F56)
+
+`state.advisories[]` accumulates contract surface that needs human attention but doesn't block phase execution (e.g., "register this handle before going live", "API quota approaching limit"). Advisories with `user_response == "deferred"` MUST be re-surfaced at every output-generation phase until either the user response changes to `acknowledged` / `resolved` OR the advisory's `re_surface_until` timestamp passes.
+
+### When to re-surface (mandatory)
+
+Every output-generation phase scans `state.advisories[]` at phase entry and re-surfaces matching advisories in its output:
+
+| Phase               | Re-surface mechanism                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| 4 PLAN              | Top-of-file banner in `calendar-{date}.md` AND a "Pending Advisories" section listing all deferred ones |
+| 5 DELIVER           | `briefs/README.md` banner; each brief frontmatter gets `pending_advisories: [...]` array                |
+| 6 REPORT            | Executive-summary banner section; report PDF first-page callout; report's "Open Items" appendix         |
+| Telegram completion | Final summary message lists deferred advisories: "⚠️ N advisories pending: 1) {advisory text} ..."      |
+
+### Selection criteria
+
+Filter `state.advisories[]` for entries where:
+
+- `user_response == "deferred"` OR `user_response == null`
+- AND (`re_surface_until` is absent OR `re_surface_until > now()`)
+- AND `re_surface_at_phases[]` includes the current phase (default: all output-generation phases)
+
+### Banner format
+
+Markdown re-surface banner template (used in calendar.md, briefs/README.md, report executive summary):
+
+```markdown
+> ⚠️ **Pending Advisory**: {advisory.message}
+> _Severity: {advisory.severity} · Raised: {advisory.raised_at} · Last user response: {user_response} ({user_response_at})_
+```
+
+Multiple advisories stack; each gets its own block.
+
+### State capture
+
+Each output-generation phase records into its phase block:
+
+```jsonc
+state.phases.{name}.advisories_resurfaced = [
+  { "advisory_index": 0, "where": "calendar.md top banner" },
+  { "advisory_index": 0, "where": "briefs/README.md" }
+]
+```
+
+This lets retroactive audits verify the advisory mechanism actually fired (vs the cutmasterai bug where advisories sat untouched in state across multiple phases).
+
+### Anti-patterns
+
+- ❌ Sitting on advisories in state without surfacing them — defeats the entire feature
+- ❌ Surfacing only at Phase 6 REPORT — calendar generation is where users still have time to act
+- ❌ Modifying the advisory entry itself (e.g., setting `acknowledged` without user input) — only user response can flip status
+- ❌ Cross-channel pollution — advisory tagged for `channel: cutmaster` should only surface in cutmaster outputs, not other channel outputs in the same project
+- ❌ Skipping `state.phases.{name}.advisories_resurfaced` capture — without this field, audits can't prove the advisory mechanism worked
+
+### cutmasterai dry-run gap
+
+The handle-squat advisory raised at 2026-05-05T02:25 was deferred by user at 02:55 with note "Re-surface advisory at Phase 5 DELIVER (calendar generation) and Phase B brief delivery." Phase 4 v2 calendar did not surface it. Phase 5 briefs did not surface it. The advisory feature was effectively non-functional. Patch M makes re-surface mandatory and auditable.
+
+---
+
+## Skill Versioning (Patch I-5, added 2026-05-04 from cutmasterai dry-run F45)
+
+State versioning (Patch I-1) catches changes to the _data_ the agent operates on. Skill versioning catches changes to the _rules_ the agent operates by — SKILL.md, references/, commands/. When skill files are edited mid-session (e.g., a spec hardening pass while a dry-run is in progress), the agent's working memory has the pre-edit content cached from session start. Re-reading state doesn't help — state.json doesn't track skill changes.
+
+### The rule
+
+At every phase entry, the orchestrator MUST re-read (via the Read tool, not implicit skill cache) the skill files this phase depends on. This refreshes their content in working memory and captures their current state for audit.
+
+Mandatory phase-entry skill re-reads:
+
+| Phase               | Files to re-read                                                                                                                                                                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| All phases (always) | `social-orchestrator/SKILL.md` + `references/social-constitution.md` + `references/critic-intake-rule.md` + `references/status-semantics.md` + `references/research-mode.md` (when `run_mode=research`) |
+| 0 ACQUIRE           | + `references/intake-questions.md` + `references/tiered-credentials.md` + `commands/social-strategy.md` § Phase 0                                                                                       |
+| 0.5a Comp Discovery | + `social-discover/SKILL.md` Mode F                                                                                                                                                                     |
+| 1 DISCOVER          | + `references/parallel-subagent-spawn.md` + `references/industry-aware-delegation.md` + `commands/social-strategy.md` § Phase 1                                                                         |
+| 2 ANALYZE           | + `social-aggregate/references/scoring-rubric.md` + `commands/social-strategy.md` § Phase 2                                                                                                             |
+| 3 AGGREGATE         | + `social-aggregate/SKILL.md` + `commands/social-strategy.md` § Phase 3                                                                                                                                 |
+| Gate A              | + `social-quality/SKILL.md` § gate-a + `references/critic-intake-rule.md`                                                                                                                               |
+| 4 PLAN              | + `references/format-as-channel.md` + `references/gary-vee-fan-out.md` + `commands/social-strategy.md` § Phase 4                                                                                        |
+| Gate B              | + `social-quality/SKILL.md` § gate-b + `social-cannibalization/SKILL.md`                                                                                                                                |
+| 5 DELIVER           | + `social-brief/SKILL.md` + `social-script/SKILL.md` + `commands/social-strategy.md` § Phase 5                                                                                                          |
+| Gate C (per-post)   | + `social-quality/SKILL.md` § gate-c                                                                                                                                                                    |
+| 6 REPORT            | + `commands/social-strategy.md` § Phase 6                                                                                                                                                               |
+
+### State capture
+
+Each phase records into its phase block:
+
+```jsonc
+state.phases.{name}.skill_versions_at_read = {
+  "social-orchestrator/SKILL.md":            { "mtime": "<iso>", "size_bytes": 8421 },
+  "references/social-constitution.md":       { "mtime": "<iso>", "size_bytes": 5102 },
+  "commands/social-strategy.md":             { "mtime": "<iso>", "size_bytes": 32014 },
+  // ... per the phase's mandatory list
+}
+```
+
+`mtime` from filesystem stat or git blob hash if available — either suffices to detect change. `size_bytes` is a cheap secondary signal (catches mtime-touched files with no content change).
+
+### Audit invariant
+
+A retroactive audit can detect skill-staleness incidents by comparing `state.phases.{n}.skill_versions_at_read[file].mtime` against `state.phases.{n+1}.skill_versions_at_read[file].mtime`. If `n+1 > n`, a skill file changed between phases — the audit can correlate that against any subsequent gate-fail to identify "Patch X landed mid-run between phase A and phase B."
+
+### Anti-patterns
+
+- ❌ Reading skills once at session start and trusting them across multiple phases — this is exactly the bug F45 surfaced
+- ❌ Re-reading only when the user explicitly says "the spec changed" — relies on the user knowing the spec changed, which they often won't
+- ❌ Skipping skill re-read because "I just read these last phase" — phases are independent contexts; the rule is uniform
+- ❌ Re-reading skills but not capturing `skill_versions_at_read` — the audit invariant only works if every phase records what it read
+- ❌ Trusting the harness skill cache to invalidate — in openclaw, skills load once per agent invocation; mid-session reloads aren't automatic. The `Read` tool is the only reliable refresh mechanism.
+
+---
+
+## State Versioning (Patch I-1, added 2026-05-04 from cutmasterai dry-run F35a)
+
+State files carry a `version_counter` integer that increments by 1 on **every write** — including manual edits, agent writes, and parallel-subagent merges. This is the canonical "did the state change since I last read it" signal.
+
+### Three rules
+
+1. **Increment-on-write**: any actor (orchestrator, subagent, user, linter) writing to the state file MUST `version_counter += 1` AND update `updated` timestamp. No exceptions.
+
+2. **Read-then-pin at phase entry**: every phase MUST re-read the state file at phase start and capture `state_version_at_read` into its phase block. The orchestrator does NOT trust cached values from prior phase contexts.
+
+3. **Write-checkpoint at phase exit**: every phase records `state_version_at_write` after its final state write. This lets retroactive audits detect interleaved external edits (`state_version_at_write - state_version_at_read > {edits the phase itself made}` = something else wrote between read and write).
+
+### Why this matters
+
+cutmasterai dry-run, 2026-05-04: intake.voice_rules.4e_mix_targets was manually revised between Phase 2 and Phase 3 (70/10/10/10 → 60/20/10/10). Phase 3 generated the aggregate report from cached Phase 2 outputs and never re-read intake. Gate A then scored against the stale aggregate report. The inconsistency went undetected because no mechanism flagged "state changed under your feet."
+
+Version counter solves this: at Gate A entry, the agent sees `state.phases.aggregate.state_version_at_read = 24` but `state.version_counter = 31` — meaning 7 writes happened between Phase 3 reading state and now. The agent MUST re-read everything that's not stable (intake is one such thing), or explicitly justify why cached values are still valid.
+
+### Mandatory re-read list at phase entry
+
+Every phase re-reads at minimum:
+
+- `state.intake` (entire block)
+- `state.run_mode` + run-mode metadata
+- `state.advisories[]`
+- `state.phases.{n-1}.*` for any prior phases this phase consumes outputs from
+- `state.gates.*` for prior gate verdicts
+
+The phase MAY cache its own write-target sub-tree mid-phase (to avoid re-reading what it just wrote), but at phase exit the cache is dropped and the next phase re-reads from disk.
+
+### Anti-patterns
+
+- ❌ Reading state once at session start and assuming it stays valid across phases — manual edits, parallel writes, and refresh runs all break this assumption
+- ❌ Bumping `updated` without bumping `version_counter` — the timestamp drifts with linter saves and isn't reliable for change detection
+- ❌ Skipping `state_version_at_read` recording because "nothing changed" — the whole point is to record it BEFORE you know whether things changed
+- ❌ Relying on `state_version_at_read` to be monotonic per phase: parallel subagents may have different read-versions for the same phase. Use the orchestrator's read-version as the canonical one.
+
+---
+
+## Run Mode Detection (pre-flight)
+
+Before Phase 0 starts, the orchestrator detects whether to run in **live** or **research** mode. Per [`references/research-mode.md`](../references/research-mode.md):
+
+- Live: `CELAVII_API_KEY` set + relevant platform adapters enabled
+- Research: API unavailable / quota_exceeded / adapter gated → fallback to web search + manual reasoning
+
+On research-mode entry: emit Telegram banner, set `state.run_mode = "research"`, and apply per-phase behavior changes documented in `research-mode.md`. Every phase write under research mode adds a `research_mode_metadata` block with `confidence: "qualitative"`. Gate A reads this block to scope its scoring.
 
 ---
 
@@ -149,11 +356,80 @@ Each gate caps at **3 iterations**. After third fail → escalate to human revie
 
 ### Steps
 
-1. **Resolve handles** — call `social-discover resolve --platform {p} --handles {...}` for each (channel × platform)
-2. **Profile baseline** — `social-discover profile` for each handle → `raw/celavii-{handle}-{platform}-profile-{ts}.json`
-3. **Last-N posts** — `social-discover` Mode A continued; default N=50, configurable
+1. **Resolve handles** — call `social-discover resolve --platform {p} --handles {...}` for each (channel × platform). The resolver returns `{handle, channel_exists: bool, handle_available: bool, channel_id?}`. If `channel_exists=false`, set `state.phases.acquire.pre_launch[ch][p] = true` and proceed to **pre-launch branch** (below). Otherwise continue to Step 2.
+2. **Profile baseline** — `social-discover profile` for each handle → `raw/celavii-{handle}-{platform}-profile-{ts}.json`. SKIPPED on pre-launch branch.
+3. **Last-N posts** — `social-discover` Mode A continued; default N=50, configurable. SKIPPED on pre-launch branch.
 4. **Hashtag seeds** — for each `intake.differentiators[]` → `social-discover hashtag --tags ...` Tier-0 only at this phase
-5. **Competitor profiles** — `social-competitor-scrape baseline --handles {competitors_per_channel[ch]}` per channel
+
+### Pre-launch branch
+
+When `pre_launch[ch][p] = true`, Phase 0 short-circuits to:
+
+- Skip Steps 2 (profile) + 3 (posts) — there's nothing to scrape
+- Skip self-baseline metrics in Phase 1 DISCOVER for that (channel × platform) pair — the subagent has no source data
+- Run Steps 4 (hashtag seeds) and 5 (competitor flow) as normal — those depend on intake.differentiators, not on the channel's own posts
+- Phase 1 DISCOVER and Phase 2 ANALYZE for pre-launch channels lean entirely on competitor + hashtag-seed data; Gate A scoring weights shift to favor "competitor-pattern coverage" over "self-pattern divergence"
+- The Phase 5 DELIVER calendar must include a launch sequence (first 10 posts) tagged `phase=launch` before steady-state cadence
+
+Pre-launch channels also surface a one-time advisory: register the handle on the platform before Phase B brief delivery to prevent squatting. The orchestrator must emit this to Telegram if `pre_launch=true`.
+
+5. **Competitor profiles** — branch on `intake.competitors_per_channel[ch].status`:
+   - `user_provided` or `research_complete` → `social-competitor-scrape baseline --handles {competitors_per_channel[ch].handles}`
+   - `research_needed` or `research_needed_partial` → run **Phase 0.5a Competitor Discovery** (below) FIRST, then loop back to baseline scrape
+
+### Phase 0.5a — Competitor Discovery (conditional)
+
+Runs only when `intake.competitors_per_channel[ch].status ∈ {research_needed, research_needed_partial}`. Cannot be skipped — Gate A will fail if `competitors_per_channel[ch].handles` is empty AND status is not `research_complete`.
+
+#### Steps
+
+1. **Build search inputs** — assemble from intake:
+   - Differentiators (`intake.differentiators[]`)
+   - Identity line (`intake.identities[ch].identity_line`)
+   - Goal verb+noun (`intake.goal`)
+   - Channel type (`intake.channel_types[ch]` — utility/founder/product)
+   - Existing hypotheses (`intake.competitors_per_channel[ch].hypotheses[]`) as priors, if any
+2. **Run discovery search** — `social-discover competitor-discover --channel {ch} --platform {p}` (Mode F, see [`../../social-discover/SKILL.md` § Mode F](../../social-discover/SKILL.md))
+   - Tier 0 only (no follower/affinity calls at this stage)
+   - Returns top 20 candidates ranked by `relevance × audience_size × recency`
+3. **Score and shortlist** — apply 4-factor heuristic per candidate:
+   - Topic overlap with differentiators (0–1.0)
+   - Audience size proxy (subs / followers, log-scaled)
+   - Posting recency (last post ≤30 days)
+   - Channel-type match (utility-vs-utility scores higher than utility-vs-founder)
+4. **Surface top 5 to user** — Telegram message format:
+   > "Found 5 competitor candidates for {channel} on {platform}:
+   >
+   > 1. @handle1 — {short why}
+   > 2. @handle2 — ...
+   >    Reply with 3 you want to track, or paste your own."
+5. **Lock confirmed list** — on user reply:
+   - Update `intake.competitors_per_channel[ch].handles = [confirmed]`
+   - Update `intake.competitors_per_channel[ch].status = "research_complete"`
+   - Update `intake.competitors_per_channel[ch].confirmed_at = <iso>`
+6. **Resume Step 0.5** — baseline scrape on confirmed handles
+
+#### Anti-patterns
+
+- ❌ Auto-locking the top 3 without user confirmation — the search heuristic is good but not infallible; the human is cheap insurance
+- ❌ Running Phase 0.5a before Steps 0.1–0.4 — differentiators and hashtag seeds inform the search; skipping them yields generic candidates
+- ❌ Treating `hypotheses[]` as confirmed — they're priors, not answers; Phase 0.5a still runs its own search
+- ❌ Skipping Phase 0.5a entirely when status is `research_needed` — Gate A will catch this and the pipeline rolls back; better to run it correctly the first time
+
+#### State write
+
+```jsonc
+state.phases.acquire.competitor_discovery = {
+  status: "complete",
+  channel: "{ch}",
+  platform: "{p}",
+  ran_at: "<iso>",
+  candidates_surveyed: 20,
+  candidates_surfaced: 5,
+  candidates_confirmed: ["@h1", "@h2", "@h3"],
+  raw_files: ["raw/{ch}-competitor-candidates-{platform}-{ts}.json"]
+}
+```
 
 ### Tiered credentials (D17)
 
@@ -190,7 +466,11 @@ Goal: build channel baselines + competitor patterns + trend signals.
 
 ### Parallel-subagent spawn (D15)
 
-Per [`references/parallel-subagent-spawn.md`](../references/parallel-subagent-spawn.md). Spawn one subagent per (channel × platform) — up to 15 parallel. Each subagent:
+Per [`references/parallel-subagent-spawn.md`](../references/parallel-subagent-spawn.md). Spawn one subagent per (channel × platform) — up to 15 parallel.
+
+**Fast path (D15.1)**: if the post-D16-prune spawn matrix is `≤2 tuples`, skip the parallel infrastructure and run inline in the orchestrator's main context. Same logic, same state writes, no spawn/merge ceremony. Per `references/parallel-subagent-spawn.md` § Single-channel fast path.
+
+Each subagent (or inline iteration):
 
 1. Reads its profile + posts JSONs (already on disk from ACQUIRE)
 2. Calls `social-trend-detect` on its own platform's hashtag/topic feeds
@@ -208,18 +488,43 @@ A founder channel skips long-form-video subagents; a utility channel skips X-thr
 
 ### Write state
 
+The discover state splits **measured baselines** (from live scrapes) from **planned projections** (from intake, for pre-launch channels). They are NEVER mixed in the same field. Gate A reads `baselines` as ground truth and `projections` as targets — conflating them poisons scoring.
+
 ```jsonc
 state.phases.discover = {
   status: "complete",
-  baselines: {
+  baselines: {                            // ONLY measured data — fields null/absent for pre-launch
     celavii: {
       instagram: { followers: 8400, er_pct: 0.62, posts_per_week: 3.5, format_mix: {...} },
       tiktok:    { followers: 12400, er_pct: 4.1, ... }
     }
   },
+  projections: {                          // ONLY planned/target values, used for pre-launch channels
+    cutmaster: {
+      youtube: {
+        target_posts_per_week: 3,
+        target_format_mix: { shorts: 1.0, long_form: 0.0 },
+        hook_archetype_targets: { pattern_interrupt: 0.60, curiosity_gap: 0.25, authority_claim: 0.10, contrarian_take: 0.05 },
+        target_4e_mix: { educate: 0.70, entertain: 0.10, engage: 0.10, empower: 0.10 },
+        source: "intake.differentiators + intake.4e_mix_targets",
+        derivation_method: "intake_synthesis"   // never "scrape" or "measurement"
+      }
+    }
+  },
+  data_source: {                          // per (channel × platform), did baseline come from real scrape?
+    cutmaster: { youtube: "projections_only" },        // pre-launch: nothing measured
+    celavii:   { instagram: "measured", tiktok: "measured" }
+  },
   trend_signals_seed: [...]
 }
 ```
+
+**Rules**:
+
+1. Pre-launch channels (per Patch A `pre_launch[ch][p]=true`) write only to `projections`, never to `baselines`. The corresponding `baselines.{ch}.{p}` field is omitted entirely (NOT set to zeros — zeros would imply "we measured zero followers" which is a true-but-misleading data point).
+2. Live channels write only to `baselines`, never to `projections`. Targets for live channels are computed downstream in Phase 4 PLAN, not in DISCOVER.
+3. `data_source[ch][p]` is one of: `measured` | `projections_only` | `partial` (if some metrics measured + some projected — rare, used only for live channels missing specific data).
+4. Gate A reads BOTH and treats them differently — see `references/critic-intake-rule.md` § Baselines vs Projections.
 
 ### Checkpoint
 
@@ -254,6 +559,10 @@ state.phases.analyze = {
 
 ## Phase 3: AGGREGATE — Deterministic (<5s)
 
+Branches on `state.run_mode`:
+
+### Live mode
+
 ```bash
 python3 ~/dev/workspace/skills/social-aggregate/scripts/aggregate.py \
   --social-dir ~/dev/workspace/projects/{project}/research/social \
@@ -265,7 +574,50 @@ Reads everything in `raw/`, outputs:
 - `aggregate-report-{date}.md` (~2K tokens, LLM-readable)
 - `aggregate-report-{date}.json` (full payload)
 
-### Write state
+### Research mode (added 2026-05-04 from cutmasterai dry-run, Patch H)
+
+When `state.run_mode == "research"` and `raw/` is empty (or contains only research-mode artifacts), aggregate.py is NOT called — there's no scrape data to aggregate. Instead, the orchestrator runs an **inline qualitative-aggregation pass**:
+
+```python
+# Pseudo-code — actual implementation lives in scripts/aggregate.py --research-mode flag (Phase B12.1)
+def aggregate_research_mode(state):
+    inputs = {
+        "competitive_format_analysis": state.phases.discover.competitive_format_analysis,
+        "trend_signals_seed": state.phases.discover.trend_signals_seed,
+        "format_best_practices": state.phases.discover.format_best_practices,
+        "repurposing_map_seed": state.phases.discover.repurposing_map_seed,
+        "analyze_findings": state.phases.analyze,
+        "intake_differentiators": state.intake.differentiators,
+        "intake_business_concept": state.intake.business_concept,
+        "projections": state.phases.discover.projections,
+    }
+    # Synthesize content pillars from differentiators + 4E targets + competitive whitespace
+    pillars = derive_pillars(inputs)
+    # Score each pillar by: differentiator coverage (0.4) + whitespace strength (0.3) + format fit (0.3)
+    scored_pillars = score_pillars(pillars, inputs)
+    # No cannibalization analysis (no real cadence data); flag as N/A
+    # No trend explosion detection (no z-scores in research mode); use trend_signals_seed strength values directly
+    return {
+        "scored_pillars": scored_pillars,        # 5–10 pillars, deterministic from inputs
+        "scored_topics_count": len(scored_pillars),
+        "cannibalization_warnings": "N/A",       # explicit N/A, not 0
+        "trend_signals_qualitative": inputs.trend_signals_seed,
+        "competitive_whitespace": derive_whitespace(inputs),
+        "format_constraints": derive_format_constraints(inputs),
+        "report_md": render_research_mode_report(...)
+    }
+```
+
+Outputs:
+
+- `aggregate-report-{date}.md` (research-mode template — clearly labeled `## Research Mode — Qualitative Aggregation`)
+- `aggregate-report-{date}.json` (research-mode payload, includes `research_mode_metadata` block)
+
+The research-mode report template MUST include a top-of-page banner:
+
+> **⚠️ Research-mode aggregation.** This report synthesizes qualitative inputs (competitor format research, trend signals from web search, intake-derived projections) — NOT live scrape data. Pillar scores reflect strategic fit, not measured performance. Re-run with API access for quantitative aggregation.
+
+### Write state (both modes)
 
 ```jsonc
 state.phases.aggregate = {
@@ -273,16 +625,32 @@ state.phases.aggregate = {
   report_path_md:   "...",
   report_path_json: "...",
   scored_topics_count: 73,
-  cannibalization_warnings: 4,
-  trend_signals_exploding: 2,
+  cannibalization_warnings: 4,         // integer in live mode; "N/A" in research mode
+  trend_signals_exploding: 2,          // integer in live mode; null in research mode (no z-scores)
   ran_at: "<iso>",
-  runtime_sec: 3.1
+  runtime_sec: 3.1,
+  research_mode_metadata: { ... }      // present only when run_mode=research
 }
 ```
+
+### Gate A reads the research-mode report differently
+
+When `state.phases.aggregate.research_mode_metadata` is present, Gate A's prompt MUST explicitly:
+
+- Score pillar consistency vs intake (NOT pillar performance)
+- Cite `competitors_per_channel.handles[]` for competitive whitespace claims (handles, not hypotheses, not off_platform)
+- Flag any quantitative claim in the pillar set as a violation of qualitative-only rule
+- Apply Article 6 verification with the projection-mode citations rule (per `critic-intake-rule.md` § Baselines vs Projections)
 
 ### Checkpoint
 
 LLM reads only `aggregate-report-{date}.md` (not the raw JSONs). State + report drive Gate A.
+
+### Anti-patterns
+
+- ❌ Calling aggregate.py without --research-mode flag when `run_mode=research` — script will produce empty output (no raw/ files) and may crash or write a misleading "0 topics scored" report
+- ❌ Mixing live + research-mode aggregation in the same report — pillar scores from different methodologies can't be compared
+- ❌ Skipping Phase 3 entirely under research mode — Gate A needs SOME scored input to score against. The qualitative pass produces real input; skipping defers the spec gap rather than closing it.
 
 ---
 
@@ -532,5 +900,5 @@ After Phase 5 completes, the command can autonomously continue to Phase 6 if `st
 - [`references/format-as-channel.md`](../references/format-as-channel.md) (D20)
 - [`references/gary-vee-fan-out.md`](../references/gary-vee-fan-out.md) (D21)
 - [`references/critic-intake-rule.md`](../references/critic-intake-rule.md) (Article 6)
-- [`.claude/rules/social-constitution.md`](file:///Users/operator/dev/openclaw/.claude/rules/social-constitution.md) (10 articles)
+- [`references/social-constitution.md`](../references/social-constitution.md) (10 articles)
 - [SOCIAL-STRATEGY-STATE-SPEC.md](file:///Users/operator/dev/workspace/projects/celavii/research/social/SOCIAL-STRATEGY-STATE-SPEC.md) (state schema v3)

@@ -163,7 +163,7 @@ The studio occupies a workspace — a directory tree on disk. Here's the floor p
 ├── social-quality/                                  ← Senior Partner (critic)
 └── ...                                              ← 17 atomic skills total
 
-~/dev/openclaw/.claude/rules/
+~/dev/openclaw/skills/social-orchestrator/references/
 └── social-constitution.md                           ← the firm's values
 ```
 
@@ -171,13 +171,13 @@ Three things to notice from the floor plan alone:
 
 1. **Two repositories meet here.** `openclaw/skills/` is the source of truth — versioned, code-reviewed, the place where the studio's know-how is recorded. `workspace/` is where work happens for clients. Skills are symlinked from openclaw into workspace so changes propagate instantly.
 2. **The state file is one file.** Every engagement's progress lives in a single JSON file. Not a database, not a Redis instance, not a queue. A file. We'll come back to why.
-3. **The constitution is outside the studio.** It lives in `.claude/rules/`, not inside any one specialist's directory. That's deliberate: values are firm-level, not departmental.
+3. **The constitution lives with the orchestrator.** It sits in the Studio Director's `references/` tree — bundled with the skill so the openclaw runtime loads it whenever the orchestrator runs. Values are firm-level, but they need to be runtime-loadable; placing them in the Director's references makes that automatic. (A historical note: the constitution briefly lived under `.claude/rules/`, a Claude-Code-only path. Moved 2026-05-04 after the cutmasterai dry-run revealed openclaw agents couldn't see it.)
 
 ### 2. The Studio Founder
 
 Before any work happens, someone — a human, in version 1 — has to set up the studio. They write three things:
 
-- **The constitution** (`.claude/rules/social-constitution.md`) — the firm's values, expressed as numbered articles. _"Every claim that survives Gate C must be specific."_ _"The critic and the generator must be different models."_ _"Save rate beats like rate."_ These are not access controls or guardrails. They are the firm's identity.
+- **The constitution** (`skills/social-orchestrator/references/social-constitution.md`) — the firm's values, expressed as numbered articles. _"Every claim that survives Gate C must be specific."_ _"The critic and the generator must be different models."_ _"Save rate beats like rate."_ These are not access controls or guardrails. They are the firm's identity.
 - **The voice spec** (`workspace/.styles/celavii/voice.json`) — the brand's personality, encoded as a four-dimensional vector (per the NN/g model: humor, formality, respectfulness, enthusiasm) plus channel overrides, banned phrases, and tone-by-context rules.
 - **The brand spec** (`workspace/.styles/celavii/brand.json`) — visual tokens (colors, typography, taglines) — relevant any time the studio produces something visual.
 
@@ -426,7 +426,7 @@ BEFORE any analysis, scoring, or content generation, you MUST load:
 
 1. State file: ~/dev/workspace/projects/celavii/research/social/social-strategy-state.json (v3)
 2. Voice spec: ~/dev/workspace/.styles/celavii/voice.json (NN/g 4-D vector + tone-by-context)
-3. Constitution: ~/dev/openclaw/.claude/rules/social-constitution.md (anti-slop rubric, banned language, gate principles)
+3. Constitution: ~/dev/openclaw/skills/social-orchestrator/references/social-constitution.md (anti-slop rubric, banned language, gate principles)
 4. Intake: state.intake — channels, identities, goal, competitors, voice rules.
    Critic gates that score without reading intake fail.
 
@@ -966,28 +966,28 @@ For teams thinking long-term about building agentic systems, this is a substanti
 
 ## Part VIII — Glossary
 
-| Term                     | Plain definition                                                     | Where it lives in our system                                 |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| **Department Model**     | The methodology this document describes                              | This file                                                    |
-| **Studio**               | A domain-specific instance of the methodology                        | `social-orchestrator/`, `seo-orchestrator/`, etc.            |
-| **Operating Model**      | Conventions every studio shares                                      | Implicit in the codebase; documented in `principles.md`      |
-| **Studio Director**      | The orchestrator skill that routes within a studio                   | `{studio}-orchestrator/SKILL.md`                             |
-| **Account Executive**    | The intake-and-brief role; a function of the Director                | The intake flow in any command brief                         |
-| **Specialist**           | An atomic skill with one job                                         | `social-discover/`, `social-brief/`, etc.                    |
-| **Senior Partner**       | A critic skill that reviews specialist output                        | `social-quality` (multiple modes)                            |
-| **Studio Founder**       | The human who authors the studio's identity, constitution, and voice | The repo's maintainers                                       |
-| **Brief**                | A markdown command file describing a unit of work                    | `commands/*.md`                                              |
-| **Engagement**           | A long-running project from intake to delivery                       | One run of a brief end-to-end                                |
-| **Engagement File**      | The state file carrying an engagement's progress                     | `social-strategy-state.json` and equivalents                 |
-| **Phase**                | A stage of an engagement (acquire, analyze, plan, etc.)              | Top-level keys in `state.phases.*`                           |
-| **Gate**                 | A quality review between phases                                      | `state.gates.{A,B,C}`                                        |
-| **Filing Cabinet**       | The `raw/` directory holding tool outputs                            | `projects/celavii/research/social/raw/`                      |
-| **Knowledge Management** | The studio's persistent know-how                                     | `references/`, `fixtures/`, the memory system                |
-| **Constitution**         | The studio's values, in numbered articles                            | `.claude/rules/{studio}-constitution.md`                     |
-| **Conflicts Check**      | Detection of work that would duplicate prior work                    | `social-cannibalization`, similar in other studios           |
-| **Cross-Model Critic**   | The rule that the partner uses a different model than the specialist | Article 7 of the Social Constitution                         |
-| **Iteration Cap**        | The rule that no gate runs more than three times                     | Article 8                                                    |
-| **Practice Group**       | A cluster of related studios sharing knowledge                       | Conceptual; SEO + Social + Blog are a Content Practice Group |
+| Term                     | Plain definition                                                     | Where it lives in our system                                       |
+| ------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Department Model**     | The methodology this document describes                              | This file                                                          |
+| **Studio**               | A domain-specific instance of the methodology                        | `social-orchestrator/`, `seo-orchestrator/`, etc.                  |
+| **Operating Model**      | Conventions every studio shares                                      | Implicit in the codebase; documented in `principles.md`            |
+| **Studio Director**      | The orchestrator skill that routes within a studio                   | `{studio}-orchestrator/SKILL.md`                                   |
+| **Account Executive**    | The intake-and-brief role; a function of the Director                | The intake flow in any command brief                               |
+| **Specialist**           | An atomic skill with one job                                         | `social-discover/`, `social-brief/`, etc.                          |
+| **Senior Partner**       | A critic skill that reviews specialist output                        | `social-quality` (multiple modes)                                  |
+| **Studio Founder**       | The human who authors the studio's identity, constitution, and voice | The repo's maintainers                                             |
+| **Brief**                | A markdown command file describing a unit of work                    | `commands/*.md`                                                    |
+| **Engagement**           | A long-running project from intake to delivery                       | One run of a brief end-to-end                                      |
+| **Engagement File**      | The state file carrying an engagement's progress                     | `social-strategy-state.json` and equivalents                       |
+| **Phase**                | A stage of an engagement (acquire, analyze, plan, etc.)              | Top-level keys in `state.phases.*`                                 |
+| **Gate**                 | A quality review between phases                                      | `state.gates.{A,B,C}`                                              |
+| **Filing Cabinet**       | The `raw/` directory holding tool outputs                            | `projects/celavii/research/social/raw/`                            |
+| **Knowledge Management** | The studio's persistent know-how                                     | `references/`, `fixtures/`, the memory system                      |
+| **Constitution**         | The studio's values, in numbered articles                            | `skills/{studio}-orchestrator/references/{studio}-constitution.md` |
+| **Conflicts Check**      | Detection of work that would duplicate prior work                    | `social-cannibalization`, similar in other studios                 |
+| **Cross-Model Critic**   | The rule that the partner uses a different model than the specialist | Article 7 of the Social Constitution                               |
+| **Iteration Cap**        | The rule that no gate runs more than three times                     | Article 8                                                          |
+| **Practice Group**       | A cluster of related studios sharing knowledge                       | Conceptual; SEO + Social + Blog are a Content Practice Group       |
 
 ---
 
