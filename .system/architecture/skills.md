@@ -8,7 +8,7 @@
 
 ```
 ~/.openclaw/skills/           ← SYMLINK → ~/dev/workspace/skills/ (global managed dir)
-~/dev/workspace/skills/     ← 56 skills (managed: domain categories + celavii + social-agents + custom)
+~/dev/workspace/skills/     ← 58 skills (managed: domain categories + celavii + social-agents + custom)
 ~/.agents/skills/             ← Personal skill overrides (applies to all workspaces)
 {workspace}/.agents/skills/   ← Per-project skill overrides (highest non-workspace priority)
 repo skills/                  ← 65 skills (bundled with OpenClaw binary)
@@ -142,6 +142,11 @@ workspace: ~/dev/workspace/skills/quality-critic/         ← explicit workspace
 | 📈 **celavii-analytics** | ✅ Ready | Demographics, locations, niches, overlap, affinity posts   | 1/query   |
 | 📚 **celavii-knowledge** | ✅ Ready | Knowledge base CRUD, semantic search for AI context        | 0 (free)  |
 | ⚡ **celavii-data-ops**  | ✅ Ready | Profile enhancement, follower/hashtag/URL scrapes, job ops | 1-2+Apify |
+| 📋 **celavii-jobs**      | ✅ Ready | List enhance/refine/scrape jobs, list/campaign coverage    | 0 (free)  |
+| 🌐 **celavii-platforms** | ✅ Ready | Platform reference (IG/TT IDs, scrape routing)             | 0 (free)  |
+| ✉️ **celavii-outreach**  | ✅ Ready | Personalized DMs, emails, follow-ups using profile intel   | 0 (local) |
+| 📑 **celavii-reporting** | ✅ Ready | Stakeholder reports — campaign / audience / pipeline       | 0 (local) |
+| 🎯 **celavii-strategy**  | ✅ Ready | Influence targeting, brand acquisition, network strategy   | 0 (local) |
 
 > **Social skills (19) are owned by two agents** as of 2026-05-04 (V7): the analytical 13 (`social-discover`, `social-brief`, `social-plan`, `social-drift`, `social-cannibalization`, `social-factcheck`, `social-sxo`, `social-persona`, `social-trend-detect`, `social-competitor-scrape`, `social-aggregate`, `social-research`, `social-quality`) live on the **`social-research`** agent (DeepSeek V4 Pro `medium`). The creative 6 (`social-orchestrator`, `social-hooks`, `social-script`, `social-shotlist`, `social-repurpose`, `celavii-social`) live on **`social-writer`** (Gemini 3.1 Pro `high`). This split enforces the cross-model critic boundary required by `skills/social-orchestrator/references/social-constitution.md` Article 7.
 

@@ -30,18 +30,20 @@ metadata:
 
 ### Mode A — Hashtag velocity
 
-```bash
-social-trend-detect hashtags --platform tiktok --niche agentic-marketing --limit 30
-```
+**Data source**: `raw/celavii-hashtag-*-{platform}-*.json` files written by `social-discover` Mode B (which calls `mcp__claude_ai_Celavii__scrape_hashtags`). Trend detection consumes these scrape outputs — does NOT call Celavii directly.
+
+If insufficient hashtag scrape history exists for the niche (< 7 days), trigger `social-discover` Mode B first to seed the time series.
 
 Process:
 
-1. Pull last 7 days of hashtag scrapes from `raw/celavii-hashtag-*-tiktok-*.json`
+1. Pull last 7 days of hashtag scrapes from `raw/celavii-hashtag-*-{platform}-*.json` (multiple snapshots per hashtag = the time series)
 2. For each hashtag, build view-count time series at hour buckets
-3. Compute velocity (Δ views / Δ time), acceleration (ΔΔ views), z-score vs same-cohort baseline
+3. Compute velocity (Δ views / Δ time), acceleration (ΔΔ views), z-score vs same-cohort baseline — via `scripts/trend_math.py`
 4. Rank by z-score; flag any > 2σ as "exploding"
 
-Output: `raw/trend-tiktok-{topic}-{ts}.json` + summary md
+**Output**: `raw/trend-{platform}-{topic}-{ts}.json` matching the schema in § Output Schema below + a summary markdown for human review.
+
+Optional accelerator: `mcp__claude_ai_Celavii__get_shared_hashtags` with `{ profile_ids, limit }` returns hashtags shared across a creator cohort — useful for niche-scoped trend detection without doing platform-wide scrapes.
 
 ### Mode B — Audio trends (TikTok / Reels)
 
@@ -53,15 +55,13 @@ social-trend-detect audio --platform tiktok --window 7d
 
 ### Mode C — Topic trends (cross-platform)
 
-```bash
-social-trend-detect topics --niches creator-intelligence,agentic-marketing
-```
+Combines three signals:
 
-Combines:
+1. **Celavii content corpus** — `mcp__claude_ai_Celavii__semantic_search_content` with `{ query: "<topic>", platform, since: "<7d-ago>", limit: 100 }` to surface posts mentioning the topic across the org's tracked content. **1 credit per call.** Frequency = post velocity proxy.
+2. **Web search velocity** — `web_search` with freshness filter (last 7 days vs last 30 days) to gauge mainstream attention growth.
+3. **Reddit/HN topic mentions** — `web_search` with `site:reddit.com` / `site:news.ycombinator.com` filters for niche discussion velocity.
 
-- Brave Search velocity (`web_search` with freshness filter)
-- Apify Google Trends interest-over-time
-- Reddit/HN topic mentions if relevant
+Cross-reference the three: a topic trending on web but absent from `semantic_search_content` is an early-detection opportunity (the platform corpus hasn't caught up yet). A topic trending in the corpus but not on web is platform-internal hype.
 
 ### Mode D — Platform-native (lagging) snapshot
 
@@ -138,8 +138,9 @@ This feeds Phase 3 aggregator's pillar clustering.
 ## Integration
 
 - Reads niche/topic seeds from `state.intake` + `state.phases.acquire.themes`
-- Reads hashtag scrape outputs from `social-discover`
-- Outputs to `state.phases.discover.trend_signals[]` + raw files
+- Reads hashtag scrape outputs from `social-discover` Mode B (which calls `mcp__claude_ai_Celavii__scrape_hashtags`)
+- Calls Celavii MCP tools directly only for Mode C cross-platform topic detection: `mcp__claude_ai_Celavii__semantic_search_content`, `mcp__claude_ai_Celavii__get_shared_hashtags` (optional accelerator)
+- Outputs to `state.phases.discover.trend_signals[]` matching § Output Schema + raw files
 - Feeds `social-aggregate` (Phase 3) and `social-plan` (Phase 4 calendar reactive slots)
 
 ## References

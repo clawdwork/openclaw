@@ -9,7 +9,9 @@
 
 ## Overview
 
-The Celavii External API v1 provides programmatic access to the Creator Intelligence Platform. It exposes **45 authenticated endpoints** across 10 categories plus 2 public documentation endpoints. All data is scoped to the API key's organization.
+The Celavii External API v1 provides programmatic access to the Creator Intelligence Platform. It exposes **74 authenticated endpoints** across 12 categories (Meta, Profiles, Campaigns, Lists, Analytics, Content, Manage/CRM, Knowledge, Enhance, Scrape, Refine, Jobs) plus 2 public documentation endpoints. All data is scoped to the API key's organization.
+
+> **Doc freshness note (2026-05-06)**: Headline endpoint count and category list updated against upstream MCP source at `/Users/operator/code/celavii/social_listener/packages/mcp/src/tools/`. Per-category section counts below may still reflect the prior 45-endpoint snapshot — section bodies are pending a sync pass. Authoritative tool surface lives in the `mcp__claude_ai_Celavii__*` tools and the upstream skills at `packages/mcp/skills/`.
 
 **Key characteristics:**
 

@@ -108,16 +108,17 @@ This won't prevent duplication entirely, but it gives a single place to check/up
 
 ### Checklist (all steps required)
 
-1. Create `skills/{name}/SKILL.md` in the repo (source of truth)
-2. Copy to `~/dev/workspace/skills/{name}/` (runtime location)
-3. Verify visible via `ls ~/.openclaw/skills/{name}/`
+1. Author `SKILL.md` in `~/dev/workspace/skills/{name}/` (single source of truth — never edit `openclaw/skills/` directly)
+2. Run `~/dev/workspace/scripts/register-workspace-skills.sh` to symlink into `~/dev/openclaw/skills/{name}` for gateway discovery
+3. Verify visible: `ls -la ~/dev/openclaw/skills/{name}` should show a symlink to workspace
 4. Update `skills.md` → add to appropriate section
 5. Update `skills.md` → increment skill count (all 4 locations)
-6. Update `README.md` → document index description + agent model table if applicable
-7. If skill needs env vars → update `security.md` env vars section + `~/.openclaw/.env`
-8. If skill needs env vars → add to `SHELL_ENV_EXPECTED_KEYS` in `src/config/io.ts`
-9. Append to `CHANGELOG.md`
-10. Run `scripts/arch-verify.sh` to confirm no drift
+6. Update `VALUES.md` → bump relevant skill-count rows
+7. Update `README.md` → document index description + agent model table if applicable
+8. If skill needs a provider/channel auth env var → register it in `src/secrets/provider-env-vars.ts` or `src/secrets/channel-env-vars.ts` so it auto-flows into `resolveShellEnvExpectedKeys()` (in `src/config/shell-env-expected-keys.ts`). Shared external API keys (e.g. `CELAVII_API_KEY`) bypass that registry — they just live in `~/.openclaw/.env` and inherit via `process.env` for unsandboxed agents.
+9. Update `security.md` env vars section + add the value to `~/.openclaw/.env`
+10. Append to `CHANGELOG.md`
+11. Run `scripts/arch-verify.sh` to confirm no drift
 ```
 
 ---

@@ -111,12 +111,18 @@ fi
 
 echo ""
 
-# --- SHELL_ENV_EXPECTED_KEYS check ---
-echo "=== CELAVII_API_KEY in SHELL_ENV_EXPECTED_KEYS ==="
-if grep -q "CELAVII_API_KEY" src/config/io.ts 2>/dev/null; then
-  ok "Present in src/config/io.ts"
+# --- Shared external API keys passthrough check ---
+# CELAVII_API_KEY is a shared external API key (not a provider/channel auth var),
+# so it doesn't get auto-registered via listKnownProviderAuthEnvVarNames /
+# listKnownChannelEnvVarNames. We just verify it's set in ~/.openclaw/.env so
+# unsandboxed agents inherit it via process.env.
+echo "=== Shared API key passthrough ==="
+if grep -q "^CELAVII_API_KEY=cvii_live_" "$HOME/.openclaw/.env" 2>/dev/null; then
+  ok "CELAVII_API_KEY present in ~/.openclaw/.env (live key format)"
+elif grep -q "^CELAVII_API_KEY=" "$HOME/.openclaw/.env" 2>/dev/null; then
+  warn "CELAVII_API_KEY entry exists but value is empty or non-standard"
 else
-  fail "MISSING from SHELL_ENV_EXPECTED_KEYS in src/config/io.ts"
+  fail "CELAVII_API_KEY MISSING from ~/.openclaw/.env"
 fi
 
 echo ""
