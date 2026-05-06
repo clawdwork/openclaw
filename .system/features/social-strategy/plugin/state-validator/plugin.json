@@ -1,0 +1,25 @@
+{
+  "name": "social-strategy-state-validator",
+  "version": "0.1.0",
+  "description": "Patch J-3a + Patch O enforcement: schema-validates every Write/Edit targeting `*/research/social/*/state.json` against state-schema.json. Blocks invalid writes with a specific violation reason. Non-bypassable — runs in openclaw runtime, not in the LLM reasoning loop.",
+  "author": { "name": "Clawdwork", "url": "https://github.com/clawdwork/openclaw" },
+  "license": "MIT",
+  "keywords": ["social", "validation", "schema", "hook", "patch-j3a", "patch-o"],
+  "hooks": [
+    {
+      "name": "validate-state-write",
+      "events": ["before_tool_call"],
+      "handler": "handler.ts",
+      "description": "Intercepts Write/Edit tools when params.target ends in /state.json under research/social/. Parses proposed content, validates against state-schema.json, returns { block: true, blockReason } on failure."
+    }
+  ],
+  "config": {
+    "schema_path": "~/dev/workspace/skills/social-orchestrator/references/state-schema.json",
+    "target_pattern": "research/social/*/state.json",
+    "allow_legacy_path": true,
+    "legacy_pattern": "research/social/_superseded/*.json"
+  },
+  "requires": {
+    "node": ">=22.0.0"
+  }
+}

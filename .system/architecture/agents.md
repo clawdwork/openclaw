@@ -101,28 +101,30 @@ DeepSeek V4 Pro (coordinator) receives user message
 Each domain agent is defined in `openclaw.json` `agents.list` and spawned via `sessions_spawn({ agentId: "{id}" })`.
 The gateway resolves per-agent config: model, skills filter, workspace, identity.
 
-| Agent                 | ID                  | Model             | Thinking | Role Summary                                                                             | Session Type   |
-| --------------------- | ------------------- | ----------------- | -------- | ---------------------------------------------------------------------------------------- | -------------- |
-| **Coordinator**       | `main`              | DeepSeek V4 Pro   | high     | User conversations, routing, web search, synthesis (1M ctx)                              | Main session   |
-| Marketing             | `marketing`         | Flash             | high     | Content, campaigns, brand voice, analytics, intel-ingest                                 | Ephemeral      |
-| SEO                   | `seo`               | DeepSeek V4 Pro   | medium   | Technical audits, content quality, schema, GEO, strategic planning (1M ctx)              | Ephemeral      |
-| Sales                 | `sales`             | 5.4-Mini          | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                           | Ephemeral      |
-| Product               | `product`           | Flash             | low      | Specs, roadmaps, competitive analysis, user stories                                      | Ephemeral      |
-| Support               | `support`           | Flash             | low      | Ticket triage, KB management, escalation                                                 | Ephemeral      |
-| Enterprise Search     | `search`            | Flash             | medium   | Query decomposition, multi-source synthesis                                              | **Persistent** |
-| Legal                 | `legal`             | Pro               | medium   | Contracts, compliance, risk assessment                                                   | Ephemeral      |
-| Finance               | `finance`           | Pro               | medium   | Budgets, forecasting, reconciliation                                                     | Ephemeral      |
-| Data                  | `data`              | Pro               | medium   | SQL, visualization, ETL, data quality                                                    | Ephemeral      |
-| Media Content         | `media-content`     | Pro               | low      | Image/video/audio prompt crafting, visual assets                                         | Ephemeral      |
-| Blogger               | `blogger`           | Pro               | high     | Blog content production, coupled with SEO agent for briefs/KWs                           | Ephemeral      |
-| **Social Research**   | `social-research`   | DeepSeek V4 Pro   | medium   | Discover, brief, plan, drift, cannibalization, factcheck, sxo, persona, trend (1M ctx)   | Ephemeral      |
-| **Social Writer**     | `social-writer`     | Pro               | high     | Orchestrator, hooks, script, shotlist, repurpose, celavii-social copy production         | Ephemeral      |
-| Quality Critic        | `quality-critic`    | DeepSeek V4 Pro   | high     | Reviews creative outputs against specs (proposals, images, decks); cross-model critic    | Ephemeral      |
-| **Dev Coder**         | `dev-coder`         | DeepSeek V4 Flash | high     | Everyday coding, automations, scripts, simple deploys, CI/CD (1M ctx)                    | Ephemeral      |
-| **Prod Coder**        | `prod-coder`        | DeepSeek V4 Pro   | high     | Complex integrations, APIs, backends, prod-critical refactors (1M ctx, native reasoning) | Ephemeral      |
-| **Planner**           | `planner`           | DeepSeek V4 Pro   | high     | Architecture review, validation, expert advisor (1M ctx, native reasoning)               | Ephemeral      |
-| **Grunt**             | `grunt`             | 5.4-Nano          | off      | File ops, tests, cleanup, bulk operations, scaffolding                                   | Ephemeral      |
-| **Workspace Auditor** | `workspace-auditor` | Pro               | high     | MWF workspace integrity audits (structural, registry, semantic)                          | Ephemeral      |
+| Agent                     | ID                      | Model             | Thinking | Role Summary                                                                                                                         | Session Type   |
+| ------------------------- | ----------------------- | ----------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
+| **Coordinator**           | `main`                  | DeepSeek V4 Pro   | high     | User conversations, routing, web search, synthesis (1M ctx)                                                                          | Main session   |
+| Marketing                 | `marketing`             | Flash             | high     | Content, campaigns, brand voice, analytics, intel-ingest                                                                             | Ephemeral      |
+| SEO                       | `seo`                   | DeepSeek V4 Pro   | medium   | Technical audits, content quality, schema, GEO, strategic planning (1M ctx)                                                          | Ephemeral      |
+| Sales                     | `sales`                 | 5.4-Mini          | medium   | Account research, outreach, synthesis, pipeline, lead-to-close                                                                       | Ephemeral      |
+| Product                   | `product`               | Flash             | low      | Specs, roadmaps, competitive analysis, user stories                                                                                  | Ephemeral      |
+| Support                   | `support`               | Flash             | low      | Ticket triage, KB management, escalation                                                                                             | Ephemeral      |
+| Enterprise Search         | `search`                | Flash             | medium   | Query decomposition, multi-source synthesis                                                                                          | **Persistent** |
+| Legal                     | `legal`                 | Pro               | medium   | Contracts, compliance, risk assessment                                                                                               | Ephemeral      |
+| Finance                   | `finance`               | Pro               | medium   | Budgets, forecasting, reconciliation                                                                                                 | Ephemeral      |
+| Data                      | `data`                  | Pro               | medium   | SQL, visualization, ETL, data quality                                                                                                | Ephemeral      |
+| Media Content             | `media-content`         | Pro               | low      | Image/video/audio prompt crafting, visual assets                                                                                     | Ephemeral      |
+| Blogger                   | `blogger`               | Pro               | high     | Blog content production, coupled with SEO agent for briefs/KWs                                                                       | Ephemeral      |
+| **Social Research**       | `social-research`       | DeepSeek V4 Pro   | medium   | Discover, brief, plan, drift, cannibalization, factcheck, sxo, persona, trend (1M ctx)                                               | Ephemeral      |
+| **Social Writer**         | `social-writer`         | Pro               | high     | Orchestrator, hooks, script, shotlist, repurpose, celavii-social copy production                                                     | Ephemeral      |
+| **Social Phase Executor** | `social-phase-executor` | Sonnet 4.6        | medium   | (Patch O) Spawned per-phase by social-writer; runs ONE phase per spawn with fresh context. Loads ALL social-_ + celavii-_ skills.    | Ephemeral      |
+| **Social Phase Auditor**  | `social-phase-auditor`  | Opus 4.7          | low      | (Patch O) Spawned after every phase exit. Diffs preflight banner artifacts vs actual state writes. Cross-model boundary vs executor. | Ephemeral      |
+| Quality Critic            | `quality-critic`        | DeepSeek V4 Pro   | high     | Reviews creative outputs against specs (proposals, images, decks); cross-model critic                                                | Ephemeral      |
+| **Dev Coder**             | `dev-coder`             | DeepSeek V4 Flash | high     | Everyday coding, automations, scripts, simple deploys, CI/CD (1M ctx)                                                                | Ephemeral      |
+| **Prod Coder**            | `prod-coder`            | DeepSeek V4 Pro   | high     | Complex integrations, APIs, backends, prod-critical refactors (1M ctx, native reasoning)                                             | Ephemeral      |
+| **Planner**               | `planner`               | DeepSeek V4 Pro   | high     | Architecture review, validation, expert advisor (1M ctx, native reasoning)                                                           | Ephemeral      |
+| **Grunt**                 | `grunt`                 | 5.4-Nano          | off      | File ops, tests, cleanup, bulk operations, scaffolding                                                                               | Ephemeral      |
+| **Workspace Auditor**     | `workspace-auditor`     | Pro               | high     | MWF workspace integrity audits (structural, registry, semantic)                                                                      | Ephemeral      |
 
 ---
 
