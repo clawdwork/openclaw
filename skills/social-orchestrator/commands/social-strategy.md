@@ -352,6 +352,125 @@ On research-mode entry: emit Telegram banner, set `state.run_mode = "research"`,
 
 ---
 
+## Instruction-Following Enforcement (Patches J-3 / J-4, added 2026-05-06)
+
+The cutmasterai dry-run surfaced a class of bug where agents emitted spec-violating outputs (backfilled `skill_versions_at_read` with current mtimes; brief tiers chosen without spec authorization; advisories never re-surfaced despite Patch M's mandate). The pattern: spec is correct, agent doesn't follow it. Three enforcement layers close this:
+
+### J-3a — State write schema validation
+
+Every `phases.{n}` block written to `social-strategy-state.json` MUST pass JSON schema validation BEFORE the write lands. Schema lives at [`references/state-schema.json`](state-schema.json) (authored alongside this section).
+
+Required fields per phase block (enforced as schema `required: [...]`):
+
+| Phase       | Required fields                                                                                                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `acquire`   | `status`, `ran_at`, `state_version_at_read`, `state_version_at_write`, `skill_versions_at_read`, `intake_complete`, `competitor_discovery.status`, `raw_files[]`                   |
+| `discover`  | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `data_source[ch][p]`, `baselines` ⊕ `projections` (per `data_source` discriminator), `spawn_path`              |
+| `analyze`   | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `patterns`, `competitive_format_analysis`                                                                      |
+| `aggregate` | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `pillars[]`, `cannibalization`, `trend_signals`, `output_path`, `run_metadata.{generator_model, critic_model}` |
+| `plan`      | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `calendar_path`, `cadence_per_channel`, `advisories_resurfaced[]`                                              |
+| `deliver`   | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `briefs[].brief_type`, `briefs[].path`, `advisories_resurfaced[]`                                              |
+| `report`    | `status`, `ran_at`, `state_version_at_*`, `skill_versions_at_read`, `deliverable_path`, `advisories_resurfaced[]`                                                                  |
+
+Schema additionally enforces:
+
+- `skill_versions_at_read[file].mtime` cannot exceed `ran_at` (catches Patch K-2 backfill at write time, not gate time)
+- `state_version_at_write > state_version_at_read` (the phase must have written at least once)
+- `data_source` discriminator: if `data_source[ch][p] == "projections_only"`, `baselines.{ch}.{p}` MUST be absent or empty (Patch F)
+- `briefs[].brief_type ∈ {"full", "skeletal"}` (Patch L) — schema rejects null or other strings
+
+Implementation: orchestrator wraps every state-mutating step in a small validator (`scripts/validate-state-write.py` reading `references/state-schema.json`). A failed schema check halts the phase with the specific violation message; agent is told to fix the field, not the whole phase.
+
+### J-3b — Phase pre-flight banner
+
+BEFORE entering any phase, the orchestrator emits a structured banner to Telegram (and stdout). The banner names the phase, lists every patch the phase honors, and enumerates the artifacts the phase will produce. Format:
+
+```
+═══════════════════════════════════════════════════════════
+PHASE 4 PRE-FLIGHT — PLAN
+═══════════════════════════════════════════════════════════
+Run mode: research
+State version at entry: 27
+Skills loaded (mtime):
+  - social-orchestrator/SKILL.md           2026-05-06T12:00:00Z
+  - social-orchestrator/commands/...md     2026-05-06T13:30:00Z
+  - social-plan/SKILL.md                   2026-05-04T09:00:00Z
+  - social-quality/SKILL.md                2026-05-06T15:00:00Z
+
+Patches honored this phase:
+  ✓ Patch A — Pre-launch path branch
+  ✓ Patch E — Single-channel fast path
+  ✓ Patch F — Baselines vs projections discriminator
+  ✓ Patch G — Research mode
+  ✓ Patch I-1 — State versioning
+  ✓ Patch I-5 — Skill versioning
+  ✓ Patch K-1 — No research-mode versioning exception
+  ✓ Patch K-2 — Backfill detection
+  ✓ Patch L — Brief tier definition (forwarded to Phase 5)
+  ✓ Patch M — Advisory re-surfacing
+
+Artifacts I will produce:
+  - calendar-{date}.md + calendar-{date}.json
+  - state.phases.plan.{calendar_path, cadence_per_channel, advisories_resurfaced[]}
+  - state.advisories[].surfaced_in_phase = "plan" (for any deferred advisory matching surface criteria)
+
+Open advisories at entry (Patch M):
+  - handle-squat-cutmasterai (status: deferred, re-surface_until: 2026-05-15)
+
+Beginning Phase 4 in 0s — say STOP to abort.
+═══════════════════════════════════════════════════════════
+```
+
+Why this works: the banner forces the agent to _commit_ to specific artifacts before producing them. Mid-phase drift (e.g., "I'll just skip the advisory re-surface because the brief is taking too long") becomes auditable — the post-phase auditor (J-4) compares actual state writes against banner promises.
+
+The orchestrator MUST emit this banner. Skipping it is a hard fail at Gate A `phase_preflight_present` check (Patch J-3b enforcement, added below).
+
+### J-4 — Post-phase auditor
+
+After every phase exits, before the next phase begins, the orchestrator runs `social-quality audit-phase --phase {n}`. This is a new sub-mode of `social-quality` (see [`social-quality/SKILL.md § Mode audit-phase`](../../social-quality/SKILL.md)). The auditor:
+
+1. Loads the phase pre-flight banner from `state.phases.{n}.preflight_banner` (orchestrator must persist the banner alongside the phase block)
+2. Diffs banner promises vs actual state writes in `state.phases.{n}`:
+   - Every artifact path the banner listed must exist on disk
+   - Every state field the banner enumerated must be present and non-null
+   - Every patch the banner claimed to honor must show evidence (e.g., Patch I-1 evidence = `state_version_at_*` fields populated; Patch M evidence = at least one entry in `advisories_resurfaced[]` if deferred advisories were open at entry)
+3. Emits `state.phases.{n}.audit = {status: "pass|warn|fail", findings: [...]}` and writes a markdown audit log to `phase-audit-{date}-{n}.md`
+4. On `fail`: orchestrator MUST NOT advance to phase {n+1} until the discrepancy is resolved (rebuild phase or document the deliberate deviation)
+
+The auditor catches every cutmasterai-class bug pre-emptively: backfilled fields, missed advisory re-surfaces, brief tier omissions, schema violations that slipped through J-3a, etc.
+
+### Banner-promise schema (state.phases.{n}.preflight_banner)
+
+```json
+"preflight_banner": {
+  "phase": "plan",
+  "emitted_at": "2026-05-06T15:30:00Z",
+  "run_mode": "research",
+  "state_version_at_entry": 27,
+  "skill_versions_at_read_snapshot": { ... },
+  "patches_honored": ["A","E","F","G","I-1","I-5","K-1","K-2","L","M"],
+  "artifacts_promised": [
+    {"type": "file", "path": "calendar-{date}.md"},
+    {"type": "file", "path": "calendar-{date}.json"},
+    {"type": "state_field", "path": "phases.plan.calendar_path"},
+    {"type": "state_field", "path": "phases.plan.cadence_per_channel"},
+    {"type": "state_field", "path": "phases.plan.advisories_resurfaced[]", "min_count": 1, "condition": "open_deferred_advisories_at_entry > 0"}
+  ],
+  "open_advisories_at_entry": [
+    {"id": "handle-squat-cutmasterai", "status": "deferred"}
+  ]
+}
+```
+
+### Anti-patterns
+
+- ❌ Emitting the banner but not persisting it to state — auditor has no ground truth to diff against
+- ❌ Auditor running but writing no audit log — auditor must produce `phase-audit-{date}-{n}.md` for forensic trail
+- ❌ Skipping audit on "small" phases (Phase 6 REPORT) — every phase audits; Phase 6 audit catches REPORT-time omissions like missing advisory banner
+- ❌ Treating audit fail as advisory — auditor fail blocks phase transition, no exceptions
+
+---
+
 ## Phase 0: ACQUIRE — Data Acquisition (15–25 min)
 
 ### Steps

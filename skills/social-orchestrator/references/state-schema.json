@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openclaw.ai/schemas/social-strategy-state-v1.json",
+  "title": "social-strategy-state",
+  "description": "Schema for social-strategy-state.json — every state write goes through this validator (Patch J-3a). Schema enforces required fields per phase, version-counter monotonicity, no-backfill of mtimes, and discriminator integrity for baselines vs projections.",
+  "type": "object",
+  "required": ["version_counter", "intake", "phases", "advisories", "run_mode"],
+  "properties": {
+    "version_counter": { "type": "integer", "minimum": 0 },
+    "run_mode": { "enum": ["live", "research"] },
+    "intake": { "$ref": "#/$defs/intake" },
+    "advisories": { "type": "array", "items": { "$ref": "#/$defs/advisory" } },
+    "phases": {
+      "type": "object",
+      "properties": {
+        "acquire": { "$ref": "#/$defs/phaseAcquire" },
+        "discover": { "$ref": "#/$defs/phaseDiscover" },
+        "analyze": { "$ref": "#/$defs/phaseGeneric" },
+        "aggregate": { "$ref": "#/$defs/phaseAggregate" },
+        "plan": { "$ref": "#/$defs/phasePlan" },
+        "deliver": { "$ref": "#/$defs/phaseDeliver" },
+        "report": { "$ref": "#/$defs/phaseGeneric" }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "patternProperties": {
+        "^(A|B|C)$": {
+          "type": "object",
+          "required": ["status", "iterations"],
+          "properties": {
+            "status": { "enum": ["pass", "warn", "fail", "pending"] },
+            "iterations": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "checks": { "type": "array" },
+            "run_metadata": { "type": "object" },
+            "exceptions": { "type": "array" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "phaseBase": {
+      "type": "object",
+      "required": [
+        "status",
+        "ran_at",
+        "state_version_at_read",
+        "state_version_at_write",
+        "skill_versions_at_read",
+        "preflight_banner"
+      ],
+      "properties": {
+        "status": { "enum": ["pending", "in_progress", "awaiting_user", "complete"] },
+        "ran_at": { "type": "string", "format": "date-time" },
+        "state_version_at_read": { "type": "integer", "minimum": 0 },
+        "state_version_at_write": { "type": "integer", "minimum": 0 },
+        "skill_versions_at_read": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["mtime", "size_bytes"],
+            "properties": {
+              "mtime": { "type": "string", "format": "date-time" },
+              "size_bytes": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "preflight_banner": { "$ref": "#/$defs/preflightBanner" },
+        "_validation": { "const": "schema_passed" },
+        "research_mode_metadata": { "$ref": "#/$defs/researchModeMetadata" },
+        "advisories_resurfaced": { "type": "array", "items": { "type": "object" } },
+        "audit": {
+          "type": "object",
+          "properties": {
+            "status": { "enum": ["pass", "warn", "fail"] },
+            "checks_run": { "type": "integer" },
+            "checks_passed": { "type": "integer" },
+            "checks_failed": { "type": "integer" },
+            "findings": { "type": "array" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "comment": "state_version_at_write must be > state_version_at_read",
+          "if": { "required": ["state_version_at_read", "state_version_at_write"] },
+          "then": {
+            "properties": {
+              "state_version_at_write": {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "phaseAcquire": {
+      "allOf": [
+        { "$ref": "#/$defs/phaseBase" },
+        {
+          "properties": {
+            "intake_complete": { "type": "boolean" },
+            "competitor_discovery": {
+              "type": "object",
+              "required": ["status"],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "complete",
+                    "research_needed",
+                    "research_needed_partial",
+                    "user_provided"
+                  ]
+                }
+              }
+            },
+            "raw_files": { "type": "array", "items": { "type": "string" } },
+            "path": { "enum": ["pre_launch", "live", "hybrid"] }
+          },
+          "required": ["intake_complete", "competitor_discovery", "raw_files"]
+        }
+      ]
+    },
+    "phaseDiscover": {
+      "allOf": [
+        { "$ref": "#/$defs/phaseBase" },
+        {
+          "properties": {
+            "spawn_path": { "enum": ["inline_fast_path", "parallel_subagent"] },
+            "data_source": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": { "enum": ["measured", "projections_only", "partial"] }
+              }
+            },
+            "baselines": { "type": "object" },
+            "projections": { "type": "object" }
+          },
+          "required": ["spawn_path", "data_source"]
+        }
+      ]
+    },
+    "phaseAggregate": {
+      "allOf": [
+        { "$ref": "#/$defs/phaseBase" },
+        {
+          "properties": {
+            "pillars": { "type": "array", "minItems": 1 },
+            "cannibalization": {},
+            "trend_signals": {},
+            "output_path": { "type": "string" },
+            "run_metadata": {
+              "type": "object",
+              "required": ["generator_model", "critic_model"],
+              "properties": {
+                "generator_model": { "type": "string", "minLength": 1 },
+                "critic_model": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "required": ["pillars", "output_path", "run_metadata"]
+        }
+      ]
+    },
+    "phasePlan": {
+      "allOf": [
+        { "$ref": "#/$defs/phaseBase" },
+        {
+          "properties": {
+            "calendar_path": { "type": "string" },
+            "cadence_per_channel": { "type": "object" }
+          },
+          "required": ["calendar_path", "cadence_per_channel"]
+        }
+      ]
+    },
+    "phaseDeliver": {
+      "allOf": [
+        { "$ref": "#/$defs/phaseBase" },
+        {
+          "properties": {
+            "briefs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["post_id", "path", "brief_type"],
+                "properties": {
+                  "post_id": { "type": "string" },
+                  "path": { "type": "string" },
+                  "brief_type": { "enum": ["full", "skeletal"] },
+                  "brief_type_override": { "type": "object" }
+                }
+              }
+            }
+          },
+          "required": ["briefs"]
+        }
+      ]
+    },
+    "phaseGeneric": { "allOf": [{ "$ref": "#/$defs/phaseBase" }] },
+    "preflightBanner": {
+      "type": "object",
+      "required": [
+        "phase",
+        "emitted_at",
+        "run_mode",
+        "state_version_at_entry",
+        "skill_versions_at_read_snapshot",
+        "patches_honored",
+        "artifacts_promised"
+      ],
+      "properties": {
+        "phase": {
+          "enum": ["acquire", "discover", "analyze", "aggregate", "plan", "deliver", "report"]
+        },
+        "emitted_at": { "type": "string", "format": "date-time" },
+        "run_mode": { "enum": ["live", "research"] },
+        "state_version_at_entry": { "type": "integer", "minimum": 0 },
+        "skill_versions_at_read_snapshot": { "type": "object" },
+        "patches_honored": { "type": "array", "items": { "type": "string" } },
+        "artifacts_promised": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["type", "path"],
+            "properties": {
+              "type": { "enum": ["file", "state_field"] },
+              "path": { "type": "string" },
+              "min_count": { "type": "integer" },
+              "condition": { "type": "string" }
+            }
+          }
+        },
+        "open_advisories_at_entry": { "type": "array" }
+      }
+    },
+    "researchModeMetadata": {
+      "type": "object",
+      "required": ["mode", "confidence"],
+      "properties": {
+        "mode": { "const": "research" },
+        "confidence": { "enum": ["qualitative", "low", "medium"] },
+        "primitives_used": { "type": "array", "items": { "type": "string" } },
+        "query_count": { "type": "integer", "minimum": 0 },
+        "caveats": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "advisory": {
+      "type": "object",
+      "required": ["id", "status", "raised_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "enum": ["open", "deferred", "resolved", "dismissed"] },
+        "raised_at": { "type": "string", "format": "date-time" },
+        "user_response": { "type": ["string", "null"] },
+        "re_surface_until": { "type": ["string", "null"], "format": "date-time" },
+        "re_surface_at_phases": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "intake": {
+      "type": "object",
+      "required": [
+        "channels",
+        "goal",
+        "differentiators",
+        "competitors_per_channel",
+        "voice_rules_ref"
+      ],
+      "properties": {
+        "channels": { "type": "object" },
+        "goal": { "type": "object" },
+        "differentiators": { "type": "array" },
+        "competitors_per_channel": { "type": "object" },
+        "voice_rules_ref": { "type": "string" },
+        "banned_language": { "type": "array" },
+        "product_description": { "type": "string" }
+      }
+    }
+  }
+}

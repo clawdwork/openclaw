@@ -49,7 +49,82 @@ Lint a single post or brief against the active `voice.json`.
    - First-person/third-person rule per channel (Warning)
 5. Score the post on the 4-D vector and compare against (channel-adjusted) target — flag any axis off by >0.30
 
-**Output**: pass/warn/fail JSON report + suggestions inline
+**Output**: pass/warn/fail JSON report + suggestions inline (schema below).
+
+## Enforce Output Schema
+
+Mode B emits a single JSON object matching this shape. Used by hooks (`validate-social-content.py`), Gate B (`brief_voice_check`), and the orchestrator's per-post quality screen.
+
+```json
+{
+  "file": "projects/celavii/content/social/briefs/celavii-ig-001-brief.md",
+  "channel": "celavii",
+  "context": "to_marketers",
+  "voice_spec": ".styles/celavii/voice.json",
+  "voice_spec_version": "2026-04-15",
+  "status": "fail",
+  "summary": "1 hard fail (forbidden phrase), 2 warnings (sentence length, AI-slop tell)",
+  "scores_4d": {
+    "humor": { "value": 0.1, "target": 0.0, "delta": 0.1, "off_axis": false },
+    "formality": { "value": -0.6, "target": -0.5, "delta": 0.1, "off_axis": false },
+    "respectfulness": { "value": 0.0, "target": 0.0, "delta": 0.0, "off_axis": false },
+    "enthusiasm": { "value": 0.7, "target": 0.4, "delta": 0.3, "off_axis": false }
+  },
+  "specificity_score": 6,
+  "specificity_target": 7,
+  "issues": [
+    {
+      "id": "forbidden_phrase",
+      "severity": "fail",
+      "rule": "voice.forbidden_phrases",
+      "location": { "line": 14, "char_start": 22, "char_end": 49 },
+      "matched": "in today's fast-paced world",
+      "message": "Forbidden phrase from voice.json hits the AI-slop list — rewrite without filler opener.",
+      "suggestion": "Drop the clause; lead with the concrete number."
+    },
+    {
+      "id": "sentence_length",
+      "severity": "warn",
+      "rule": "voice.structural.max_sentence_words",
+      "location": { "line": 22, "char_start": 0, "char_end": 187 },
+      "matched": "...",
+      "message": "Sentence is 34 words; cap is 28 (channel: celavii).",
+      "suggestion": "Split at the comma after 'agents' (line 22, char ~92)."
+    },
+    {
+      "id": "ai_slop_tell",
+      "severity": "warn",
+      "rule": "voice.ai_slop_tells",
+      "location": { "line": 8, "char_start": 0, "char_end": 14 },
+      "matched": "Look no further",
+      "message": "Phrase appears in voice.json#ai_slop_tells — strong LLM-tell.",
+      "suggestion": "Replace with the action: '<verb> <noun>'."
+    }
+  ],
+  "suggestions_count": 3,
+  "ran_at": "2026-05-06T19:30:00Z"
+}
+```
+
+### Status semantics
+
+- `"pass"` — zero hard fails, zero warnings. Brief proceeds.
+- `"warn"` — zero hard fails, ≥1 warning. Brief proceeds; warnings surfaced to user as inline suggestions; `social-quality` Gate B records but does not block.
+- `"fail"` — ≥1 hard fail. Brief generation halts; `social-quality` Gate B fails; user must rewrite or override.
+
+### Severity → rule mapping (canonical)
+
+| Issue id           | Severity | Source rule (voice.json key)           |
+| ------------------ | -------- | -------------------------------------- |
+| `forbidden_phrase` | fail     | `forbidden_phrases[]`                  |
+| `specificity_low`  | fail     | `structural.min_specificity_score`     |
+| `four_d_off_axis`  | fail     | `four_d.{axis}.target` (delta > 0.30)  |
+| `ai_slop_tell`     | warn     | `ai_slop_tells[]`                      |
+| `sentence_length`  | warn     | `structural.max_sentence_words`        |
+| `paragraph_length` | warn     | `structural.max_paragraph_words`       |
+| `pov_violation`    | warn     | `channel_overrides.{ch}.point_of_view` |
+
+`location` is byte-accurate to enable hooks to diff/replace inline. `suggestion` is optional; absence means "rewrite required, mechanical replacement not safe".
 
 ## Voice Spec Location
 

@@ -1,0 +1,45 @@
+{
+  "_doc": "Thresholds for social-cannibalization. See SKILL.md § Thresholds for derivation.",
+  "embedding_model": "text-embedding-3-small",
+  "rules": [
+    {
+      "id": "same_channel_0_7_days",
+      "scope": "same_channel",
+      "max_days_apart": 7,
+      "cosine_threshold": 0.8,
+      "severity": "fail",
+      "message": "Same channel, ≤7 days apart, cosine ≥0.80 — block calendar"
+    },
+    {
+      "id": "same_channel_8_30_days",
+      "scope": "same_channel",
+      "min_days_apart": 8,
+      "max_days_apart": 30,
+      "cosine_threshold": 0.85,
+      "severity": "warn",
+      "message": "Same channel, 8–30 days apart, cosine ≥0.85 — request rewrite or reschedule"
+    },
+    {
+      "id": "same_channel_31_plus_days",
+      "scope": "same_channel",
+      "min_days_apart": 31,
+      "cosine_threshold": 1.01,
+      "severity": "pass",
+      "message": "Same channel, ≥31 days apart — temporal distance neutralizes overlap"
+    },
+    {
+      "id": "cross_channel_warn",
+      "scope": "cross_channel",
+      "cosine_threshold": 0.8,
+      "severity": "warn",
+      "message": "Cross-channel cosine ≥0.80 — channels should be distinct"
+    },
+    {
+      "id": "cross_channel_fail",
+      "scope": "cross_channel",
+      "cosine_threshold": 0.9,
+      "severity": "fail",
+      "message": "Cross-channel cosine ≥0.90 — likely misrouted post"
+    }
+  ]
+}
