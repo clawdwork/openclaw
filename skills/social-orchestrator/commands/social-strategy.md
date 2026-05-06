@@ -26,7 +26,7 @@ description: >
 /social_strategy help                     → this block
 ```
 
-**Output**: `~/dev/workspace/projects/{project}/research/social/` populated with `social-strategy-state.json`, `aggregate-report-{date}.{md,json}`, `publication-calendar.md`, `briefs/*.md`, plus a Next.js print-ready PDF in `deliverables/social-report-v1/`.
+**Output**: `~/dev/workspace/projects/{project}/research/social/{run_id}/` populated with `state.json`, `aggregate-report.{md,json}`, `calendar.{md,json}`, `briefs/*.md`, `phase-audits/*.md`, `preflight-banners/*.md`, plus the print-ready HTML deliverable in `deliverables/social-report.html`. The project's `research/social/INDEX.md` gets a row for this run. See [`references/run-id-derivation.md`](../references/run-id-derivation.md) for the `run_id` derivation rule (Patch N).
 
 **Cost**: ~$8–14 + Apify scrape costs (Tier-1 ops only). See [§ Cost Estimate](#cost-estimate).
 
@@ -40,13 +40,17 @@ User says any of: `/social_strategy`, "build social strategy", "plan our social 
 
 ## Intake Flow (REQUIRED — run before any phase)
 
-### Step 1: Check for existing state
+### Step 1: Check for existing state (Patch N — read INDEX.md, NOT file-glob)
 
 ```bash
-ls ~/dev/workspace/projects/*/research/social/social-strategy-state.json 2>/dev/null
+cat ~/dev/workspace/projects/{project}/research/social/INDEX.md 2>/dev/null
 ```
 
-If found and `state.intake.locked=true`: ask user "Resume {project} or start new?" Default to resume.
+INDEX.md is the per-project run manifest (see [`references/INDEX-template.md`](../references/INDEX-template.md)). Surface rows where `status ∈ {running, awaiting_user, failed}` as resume candidates; default to most-recently-started.
+
+If INDEX.md doesn't exist: the project has never run `/social_strategy` under Patch N. Check for legacy `social-strategy-state.json` at the un-scoped path; if present, prompt the user to mark it `legacy_pre_patch_n` in a new INDEX.md before starting fresh (do not delete; archive to `_superseded/`).
+
+A user-confirmed resume reads `state.json` from the matching run's folder (`research/social/{run_id}/state.json`), NOT the legacy un-scoped path.
 
 ### Step 2: Five Questions (one at a time, Telegram-friendly)
 
@@ -76,19 +80,29 @@ Auto-fill from intake without asking:
 - `~/dev/workspace/.styles/{project}/brand.json` (colors, taglines)
 - `intake` block built by Step 2 above
 
-## Output
+## Output (Patch N — per-run scoping)
 
 ```
 ~/dev/workspace/projects/{project}/research/social/
-├── social-strategy-state.json
-├── raw/                                          ← all scraped JSONs (social-discover, competitor-scrape)
-├── aggregate-report-{date}.md                    ← LLM-readable summary (Phase 3)
-├── aggregate-report-{date}.json                  ← full structured payload
-├── publication-calendar.md                       ← Phase 4 output
-├── briefs/{channel}-{post-id}-brief.md           ← Phase 5 output (one per planned post)
-├── briefs/{channel}-{post-id}-hooks.md           ← hook variants (5+, archetype-tagged)
-└── deliverables/social-report-v1/                ← Phase 6 Next.js print-ready PDF project
+├── INDEX.md                                              ← cross-run manifest (Patch N)
+└── {run_id}/                                             ← e.g. celavii-instagram-2026-05-06
+    ├── state.json                                        ← single source of truth (was social-strategy-state.json)
+    ├── preflight-banners/                                ← Patch J-3b artifacts (one per phase)
+    │   ├── 0-acquire.md ... 6-report.md
+    ├── phase-audits/                                     ← Patch J-4 artifacts (one per phase exit)
+    │   ├── 0-acquire.md ... 6-report.md
+    ├── raw/                                              ← all scraped JSONs (social-discover, competitor-scrape)
+    ├── aggregate-report.md, aggregate-report.json        ← Phase 3 outputs (no date suffix — folder is dated)
+    ├── calendar.md, calendar.json                        ← Phase 4 outputs
+    ├── gate-a-report.md, gate-b-report.md                ← critic verdicts
+    ├── briefs/                                           ← Phase 5 outputs
+    │   ├── {channel}-{platform}-001-brief.md ... NNN
+    │   └── {channel}-{platform}-001-hooks.md ...
+    └── deliverables/
+        └── social-report.html                            ← Phase 6 print-ready single-file
 ```
+
+`run_id` is computed at Phase 0 entry per [`references/run-id-derivation.md`](../references/run-id-derivation.md). Format: `{channel-list}-{platform-list}-{YYYY-MM-DD}[-r{N}]`.
 
 ## Data Persistence
 
@@ -475,6 +489,12 @@ The auditor catches every cutmasterai-class bug pre-emptively: backfilled fields
 
 ### Steps
 
+0. **Compute run_id + initialize run folder (Patch N)** — once intake is locked:
+   - Derive `run_id` per [`references/run-id-derivation.md`](../references/run-id-derivation.md) from `intake.channels` keys + union of platforms in `intake.identities[ch].handles`
+   - Create `projects/{project}/research/social/{run_id}/` and subfolders `raw/`, `briefs/`, `phase-audits/`, `preflight-banners/`, `deliverables/`
+   - Write `state.json` to `{run_id}/state.json` (this is the only state file going forward; `state.intake.run_id = "{run_id}"` is set as the canonical record of what folder this state belongs to)
+   - Initialize / append to `projects/{project}/research/social/INDEX.md` per [`references/INDEX-template.md`](../references/INDEX-template.md). Append a row: `| {run_id} | {channels} | {platforms} | {now ET} | acquire | running | {run_mode} | yes |`
+   - Emit Phase 0 pre-flight banner (Patch J-3b) to `{run_id}/preflight-banners/0-acquire.md` AND persist a copy to `state.phases.acquire.preflight_banner`
 1. **Resolve handles** — call `social-discover resolve --platform {p} --handles {...}` for each (channel × platform). The resolver returns `{handle, channel_exists: bool, handle_available: bool, channel_id?}`. If `channel_exists=false`, set `state.phases.acquire.pre_launch[ch][p] = true` and proceed to **pre-launch branch** (below). Otherwise continue to Step 2.
 2. **Profile baseline** — `social-discover profile` for each handle → `raw/celavii-{handle}-{platform}-profile-{ts}.json`. SKIPPED on pre-launch branch.
 3. **Last-N posts** — `social-discover` Mode A continued; default N=50, configurable. SKIPPED on pre-launch branch.
