@@ -44,7 +44,7 @@
                             ▼
             ┌──────────────────────────────────────────┐
             │  AUDITOR (social-phase-auditor)          │
-            │  - Different model (Opus, not Sonnet)    │
+            │  - Different model (DeepSeek, not Gemini)│
             │  - Reads Template[N] + state.phases.{n}  │
             │  - Diffs artifacts_promised vs actual    │
             │  - Verifies patches_honored evidence     │
@@ -112,7 +112,7 @@ Add these two entries to `~/dev/config/openclaw.json#agents.list` (placement: al
   "id": "social-phase-executor",
   "name": "Social Phase Executor",
   "workspace": "/Users/operator/dev/workspace",
-  "model": "anthropic/claude-sonnet-4-6",
+  "model": "google/gemini-3.1-pro-preview",
   "thinkingDefault": "medium",
   "skills": [
     "social-orchestrator",
@@ -161,7 +161,10 @@ Add these two entries to `~/dev/config/openclaw.json#agents.list` (placement: al
   "id": "social-phase-auditor",
   "name": "Social Phase Auditor",
   "workspace": "/Users/operator/dev/workspace",
-  "model": "anthropic/claude-opus-4-7",
+  "model": {
+    "primary": "openrouter/deepseek/deepseek-v4-pro",
+    "fallbacks": ["google/gemini-3.1-pro-preview"]
+  },
   "thinkingDefault": "low",
   "skills": ["social-quality", "social-orchestrator"],
   "identity": { "name": "PhaseAuditor", "emoji": "🛂" },
@@ -175,7 +178,7 @@ Add these two entries to `~/dev/config/openclaw.json#agents.list` (placement: al
 - Input: `{ phase: "<phase_id>", run_id: "<id>", state_path: "<abs path>", template: "<verbatim Template[N]>" }`
 - Output: `{ status: "pass"|"warn"|"fail", checks_run: <int>, findings: [{check: <id>, severity: <level>, message: <text>}] }`
 
-The model split (Sonnet executor on Anthropic, Opus auditor on Anthropic) honors Article 7's cross-model critic boundary. Models are swappable: any pair from `{Anthropic, OpenRouter (DeepSeek/Kimi/GLM), Google}` works as long as `executor.model ≠ auditor.model`. The architecture's V7 default DeepSeek-V4-Pro (executor) + Gemini-3.1-Pro (auditor) pair is also valid.
+The model split (Gemini-3.1-Pro executor on Google, DeepSeek-V4-Pro auditor on OpenRouter with Gemini-3.1-Pro fallback) honors Article 7's cross-model critic boundary in normal operation. Under fallback both end up Gemini — Article 7 violated as documented degraded mode (the auditor's independence collapses but the pipeline continues; flag in logs for review). Models are swappable: any pair from `{Anthropic, OpenRouter (DeepSeek/Kimi/GLM), Google}` works as long as `executor.model ≠ auditor.model.primary`.
 
 ### Install steps (after editing openclaw.json)
 
