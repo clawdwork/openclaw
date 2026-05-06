@@ -4,12 +4,12 @@
 
 ## The four enforcement layers
 
-| Layer                            | Mechanism                                                                                                                                                                          | Where it lives                                                                            |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| L1 — subagent-per-phase          | `sessions_spawn` with fresh context per phase; defeats skill-cache staleness                                                                                                       | This document + `commands/social-strategy.md` Phase Templates section                     |
-| L2 — schema validator hook       | `before_tool_call` hook intercepts Write/Edit on `state.json`, validates against `state-schema.json`, blocks invalid writes                                                        | Plugin at `~/.openclaw/plugins/social-strategy-state-validator/`                          |
-| L3 — automatic audit-phase spawn | Orchestrator main loop spawns `social-phase-auditor` after every phase; phase advancement blocks on audit fail                                                                     | `commands/social-strategy.md` Phase Templates § How the orchestrator uses these templates |
-| L4 — literal phase templates     | `commands/social-strategy.md` § Phase Templates: each phase's `artifacts_promised[]` and `patches_honored[]` are frozen JSON blocks the agent serializes verbatim, not paraphrases | `commands/social-strategy.md` Phase Templates section                                     |
+| Layer                            | Mechanism                                                                                                                                                                                                                            | Where it lives                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| L1 — subagent-per-phase          | `sessions_spawn` with fresh context per phase; defeats skill-cache staleness                                                                                                                                                         | This document + `commands/social-strategy.md` Phase Templates section                     |
+| L2 — schema validator hook       | `before_tool_call` hook intercepts Write/Edit on `state.json`, validates against `state-schema.json`, blocks invalid writes. **Status: designed, not installed (openclaw 2026.4.25 lacks tool-call hook surface)** — see § L2 status | Plugin scaffold at `.system/features/social-strategy/plugin/state-validator/`             |
+| L3 — automatic audit-phase spawn | Orchestrator main loop spawns `social-phase-auditor` after every phase; phase advancement blocks on audit fail                                                                                                                       | `commands/social-strategy.md` Phase Templates § How the orchestrator uses these templates |
+| L4 — literal phase templates     | `commands/social-strategy.md` § Phase Templates: each phase's `artifacts_promised[]` and `patches_honored[]` are frozen JSON blocks the agent serializes verbatim, not paraphrases                                                   | `commands/social-strategy.md` Phase Templates section                                     |
 
 ## The orchestrator → phase-executor → auditor loop
 
@@ -74,6 +74,20 @@ The `before_tool_call` hook for `Write`/`Edit` runs in non-LLM code (TypeScript 
 5. The agent MUST fix the data shape; there's no "skip validation" path
 
 This is the only layer that's _physically_ impossible for the agent to bypass — hooks run in the openclaw runtime, not in the LLM's reasoning loop.
+
+#### L2 status (2026-05-06): designed, not installed
+
+The handler at `.system/features/social-strategy/plugin/state-validator/handler.ts` is correct against the spec, but **openclaw 2026.4.25 does not expose a `before_tool_call` hook event**. Available hook events in this runtime are limited to: `command`, `command:new`, `command:reset`, `agent:bootstrap`, `gateway:startup`. The L2 layer therefore cannot fire on Write/Edit calls until openclaw core grows a tool-call hook surface.
+
+Until L2 lands:
+
+- L1 (fresh subagent per phase) prevents stale-skill-cache drift — handles the failure mode Phase 0 of celavii-instagram-2026-05-06 actually hit.
+- L3 (auditor subagent) catches the schema violations L2 would catch — just one loop iteration later (after the executor returns) instead of at the seam (mid-write).
+- The agent can in theory write malformed state.json. The auditor will flag it as `fail` and the orchestrator will halt phase advancement before the malformed state contaminates downstream phases.
+
+The architecture works without L2; it just has a wider window between violation-introduced and violation-caught. To close the window, see "Path to activation" in the plugin scaffold's README.
+
+Tracked as: openclaw upstream PR (add `tool:before` event), then reformat plugin to `HOOK.md` + `handler.js` openclaw hook-pack convention, then `openclaw plugins install ...`. ~1-2 days upstream + ~1 hour reformat.
 
 ### L3 — automatic audit-phase spawn
 
@@ -181,26 +195,16 @@ openclaw agents list 2>&1 | grep "social-phase-"
 
 ## Validator plugin (L2) install
 
-Plugin manifest + handler live at `~/.openclaw/plugins/social-strategy-state-validator/`:
-
-```
-~/.openclaw/plugins/social-strategy-state-validator/
-├── plugin.json          # manifest
-├── handler.ts           # before_tool_call hook
-├── schema.json          # symlink → workspace/skills/.../state-schema.json
-└── README.md            # install + test instructions
-```
-
-After install: `openclaw plugin reload` picks up the manifest. Hook fires automatically on every Write/Edit targeting `*/research/social/{run_id}/state.json`.
+**Not installable on openclaw 2026.4.25** — see § L2 status above. The plugin scaffold lives at `~/dev/openclaw/.system/features/social-strategy/plugin/state-validator/` (manifest + TypeScript handler) but cannot be wired until openclaw core exposes a tool-call hook event. The plugin's README documents the upstream-PR path to activation.
 
 ## Failure semantics
 
-| Layer fires                                             | Result                                                              | Recovery                                                                                                                                        |
-| ------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| L2 schema validator blocks a Write                      | Phase executor receives block reason; must fix data shape and retry | Phase executor's next attempt; iteration counted toward Article 8 cap                                                                           |
-| L3 audit returns `fail`                                 | Orchestrator halts phase advancement                                | User reviews findings; either remediates (re-spawn phase executor) or accepts deviation with documented `cross_model_exception` / similar field |
-| L1 subagent fails to spawn                              | Orchestrator falls back to inline execution with prominent warning  | Logged as `phase_orchestration_degraded`; auditor still runs                                                                                    |
-| L4 template lookup fails (template missing for a phase) | Hard fail at orchestrator startup                                   | Spec bug; cannot proceed                                                                                                                        |
+| Layer fires                                             | Result                                                                                                                 | Recovery                                                                                                                                        |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| L2 schema validator blocks a Write                      | Phase executor receives block reason; must fix data shape and retry. **Currently inactive** — fall through to L3 catch | Phase executor's next attempt; iteration counted toward Article 8 cap                                                                           |
+| L3 audit returns `fail`                                 | Orchestrator halts phase advancement                                                                                   | User reviews findings; either remediates (re-spawn phase executor) or accepts deviation with documented `cross_model_exception` / similar field |
+| L1 subagent fails to spawn                              | Orchestrator falls back to inline execution with prominent warning                                                     | Logged as `phase_orchestration_degraded`; auditor still runs                                                                                    |
+| L4 template lookup fails (template missing for a phase) | Hard fail at orchestrator startup                                                                                      | Spec bug; cannot proceed                                                                                                                        |
 
 ## Migration path from current single-agent execution
 

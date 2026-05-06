@@ -13,6 +13,31 @@ description: >
 
 ---
 
+## ⚙️ Orchestration is now deterministic code (Patch O+1, 2026-05-06)
+
+**Phase order, audit gating, and halt-on-fail are no longer interpreted from this file.** They live in TypeScript at [`~/dev/workspace/scripts/social-strategy/`](file:///Users/operator/dev/workspace/scripts/social-strategy/).
+
+### How to invoke
+
+The agent receiving `/social_strategy` should:
+
+1. Conduct intake (the questions in § Phase 0 below — this part is still LLM-judgment)
+2. Build an intake JSON object: `{ "channels": {...}, "identities": {...}, ...other intake fields }`
+3. Shell out:
+   ```bash
+   echo '<intake-json>' | npx tsx ~/dev/workspace/scripts/social-strategy/src/run.ts --intake-stdin
+   ```
+4. Stream the script's stderr (phase progress) to chat
+5. On exit, parse stdout JSON `{ run_id, run_dir, status, phases, ... }` and post a summary
+
+### What this file is now
+
+This document remains the **specification** that the `social-phase-executor` subagent reads inside each phase (§ Phase Templates is fed to it verbatim by the script). Phase descriptions (§ Phase 0 ACQUIRE through § Phase 6 REPORT below) describe what each executor invocation should do. The orchestrator-script pulls the `subagent_spawn` config + `artifacts_promised` from § Phase Templates and dispatches.
+
+**You no longer interpret the for-loop. The script does.**
+
+---
+
 ## Help
 
 ```

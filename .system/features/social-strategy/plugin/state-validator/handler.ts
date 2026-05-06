@@ -1,14 +1,22 @@
 /**
  * social-strategy-state-validator hook handler (Patch J-3a + Patch O).
  *
+ * STATUS (2026-05-06): designed, NOT installable on openclaw 2026.4.25.
+ * The runtime in this version exposes only command/agent/gateway hook
+ * events — there is no `before_tool_call` (or equivalent tool-call) hook
+ * surface. This handler is correct against the spec but has no event to
+ * bind to. See ./README.md § "Path to activation" for the upstream PR
+ * required, and ../../../../skills/social-orchestrator/references/phase-orchestration.md
+ * § "L2 status" for what carries enforcement until then (L1+L3+L4).
+ *
  * Wires into openclaw `before_tool_call` to intercept Write/Edit tools that
  * target `research/social/{run_id}/state.json` (under any project root). Validates the proposed
  * content against `state-schema.json`. Returns `{ block: true, blockReason }`
  * on schema violation; otherwise returns `{}` (allow).
  *
- * Non-bypassable: the hook runs in the openclaw runtime, not in the LLM
- * reasoning loop. The agent cannot skip validation by reasoning around it —
- * the underlying Write tool just sees the block.
+ * Non-bypassable (once installed): the hook runs in the openclaw runtime,
+ * not in the LLM reasoning loop. The agent cannot skip validation by
+ * reasoning around it — the underlying Write tool just sees the block.
  *
  * Schema source-of-truth: `~/dev/workspace/skills/social-orchestrator/references/state-schema.json`.
  */
