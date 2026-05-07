@@ -198,26 +198,6 @@ If the user asks for help on a specific command:
 
 1. Read `commands/{command-name}.md` → print the `## Help` section.
 
-## Run-ID Derivation (Patch N, added 2026-05-06)
-
-Every `/social_strategy` invocation derives a deterministic `run_id` and scopes ALL artifacts under `projects/{project}/research/social/{run_id}/`. This prevents collisions when the same project runs strategies for different channels or platforms (e.g. `celavii × instagram` today, `celavii × youtube` next month — both must coexist).
-
-The canonical algorithm + edge cases live at [`references/run-id-derivation.md`](references/run-id-derivation.md). Quick reference:
-
-```
-run_id = "{channel-list}-{platform-list}-{YYYY-MM-DD}[-{retry-suffix}]"
-
-Single channel × single platform:  celavii-instagram-2026-05-06
-Single channel × multi-platform:   celavii-multi-2026-05-06
-Multi-channel (2) × single:        elioth-celavii-instagram-2026-05-06
-Multi-channel (3+):                multichannel-instagram-2026-05-06
-Same-day re-run:                   celavii-instagram-2026-05-06-r2
-```
-
-Cross-run discovery happens via [`research/social/INDEX.md`](references/INDEX-template.md) — the per-project run manifest. The orchestrator updates INDEX.md at five moments: run-start, every phase-exit, gate-halt, run-complete, run-abandon. Resume detection reads INDEX.md (NOT `ls *-state.json`).
-
-**state file path**: `projects/{project}/research/social/{run_id}/state.json` (Patch N replaces the old hardcoded `social-strategy-state.json`).
-
 ## Reference Files
 
 Read on-demand:
@@ -225,9 +205,6 @@ Read on-demand:
 - `references/social-constitution.md` — the firm's 10 articles (anti-slop, sourced claims, distinctive POV, banned language, critic-reads-intake, cross-model critic, iteration cap, save-rate-over-likes). Runtime-loadable — every gate cites by article number
 - `references/status-semantics.md` — when each step flips to `complete`. Defines `pending | in_progress | awaiting_user | complete`, the cascade rule (parent = min of children), and the cardinal sin (writing `complete` while user input still pending)
 - `references/research-mode.md` — fallback mode when Celavii API / platform adapters are unavailable. Documents per-phase behavior changes, mandatory state metadata (`research_mode_metadata.confidence`), and report caveats. Activates automatically on missing `CELAVII_API_KEY` or adapter gates
-- `references/run-id-derivation.md` — Patch N output-scoping algorithm, edge cases, test cases (read at Phase 0 to compute `run_id`)
-- `references/INDEX-template.md` — per-project run-manifest schema + status enum + update points (read on every run-start, gate-halt, and run-end)
-- `references/state-schema.json` — Patch J-3a JSON Schema validator for `state.json` writes; orchestrator MUST validate every state mutation before write
 
 ## Dry-run findings convention
 

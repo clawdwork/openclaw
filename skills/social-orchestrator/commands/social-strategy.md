@@ -1,84 +1,15 @@
 ---
 name: social-strategy
 description: >
-  /social_strategy — 7-phase social-media strategy pipeline. Host agent's job
-  is intake + shell out to ~/dev/workspace/scripts/social-strategy/. Do NOT
-  interpret the phase prose in this file as runtime instructions; that's
-  for the executor subagent the script spawns.
+  /social_strategy — 7-phase social-media strategy pipeline (ACQUIRE → DISCOVER →
+  ANALYZE → AGGREGATE → PLAN → DELIVER → REPORT) with critic gates A and B.
+  Mirrors /seo_strategy. Cross-model critic + 3-iteration cap enforced at every
+  gate. Outputs publication calendar + per-post briefs + print-ready PDF.
 ---
 
-# 🛑 HOST-AGENT INSTRUCTIONS — READ THIS BLOCK ONLY
+# /social_strategy
 
-**You are the host agent receiving `/social_strategy`. Your job has exactly four steps. Do not "run Phase 0". Do not write preflight banners. Do not render audit verdicts. The script does all of that. If you find yourself executing the phase prose below, you are doing it wrong — re-read this block and shell out.**
-
-## What you do
-
-1. **Intake.** Ask the user (or accept from the prompt) for the values listed in § Intake Values below. Confirm in one line. Build an intake JSON.
-2. **Save** the intake JSON to `/tmp/social-strategy-intake-{timestamp}.json`.
-3. **Run the script** — copy this command verbatim, substituting `{path}` and `{project-root}`:
-   ```bash
-   cd ~/dev/workspace/scripts/social-strategy && \
-     npx tsx src/run.ts \
-       --intake {path-to-intake-json} \
-       --project-root ~/dev/workspace/projects/{project-name}
-   ```
-   Stream the script's **stderr** to chat as it runs (phase-by-phase progress feed). The script handles run_id derivation, schema validation, executor + auditor spawning, halt-on-fail, INDEX.md updates, and final state. You do nothing during execution.
-4. **Report.** When the script exits, its **stdout** is a single JSON envelope: `{ run_id, run_dir, status, phases, failed_at, failed_findings }`. Parse it and tell the user:
-   - `status: complete` → run_id + deliverable path + 2-line per-phase summary read from `phase-audits/`
-   - `status: failed` → which phase, the audit findings, the run_dir to inspect, **don't auto-retry**
-
-## Anti-patterns — do not do these
-
-- ❌ Reading § Phase 0..6 below and producing artifacts yourself
-- ❌ Writing your own preflight banner (the script writes it; the executor subagent fills it in)
-- ❌ Rendering an audit verdict (the auditor subagent does this)
-- ❌ Choosing your own `run_id` (e.g. `celavii-ig-...` instead of `celavii-instagram-...`) — Patch N derivation is in the script
-- ❌ Manually creating the run directory structure (the script does it)
-- ❌ Stopping between phases waiting for user approval (the script runs end-to-end; halt only on audit fail)
-
-If the script crashes or exits with a non-JSON stdout, that's a bug — report the stderr trail and stop. Do not "retry by hand".
-
-## Intake Values
-
-Required (the schema validator will reject the script's first state.json write if any of these are missing):
-
-| Field                     | Shape                                                  | Notes                                                                          |
-| ------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `channels`                | `{ <channel>: { kind, stage } }`                       | One entry per channel handle.                                                  |
-| `identities`              | `{ <channel>: { handles: { <platform>: <handle> } } }` | Platform keys must be literal: `instagram`, `tiktok`, `x` — NOT abbreviations. |
-| `goal`                    | `{ primary, horizon_days, kpis }`                      | What success looks like.                                                       |
-| `differentiators`         | `string[]`                                             | 2–4 specific to this brand.                                                    |
-| `competitors_per_channel` | `{ <channel>: string[] }`                              | 3–6 handles per channel.                                                       |
-| `voice_rules_ref`         | `string` (path)                                        | Where the brand voice lives.                                                   |
-| `run_mode`                | `"live"                                                | "research"`                                                                    | `live` hits real APIs (costs credits); `research` uses projections. |
-
-Optional: `banned_language: string[]`, `product_description: string`.
-
-## Where things live
-
-- **Orchestrator script**: [`~/dev/workspace/scripts/social-strategy/`](file:///Users/operator/dev/workspace/scripts/social-strategy/) — TypeScript, runs the loop. README inside.
-- **Run output**: `~/dev/workspace/projects/{project}/research/social/{run_id}/`
-- **Run manifest**: `~/dev/workspace/projects/{project}/research/social/INDEX.md`
-- **State schema**: [`references/state-schema.json`](../references/state-schema.json) — validated on every state write.
-- **run_id rule**: [`references/run-id-derivation.md`](../references/run-id-derivation.md) — Patch N.
-- **Phase architecture**: [`references/phase-orchestration.md`](../references/phase-orchestration.md) — Patch O 4-layer enforcement.
-
-## Slash subcommands
-
-```
-/social_strategy                          → run end-to-end (intake first)
-/social_strategy resume <run_id>          → re-invoke script against existing run_dir (not yet implemented in script)
-/social_strategy dry-run                  → script supports --dry-run to skip the phase loop
-/social_strategy help                     → this block
-```
-
----
-
-# 📚 EXECUTOR-SUBAGENT REFERENCE (everything below this line)
-
-> **Host agent: STOP READING HERE.** Everything below is the specification the `social-phase-executor` subagent loads when the script spawns it for a given phase. The script feeds the relevant § Phase Templates entry to the executor as its task message; the executor reads § Phase 0..6 + § Skill Versioning + § State Versioning + § Advisory Re-Surfacing for context on its own phase only.
->
-> **If you (host) are reading this, you've gone past your job.** Go back to the top of this file. Run the script. Don't interpret what's below.
+> **Phase D contract.** Mirrors [`workspace/skills/seo/commands/seo-strategy.md`](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md) (1232 lines). 7 phases + 2 gates + remediation loop. Atomic skills (Phase B) handle the work; this command is the wiring.
 
 ---
 
@@ -95,7 +26,7 @@ Optional: `banned_language: string[]`, `product_description: string`.
 /social_strategy help                     → this block
 ```
 
-**Output**: `~/dev/workspace/projects/{project}/research/social/{run_id}/` populated with `state.json`, `aggregate-report.{md,json}`, `calendar.{md,json}`, `briefs/*.md`, `phase-audits/*.md`, `preflight-banners/*.md`, plus the print-ready HTML deliverable in `deliverables/social-report.html`. The project's `research/social/INDEX.md` gets a row for this run. See [`references/run-id-derivation.md`](../references/run-id-derivation.md) for the `run_id` derivation rule (Patch N).
+**Output**: `~/dev/workspace/projects/{project}/research/social/` populated with `social-strategy-state.json`, `aggregate-report-{date}.{md,json}`, `publication-calendar.md`, `briefs/*.md`, plus a Next.js print-ready PDF in `deliverables/social-report-v1/`.
 
 **Cost**: ~$8–14 + Apify scrape costs (Tier-1 ops only). See [§ Cost Estimate](#cost-estimate).
 
@@ -109,17 +40,13 @@ User says any of: `/social_strategy`, "build social strategy", "plan our social 
 
 ## Intake Flow (REQUIRED — run before any phase)
 
-### Step 1: Check for existing state (Patch N — read INDEX.md, NOT file-glob)
+### Step 1: Check for existing state
 
 ```bash
-cat ~/dev/workspace/projects/{project}/research/social/INDEX.md 2>/dev/null
+ls ~/dev/workspace/projects/*/research/social/social-strategy-state.json 2>/dev/null
 ```
 
-INDEX.md is the per-project run manifest (see [`references/INDEX-template.md`](../references/INDEX-template.md)). Surface rows where `status ∈ {running, awaiting_user, failed}` as resume candidates; default to most-recently-started.
-
-If INDEX.md doesn't exist: the project has never run `/social_strategy` under Patch N. Check for legacy `social-strategy-state.json` at the un-scoped path; if present, prompt the user to mark it `legacy_pre_patch_n` in a new INDEX.md before starting fresh (do not delete; archive to `_superseded/`).
-
-A user-confirmed resume reads `state.json` from the matching run's folder (`research/social/{run_id}/state.json`), NOT the legacy un-scoped path.
+If found and `state.intake.locked=true`: ask user "Resume {project} or start new?" Default to resume.
 
 ### Step 2: Five Questions (one at a time, Telegram-friendly)
 
@@ -149,29 +76,19 @@ Auto-fill from intake without asking:
 - `~/dev/workspace/.styles/{project}/brand.json` (colors, taglines)
 - `intake` block built by Step 2 above
 
-## Output (Patch N — per-run scoping)
+## Output
 
 ```
 ~/dev/workspace/projects/{project}/research/social/
-├── INDEX.md                                              ← cross-run manifest (Patch N)
-└── {run_id}/                                             ← e.g. celavii-instagram-2026-05-06
-    ├── state.json                                        ← single source of truth (was social-strategy-state.json)
-    ├── preflight-banners/                                ← Patch J-3b artifacts (one per phase)
-    │   ├── 0-acquire.md ... 6-report.md
-    ├── phase-audits/                                     ← Patch J-4 artifacts (one per phase exit)
-    │   ├── 0-acquire.md ... 6-report.md
-    ├── raw/                                              ← all scraped JSONs (social-discover, competitor-scrape)
-    ├── aggregate-report.md, aggregate-report.json        ← Phase 3 outputs (no date suffix — folder is dated)
-    ├── calendar.md, calendar.json                        ← Phase 4 outputs
-    ├── gate-a-report.md, gate-b-report.md                ← critic verdicts
-    ├── briefs/                                           ← Phase 5 outputs
-    │   ├── {channel}-{platform}-001-brief.md ... NNN
-    │   └── {channel}-{platform}-001-hooks.md ...
-    └── deliverables/
-        └── social-report.html                            ← Phase 6 print-ready single-file
+├── social-strategy-state.json
+├── raw/                                          ← all scraped JSONs (social-discover, competitor-scrape)
+├── aggregate-report-{date}.md                    ← LLM-readable summary (Phase 3)
+├── aggregate-report-{date}.json                  ← full structured payload
+├── publication-calendar.md                       ← Phase 4 output
+├── briefs/{channel}-{post-id}-brief.md           ← Phase 5 output (one per planned post)
+├── briefs/{channel}-{post-id}-hooks.md           ← hook variants (5+, archetype-tagged)
+└── deliverables/social-report-v1/                ← Phase 6 Next.js print-ready PDF project
 ```
-
-`run_id` is computed at Phase 0 entry per [`references/run-id-derivation.md`](../references/run-id-derivation.md). Format: `{channel-list}-{platform-list}-{YYYY-MM-DD}[-r{N}]`.
 
 ## Data Persistence
 
@@ -244,51 +161,6 @@ State file is the single source of truth. Every phase writes to it; every phase 
 ---
 
 ## Execution Model
-
-### Production architecture (Patch O — added 2026-05-06)
-
-Each phase runs in a **freshly-spawned subagent**, gated by a **schema-validator hook** on state.json writes, audited by a **separate auditor subagent** at every phase exit. See [`references/phase-orchestration.md`](../references/phase-orchestration.md) for the full architecture.
-
-```
-Orchestrator (social-writer agent — coordinator only)
-  │
-  │  loop for phase N in [0..6]:
-  │    1. Read Template[N] from § Phase Templates verbatim (no paraphrase)
-  │    2. Re-read SKILL.md / commands / required references via Read tool (Patch I-5)
-  │    3. Initialize state.phases.{n}.preflight_banner = Template[N] verbatim
-  │    4. sessions_spawn("social-phase-executor", task = Template[N].subagent_spawn.task_template)
-  │    5. Phase executor (FRESH context, FRESH skill cache):
-  │         a. Re-reads Template[N].skills_to_re_read
-  │         b. Executes phase steps per § Phase N below
-  │         c. Writes state.phases.{n} block
-  │           ├─ State-validator hook (~/.openclaw/plugins/social-strategy-state-validator)
-  │           │  intercepts the Write/Edit, validates against state-schema.json
-  │           │  → block on schema violation; agent must fix and retry (no bypass)
-  │         d. Returns { status, state_block, banner_md, raw_files_written }
-  │    6. Orchestrator merges state_block into state.json (validator fires again)
-  │    7. sessions_spawn("social-phase-auditor", task = "Audit Phase N")
-  │    8. Auditor (DIFFERENT model — Article 7):
-  │         a. Reads Template[N].artifacts_promised + state.phases.{n}
-  │         b. Diffs: every artifact present? every state field populated? every
-  │            patch_honored has evidence?
-  │         c. Returns { status: pass|warn|fail, findings: [...] }
-  │         d. Writes phase-audits/{N}-{phase}.md
-  │    9. If audit "fail" → halt phase advancement; surface findings to user
-  │       If audit "warn" → log, advance
-  │       If audit "pass" → advance to phase N+1
-  └─ End loop
-```
-
-**Why this changed**: The pre-Patch-O execution model was "Sonnet runs all 7 phases sequentially in one session" — which meant skill-cache staleness compounded through the run, and patches I-1, I-5, J-3, J-4 were self-enforced by the agent that was supposed to follow them. The first grounded run (celavii × instagram, 2026-05-06) demonstrated the failure mode: 8 patch violations in Phase 0 alone, none caught, because the same agent that wrote the violations was also responsible for catching them.
-
-**Non-bypassable layers** (ranked by enforcement strength):
-
-| Layer                     | Mechanism                                                                 | Bypassable?                                                      |
-| ------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| L2 — state-validator hook | TS handler in openclaw runtime; agent never sees the validator            | ❌ runs in non-LLM code                                          |
-| L3 — auditor spawn        | Orchestrator code path unconditionally spawns auditor at every phase exit | ❌ as long as orchestrator follows this command spec             |
-| L1 — subagent-per-phase   | Fresh spawn = fresh skill cache; can't carry stale beliefs forward        | ❌ architectural                                                 |
-| L4 — literal templates    | JSON blocks the executor copies, no paraphrase room                       | ⚠️ depends on executor honoring template (auditor catches drift) |
 
 ### Per-phase agent + thinking levels
 
@@ -599,393 +471,10 @@ The auditor catches every cutmasterai-class bug pre-emptively: backfilled fields
 
 ---
 
-## Phase Templates (Patch O — production hardening, added 2026-05-06)
-
-Every phase has a literal template here. Phase orchestration is **not** the agent paraphrasing what to do — it's the agent serializing this template's `artifacts_promised[]` + `patches_honored[]` into `state.phases.{n}.preflight_banner` verbatim, then producing the listed artifacts. The post-phase auditor (`social-quality audit-phase`) diffs the resulting state against this template; missing artifacts or unhonored patches = audit fail = phase advancement blocked.
-
-**Why a static table**: Phase 0 dry-run drift (2026-05-06) showed the agent treating Patch J-3b as advisory, emitting a narrative banner instead of the structured form. Templates remove the interpretation surface. The agent fills in `<placeholder>` values; everything else is fixed.
-
-### Template — Phase 0 ACQUIRE
-
-```json
-{
-  "phase": "acquire",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.acquire.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.acquire.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.acquire.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.acquire.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.acquire.skill_versions_at_read", "min_keys": 5 },
-    { "type": "state_field", "path": "phases.acquire.preflight_banner", "required": true },
-    { "type": "state_field", "path": "phases.acquire.intake_complete", "expect": true },
-    {
-      "type": "state_field",
-      "path": "phases.acquire.competitor_discovery.status",
-      "enum": ["complete", "user_provided", "research_complete"]
-    },
-    { "type": "state_field", "path": "phases.acquire.raw_files", "min_count": 1 },
-    {
-      "type": "state_field",
-      "path": "phases.acquire.audit",
-      "required": true,
-      "produced_by": "social-quality audit-phase"
-    },
-    { "type": "file", "path": "{run_id}/preflight-banners/0-acquire.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/0-acquire.md", "produced_by": "audit-phase" }
-  ],
-  "patches_honored": [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E",
-    "F",
-    "G",
-    "I-1",
-    "I-5",
-    "K-1",
-    "K-2",
-    "M",
-    "N",
-    "J-3a",
-    "J-3b",
-    "J-4",
-    "O"
-  ],
-  "skills_to_re_read": [
-    "social-orchestrator/SKILL.md",
-    "social-orchestrator/commands/social-strategy.md",
-    "social-orchestrator/references/social-constitution.md",
-    "social-orchestrator/references/critic-intake-rule.md",
-    "social-orchestrator/references/run-id-derivation.md",
-    "social-orchestrator/references/research-mode.md"
-  ],
-  "subagent_spawn": {
-    "agent_id": "social-phase-executor",
-    "thinking": "medium",
-    "task_template": "Run Phase 0 ACQUIRE for run_id={run_id}. Read state at {state_path}. Re-read all skills_to_re_read into context. Execute Steps 0-5 per commands/social-strategy.md § Phase 0. Honor every patch in patches_honored. Produce every entry in artifacts_promised before returning. Return structured JSON: { status, state_block, raw_files_written, banner_md }."
-  }
-}
-```
-
-### Template — Phase 1 DISCOVER
-
-```json
-{
-  "phase": "discover",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.discover.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.discover.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.discover.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.discover.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.discover.skill_versions_at_read", "min_keys": 5 },
-    { "type": "state_field", "path": "phases.discover.preflight_banner", "required": true },
-    {
-      "type": "state_field",
-      "path": "phases.discover.spawn_path",
-      "enum": ["inline_fast_path", "parallel_subagent"]
-    },
-    {
-      "type": "state_field",
-      "path": "phases.discover.data_source",
-      "required": true,
-      "schema": "object<channel, object<platform, enum<measured|projections_only|partial>>>"
-    },
-    { "type": "state_field", "path": "phases.discover.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/preflight-banners/1-discover.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/1-discover.md", "produced_by": "audit-phase" }
-  ],
-  "patches_honored": ["E", "F", "G", "I-1", "I-5", "K-1", "K-2", "N", "J-3a", "J-3b", "J-4", "O"],
-  "skills_to_re_read": [
-    "social-orchestrator/commands/social-strategy.md",
-    "social-discover/SKILL.md",
-    "social-orchestrator/references/parallel-subagent-spawn.md",
-    "social-orchestrator/references/research-mode.md"
-  ],
-  "subagent_spawn": {
-    "agent_id": "social-phase-executor",
-    "thinking": "medium",
-    "task_template": "Run Phase 1 DISCOVER for run_id={run_id}. Spawn child subagents per (channel × platform) only if spawn_path=parallel_subagent. Re-read skills, write data_source discriminator, populate baselines OR projections (NEVER mixed)."
-  }
-}
-```
-
-### Template — Phase 2 ANALYZE
-
-```json
-{
-  "phase": "analyze",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.analyze.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.analyze.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.analyze.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.analyze.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.analyze.skill_versions_at_read", "min_keys": 4 },
-    { "type": "state_field", "path": "phases.analyze.preflight_banner", "required": true },
-    { "type": "state_field", "path": "phases.analyze.patterns", "required": true },
-    {
-      "type": "state_field",
-      "path": "phases.analyze.competitive_format_analysis",
-      "required": true
-    },
-    { "type": "state_field", "path": "phases.analyze.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/preflight-banners/2-analyze.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/2-analyze.md", "produced_by": "audit-phase" }
-  ],
-  "patches_honored": ["G", "I-1", "I-5", "K-1", "K-2", "N", "J-3a", "J-3b", "J-4", "O"],
-  "skills_to_re_read": [
-    "social-orchestrator/commands/social-strategy.md",
-    "social-orchestrator/SKILL.md",
-    "social-orchestrator/references/research-mode.md"
-  ],
-  "subagent_spawn": { "agent_id": "social-phase-executor", "thinking": "medium" }
-}
-```
-
-### Template — Phase 3 AGGREGATE
-
-```json
-{
-  "phase": "aggregate",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.aggregate.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.aggregate.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.aggregate.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.aggregate.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.aggregate.skill_versions_at_read", "min_keys": 4 },
-    { "type": "state_field", "path": "phases.aggregate.preflight_banner", "required": true },
-    { "type": "state_field", "path": "phases.aggregate.pillars", "min_count": 1 },
-    { "type": "state_field", "path": "phases.aggregate.output_path", "type_check": "string" },
-    {
-      "type": "state_field",
-      "path": "phases.aggregate.run_metadata.generator_model",
-      "type_check": "string"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.aggregate.run_metadata.critic_model",
-      "type_check": "string",
-      "constraint": "MUST differ from generator_model — Article 7"
-    },
-    { "type": "state_field", "path": "phases.aggregate.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/aggregate-report.md" },
-    { "type": "file", "path": "{run_id}/aggregate-report.json" },
-    { "type": "file", "path": "{run_id}/preflight-banners/3-aggregate.md" },
-    {
-      "type": "file",
-      "path": "{run_id}/phase-audits/3-aggregate.md",
-      "produced_by": "audit-phase"
-    },
-    { "type": "file", "path": "{run_id}/gate-a-report.md", "produced_by": "social-quality gate-a" }
-  ],
-  "patches_honored": [
-    "G",
-    "H",
-    "I-1",
-    "I-2",
-    "I-3",
-    "I-5",
-    "K-1",
-    "K-2",
-    "N",
-    "J-3a",
-    "J-3b",
-    "J-4",
-    "O"
-  ],
-  "skills_to_re_read": [
-    "social-aggregate/SKILL.md",
-    "social-orchestrator/commands/social-strategy.md"
-  ],
-  "subagent_spawn": { "agent_id": "social-phase-executor", "thinking": "medium" }
-}
-```
-
-### Template — Phase 4 PLAN
-
-```json
-{
-  "phase": "plan",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.plan.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.plan.ran_at", "type_check": "iso_datetime" },
-    { "type": "state_field", "path": "phases.plan.state_version_at_read", "type_check": "integer" },
-    {
-      "type": "state_field",
-      "path": "phases.plan.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.plan.skill_versions_at_read", "min_keys": 4 },
-    { "type": "state_field", "path": "phases.plan.preflight_banner", "required": true },
-    { "type": "state_field", "path": "phases.plan.calendar_path", "type_check": "string" },
-    { "type": "state_field", "path": "phases.plan.cadence_per_channel", "required": true },
-    {
-      "type": "state_field",
-      "path": "phases.plan.advisories_resurfaced",
-      "min_count_if": "open_deferred_advisories_at_entry > 0"
-    },
-    { "type": "state_field", "path": "phases.plan.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/calendar.md" },
-    { "type": "file", "path": "{run_id}/calendar.json" },
-    { "type": "file", "path": "{run_id}/preflight-banners/4-plan.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/4-plan.md", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/gate-b-report.md", "produced_by": "social-quality gate-b" }
-  ],
-  "patches_honored": ["I-1", "I-5", "K-1", "K-2", "L", "M", "N", "J-3a", "J-3b", "J-4", "O"],
-  "skills_to_re_read": [
-    "social-plan/SKILL.md",
-    "social-cannibalization/SKILL.md",
-    "social-orchestrator/commands/social-strategy.md"
-  ],
-  "subagent_spawn": { "agent_id": "social-phase-executor", "thinking": "medium" }
-}
-```
-
-### Template — Phase 5 DELIVER
-
-```json
-{
-  "phase": "deliver",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.deliver.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.deliver.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.deliver.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.deliver.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.deliver.skill_versions_at_read", "min_keys": 3 },
-    { "type": "state_field", "path": "phases.deliver.preflight_banner", "required": true },
-    {
-      "type": "state_field",
-      "path": "phases.deliver.briefs",
-      "min_count": 1,
-      "item_constraint": "every brief has post_id, path, brief_type ∈ {full,skeletal}"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.deliver.advisories_resurfaced",
-      "min_count_if": "open_deferred_advisories_at_entry > 0"
-    },
-    { "type": "state_field", "path": "phases.deliver.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/briefs/", "type_check": "directory_with_files" },
-    { "type": "file", "path": "{run_id}/preflight-banners/5-deliver.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/5-deliver.md", "produced_by": "audit-phase" }
-  ],
-  "patches_honored": ["I-1", "I-5", "K-1", "K-2", "L", "M", "N", "J-3a", "J-3b", "J-4", "O"],
-  "skills_to_re_read": [
-    "social-brief/SKILL.md",
-    "social-orchestrator/commands/social-strategy.md",
-    "social-persona/SKILL.md"
-  ],
-  "subagent_spawn": { "agent_id": "social-phase-executor", "thinking": "medium" }
-}
-```
-
-### Template — Phase 6 REPORT
-
-```json
-{
-  "phase": "report",
-  "artifacts_promised": [
-    { "type": "state_field", "path": "phases.report.status", "expect": "complete" },
-    { "type": "state_field", "path": "phases.report.ran_at", "type_check": "iso_datetime" },
-    {
-      "type": "state_field",
-      "path": "phases.report.state_version_at_read",
-      "type_check": "integer"
-    },
-    {
-      "type": "state_field",
-      "path": "phases.report.state_version_at_write",
-      "type_check": "integer"
-    },
-    { "type": "state_field", "path": "phases.report.skill_versions_at_read", "min_keys": 3 },
-    { "type": "state_field", "path": "phases.report.preflight_banner", "required": true },
-    { "type": "state_field", "path": "phases.report.deliverable_path", "type_check": "string" },
-    {
-      "type": "state_field",
-      "path": "phases.report.advisories_resurfaced",
-      "min_count_if": "open_deferred_advisories_at_entry > 0"
-    },
-    { "type": "state_field", "path": "phases.report.audit", "produced_by": "audit-phase" },
-    { "type": "file", "path": "{run_id}/deliverables/social-report.html" },
-    { "type": "file", "path": "{run_id}/preflight-banners/6-report.md" },
-    { "type": "file", "path": "{run_id}/phase-audits/6-report.md", "produced_by": "audit-phase" }
-  ],
-  "patches_honored": ["I-1", "I-5", "K-1", "K-2", "M", "N", "J-3a", "J-3b", "J-4", "O"],
-  "skills_to_re_read": ["social-orchestrator/commands/social-strategy.md"],
-  "subagent_spawn": { "agent_id": "social-phase-executor", "thinking": "low" }
-}
-```
-
-### How the orchestrator uses these templates
-
-```
-For each phase N in [0..6]:
-  1. Look up Template[N] above (literal lookup, not paraphrase)
-  2. Serialize Template[N] into state.phases.{n}.preflight_banner verbatim
-  3. Write state.json (state-validator hook validates schema before write — Patch J-3a)
-  4. Write {run_id}/preflight-banners/{N}-{phase}.md (the human-readable banner mirror)
-  5. sessions_spawn({ agentId: Template[N].subagent_spawn.agent_id, task: <task_template formatted with run_id, state_path>, thinking: ... })
-  6. Phase subagent executes phase, produces artifacts, returns { status, state_block, banner_md }
-  7. Orchestrator merges state_block into state.json (state-validator hook fires again)
-  8. Orchestrator immediately spawns audit-subagent: sessions_spawn({ agentId: "social-phase-auditor", task: "Audit Phase {N}", thinking: "low" })
-  9. Audit subagent diffs state.phases.{n} against Template[N].artifacts_promised; writes phase-audits/{N}-{phase}.md
-  10. If audit returns fail → halt; if pass → advance to phase N+1
-```
-
-The orchestrator's only job is template lookup + state validation + spawn coordination. **It does not interpret what a phase "should" produce** — that's frozen in the template.
-
----
-
 ## Phase 0: ACQUIRE — Data Acquisition (15–25 min)
 
 ### Steps
 
-0. **Compute run_id + initialize run folder (Patch N)** — once intake is locked:
-   - Derive `run_id` per [`references/run-id-derivation.md`](../references/run-id-derivation.md) from `intake.channels` keys + union of platforms in `intake.identities[ch].handles`
-   - Create `projects/{project}/research/social/{run_id}/` and subfolders `raw/`, `briefs/`, `phase-audits/`, `preflight-banners/`, `deliverables/`
-   - Write `state.json` to `{run_id}/state.json` (this is the only state file going forward; `state.intake.run_id = "{run_id}"` is set as the canonical record of what folder this state belongs to)
-   - Initialize / append to `projects/{project}/research/social/INDEX.md` per [`references/INDEX-template.md`](../references/INDEX-template.md). Append a row: `| {run_id} | {channels} | {platforms} | {now ET} | acquire | running | {run_mode} | yes |`
-   - Emit Phase 0 pre-flight banner (Patch J-3b) to `{run_id}/preflight-banners/0-acquire.md` AND persist a copy to `state.phases.acquire.preflight_banner`
 1. **Resolve handles** — call `social-discover resolve --platform {p} --handles {...}` for each (channel × platform). The resolver returns `{handle, channel_exists: bool, handle_available: bool, channel_id?}`. If `channel_exists=false`, set `state.phases.acquire.pre_launch[ch][p] = true` and proceed to **pre-launch branch** (below). Otherwise continue to Step 2.
 2. **Profile baseline** — `social-discover profile` for each handle → `raw/celavii-{handle}-{platform}-profile-{ts}.json`. SKIPPED on pre-launch branch.
 3. **Last-N posts** — `social-discover` Mode A continued; default N=50, configurable. SKIPPED on pre-launch branch.
