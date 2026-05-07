@@ -1,40 +1,84 @@
 ---
 name: social-strategy
 description: >
-  /social_strategy — 7-phase social-media strategy pipeline (ACQUIRE → DISCOVER →
-  ANALYZE → AGGREGATE → PLAN → DELIVER → REPORT) with critic gates A and B.
-  Mirrors /seo_strategy. Cross-model critic + 3-iteration cap enforced at every
-  gate. Outputs publication calendar + per-post briefs + print-ready PDF.
+  /social_strategy — 7-phase social-media strategy pipeline. Host agent's job
+  is intake + shell out to ~/dev/workspace/scripts/social-strategy/. Do NOT
+  interpret the phase prose in this file as runtime instructions; that's
+  for the executor subagent the script spawns.
 ---
 
-# /social_strategy
+# 🛑 HOST-AGENT INSTRUCTIONS — READ THIS BLOCK ONLY
 
-> **Phase D contract.** Mirrors [`workspace/skills/seo/commands/seo-strategy.md`](file:///Users/operator/dev/workspace/skills/seo/commands/seo-strategy.md) (1232 lines). 7 phases + 2 gates + remediation loop. Atomic skills (Phase B) handle the work; this command is the wiring.
+**You are the host agent receiving `/social_strategy`. Your job has exactly four steps. Do not "run Phase 0". Do not write preflight banners. Do not render audit verdicts. The script does all of that. If you find yourself executing the phase prose below, you are doing it wrong — re-read this block and shell out.**
 
----
+## What you do
 
-## ⚙️ Orchestration is now deterministic code (Patch O+1, 2026-05-06)
-
-**Phase order, audit gating, and halt-on-fail are no longer interpreted from this file.** They live in TypeScript at [`~/dev/workspace/scripts/social-strategy/`](file:///Users/operator/dev/workspace/scripts/social-strategy/).
-
-### How to invoke
-
-The agent receiving `/social_strategy` should:
-
-1. Conduct intake (the questions in § Phase 0 below — this part is still LLM-judgment)
-2. Build an intake JSON object: `{ "channels": {...}, "identities": {...}, ...other intake fields }`
-3. Shell out:
+1. **Intake.** Ask the user (or accept from the prompt) for the values listed in § Intake Values below. Confirm in one line. Build an intake JSON.
+2. **Save** the intake JSON to `/tmp/social-strategy-intake-{timestamp}.json`.
+3. **Run the script** — copy this command verbatim, substituting `{path}` and `{project-root}`:
    ```bash
-   echo '<intake-json>' | npx tsx ~/dev/workspace/scripts/social-strategy/src/run.ts --intake-stdin
+   cd ~/dev/workspace/scripts/social-strategy && \
+     npx tsx src/run.ts \
+       --intake {path-to-intake-json} \
+       --project-root ~/dev/workspace/projects/{project-name}
    ```
-4. Stream the script's stderr (phase progress) to chat
-5. On exit, parse stdout JSON `{ run_id, run_dir, status, phases, ... }` and post a summary
+   Stream the script's **stderr** to chat as it runs (phase-by-phase progress feed). The script handles run_id derivation, schema validation, executor + auditor spawning, halt-on-fail, INDEX.md updates, and final state. You do nothing during execution.
+4. **Report.** When the script exits, its **stdout** is a single JSON envelope: `{ run_id, run_dir, status, phases, failed_at, failed_findings }`. Parse it and tell the user:
+   - `status: complete` → run_id + deliverable path + 2-line per-phase summary read from `phase-audits/`
+   - `status: failed` → which phase, the audit findings, the run_dir to inspect, **don't auto-retry**
 
-### What this file is now
+## Anti-patterns — do not do these
 
-This document remains the **specification** that the `social-phase-executor` subagent reads inside each phase (§ Phase Templates is fed to it verbatim by the script). Phase descriptions (§ Phase 0 ACQUIRE through § Phase 6 REPORT below) describe what each executor invocation should do. The orchestrator-script pulls the `subagent_spawn` config + `artifacts_promised` from § Phase Templates and dispatches.
+- ❌ Reading § Phase 0..6 below and producing artifacts yourself
+- ❌ Writing your own preflight banner (the script writes it; the executor subagent fills it in)
+- ❌ Rendering an audit verdict (the auditor subagent does this)
+- ❌ Choosing your own `run_id` (e.g. `celavii-ig-...` instead of `celavii-instagram-...`) — Patch N derivation is in the script
+- ❌ Manually creating the run directory structure (the script does it)
+- ❌ Stopping between phases waiting for user approval (the script runs end-to-end; halt only on audit fail)
 
-**You no longer interpret the for-loop. The script does.**
+If the script crashes or exits with a non-JSON stdout, that's a bug — report the stderr trail and stop. Do not "retry by hand".
+
+## Intake Values
+
+Required (the schema validator will reject the script's first state.json write if any of these are missing):
+
+| Field                     | Shape                                                  | Notes                                                                          |
+| ------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `channels`                | `{ <channel>: { kind, stage } }`                       | One entry per channel handle.                                                  |
+| `identities`              | `{ <channel>: { handles: { <platform>: <handle> } } }` | Platform keys must be literal: `instagram`, `tiktok`, `x` — NOT abbreviations. |
+| `goal`                    | `{ primary, horizon_days, kpis }`                      | What success looks like.                                                       |
+| `differentiators`         | `string[]`                                             | 2–4 specific to this brand.                                                    |
+| `competitors_per_channel` | `{ <channel>: string[] }`                              | 3–6 handles per channel.                                                       |
+| `voice_rules_ref`         | `string` (path)                                        | Where the brand voice lives.                                                   |
+| `run_mode`                | `"live"                                                | "research"`                                                                    | `live` hits real APIs (costs credits); `research` uses projections. |
+
+Optional: `banned_language: string[]`, `product_description: string`.
+
+## Where things live
+
+- **Orchestrator script**: [`~/dev/workspace/scripts/social-strategy/`](file:///Users/operator/dev/workspace/scripts/social-strategy/) — TypeScript, runs the loop. README inside.
+- **Run output**: `~/dev/workspace/projects/{project}/research/social/{run_id}/`
+- **Run manifest**: `~/dev/workspace/projects/{project}/research/social/INDEX.md`
+- **State schema**: [`references/state-schema.json`](../references/state-schema.json) — validated on every state write.
+- **run_id rule**: [`references/run-id-derivation.md`](../references/run-id-derivation.md) — Patch N.
+- **Phase architecture**: [`references/phase-orchestration.md`](../references/phase-orchestration.md) — Patch O 4-layer enforcement.
+
+## Slash subcommands
+
+```
+/social_strategy                          → run end-to-end (intake first)
+/social_strategy resume <run_id>          → re-invoke script against existing run_dir (not yet implemented in script)
+/social_strategy dry-run                  → script supports --dry-run to skip the phase loop
+/social_strategy help                     → this block
+```
+
+---
+
+# 📚 EXECUTOR-SUBAGENT REFERENCE (everything below this line)
+
+> **Host agent: STOP READING HERE.** Everything below is the specification the `social-phase-executor` subagent loads when the script spawns it for a given phase. The script feeds the relevant § Phase Templates entry to the executor as its task message; the executor reads § Phase 0..6 + § Skill Versioning + § State Versioning + § Advisory Re-Surfacing for context on its own phase only.
+>
+> **If you (host) are reading this, you've gone past your job.** Go back to the top of this file. Run the script. Don't interpret what's below.
 
 ---
 
