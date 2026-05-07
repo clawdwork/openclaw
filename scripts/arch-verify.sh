@@ -3,7 +3,10 @@
 # Run before any /architecture update to detect drift.
 set -euo pipefail
 
-ARCH_DIR=".system/architecture"
+# Resolve repo root from script location so the script works from any CWD.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ARCH_DIR="$REPO_ROOT/.system/architecture"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
