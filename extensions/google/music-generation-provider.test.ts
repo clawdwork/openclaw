@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
 const { createGoogleGenAIMock, generateContentMock } = vi.hoisted(() => {
   const generateContentMock = vi.fn();
@@ -17,7 +17,7 @@ vi.mock("./google-genai-runtime.js", () => ({
 }));
 
 import * as providerAuthRuntime from "openclaw/plugin-sdk/provider-auth-runtime";
-import { expectExplicitMusicGenerationCapabilities } from "../../test/helpers/media-generation/provider-capability-assertions.js";
+import { expectExplicitMusicGenerationCapabilities } from "openclaw/plugin-sdk/provider-test-contracts";
 import { buildGoogleMusicGenerationProvider } from "./music-generation-provider.js";
 
 describe("google music generation provider", () => {
@@ -25,6 +25,11 @@ describe("google music generation provider", () => {
     vi.restoreAllMocks();
     generateContentMock.mockReset();
     createGoogleGenAIMock.mockClear();
+  });
+
+  afterAll(() => {
+    vi.doUnmock("./google-genai-runtime.js");
+    vi.resetModules();
   });
 
   it("declares explicit mode capabilities", () => {

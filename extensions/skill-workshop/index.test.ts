@@ -2,8 +2,9 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import type { AnyAgentTool } from "openclaw/plugin-sdk/agent-runtime";
+import type { PluginTrustedToolPolicyRegistration } from "openclaw/plugin-sdk/core";
+import { createTestPluginApi } from "openclaw/plugin-sdk/plugin-test-api";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createTestPluginApi } from "../../test/helpers/plugins/plugin-api.js";
 import plugin, {
   applyProposalToWorkspace,
   createProposalFromMessages,
@@ -234,7 +235,7 @@ describe("skill-workshop", () => {
       pluginConfig: { approvalPolicy: "auto" },
       runtime: {
         config: {
-          loadConfig: () => configFile,
+          current: () => configFile,
         },
       } as never,
       on,
@@ -288,7 +289,7 @@ describe("skill-workshop", () => {
           resolveStateDir: () => stateDir,
         },
         config: {
-          loadConfig: () => configFile,
+          current: () => configFile,
         },
       } as never,
       registerTool(registered) {
@@ -346,7 +347,7 @@ describe("skill-workshop", () => {
           resolveStateDir: () => stateDir,
         },
         config: {
-          loadConfig: () => configFile,
+          current: () => configFile,
         },
       } as never,
       registerTool(registered) {
@@ -405,7 +406,7 @@ describe("skill-workshop", () => {
           resolveStateDir: () => stateDir,
         },
         config: {
-          loadConfig: () => configFile,
+          current: () => configFile,
         },
       } as never,
       on,
@@ -492,7 +493,7 @@ describe("skill-workshop", () => {
           resolveStateDir: () => stateDir,
         },
         config: {
-          loadConfig: () => configFile,
+          current: () => configFile,
         },
       } as never,
       on,
@@ -615,6 +616,72 @@ describe("skill-workshop", () => {
     ).rejects.toMatchObject({ code: "ENOENT" });
     const store = new SkillWorkshopStore({ stateDir, workspaceDir });
     expect(await store.list("pending")).toHaveLength(1);
+  });
+
+  it("queues apply true suggestions in pending mode before explicit apply", async () => {
+    const workspaceDir = await makeTempDir();
+    const stateDir = await makeTempDir();
+    let tool: AnyAgentTool | undefined;
+    const api = createTestPluginApi({
+      pluginConfig: { approvalPolicy: "pending" },
+      runtime: {
+        agent: {
+          resolveAgentWorkspaceDir: () => workspaceDir,
+        },
+        state: {
+          resolveStateDir: () => stateDir,
+        },
+      } as never,
+      registerTool(registered) {
+        const resolved =
+          typeof registered === "function" ? registered({ workspaceDir }) : registered;
+        tool = Array.isArray(resolved) ? resolved[0] : (resolved ?? undefined);
+      },
+    });
+
+    plugin.register(api);
+    const result = await tool?.execute?.("call-1", {
+      action: "suggest",
+      apply: true,
+      skillName: "screenshot-asset-workflow",
+      description: "Screenshot asset workflow",
+      body: "Verify dimensions, optimize the PNG, and run the relevant gate.",
+    });
+
+    expect(result?.details).toMatchObject({ status: "pending" });
+    const proposalId =
+      (result?.details as { proposal?: { id?: string } } | undefined)?.proposal?.id ?? "";
+    expect(proposalId).toBeTruthy();
+    await expect(
+      fs.access(path.join(workspaceDir, "skills", "screenshot-asset-workflow", "SKILL.md")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    const store = new SkillWorkshopStore({ stateDir, workspaceDir });
+    expect(await store.list("pending")).toHaveLength(1);
+    expect(await store.list("applied")).toHaveLength(0);
+  });
+
+  it("requires operator approval before applying queued proposals in pending mode", async () => {
+    let trustedPolicy: PluginTrustedToolPolicyRegistration | undefined;
+    const api = createTestPluginApi({
+      pluginConfig: { approvalPolicy: "pending" },
+      registerTrustedToolPolicy(policy) {
+        trustedPolicy = policy;
+      },
+    });
+
+    plugin.register(api);
+
+    const result = await trustedPolicy?.evaluate(
+      { toolName: "skill_workshop", params: { action: "apply", id: "proposal-1" } },
+      { toolName: "skill_workshop" },
+    );
+
+    expect(result).toMatchObject({
+      requireApproval: {
+        title: "Apply workspace skill proposal",
+        allowedDecisions: ["allow-once", "deny"],
+      },
+    });
   });
 
   it("uses the reviewer to propose existing skill repairs", async () => {

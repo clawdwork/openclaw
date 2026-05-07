@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type WebSocket, WebSocketServer } from "ws";
 import { SsrFBlockedError } from "../infra/net/ssrf.js";
 import { rawDataToString } from "../infra/ws.js";
-import "../../test-support/browser-security-runtime.mock.js";
+import "../test-support/browser-security.mock.js";
 import {
   isDirectCdpWebSocketEndpoint,
   isWebSocketUrl,
@@ -49,6 +49,19 @@ describe("cdp", () => {
           params?: Record<string, unknown>;
         };
         onMessage(msg, socket);
+        if (msg.method === "Target.attachToTarget") {
+          socket.send(JSON.stringify({ id: msg.id, result: { sessionId: "S1" } }));
+        } else if (
+          msg.method === "Target.detachFromTarget" ||
+          msg.method === "Page.enable" ||
+          msg.method === "Runtime.enable" ||
+          msg.method === "Network.enable" ||
+          msg.method === "DOM.enable" ||
+          msg.method === "Accessibility.enable" ||
+          msg.method === "Runtime.runIfWaitingForDebugger"
+        ) {
+          socket.send(JSON.stringify({ id: msg.id, result: {} }));
+        }
       });
     });
     return wsPort;
@@ -87,7 +100,11 @@ describe("cdp", () => {
   });
 
   it("creates a target via the browser websocket", async () => {
+    const methods: string[] = [];
     const wsPort = await startWsServerWithMessages((msg, socket) => {
+      if (msg.method) {
+        methods.push(msg.method);
+      }
       if (msg.method !== "Target.createTarget") {
         return;
       }
@@ -109,6 +126,19 @@ describe("cdp", () => {
     });
 
     expect(created.targetId).toBe("TARGET_123");
+    expect(methods).toEqual(
+      expect.arrayContaining([
+        "Target.createTarget",
+        "Target.attachToTarget",
+        "Page.enable",
+        "Runtime.enable",
+        "Network.enable",
+        "DOM.enable",
+        "Accessibility.enable",
+        "Runtime.runIfWaitingForDebugger",
+        "Target.detachFromTarget",
+      ]),
+    );
   });
 
   it("creates a target via direct WebSocket URL (skips /json/version)", async () => {
@@ -216,6 +246,18 @@ describe("cdp", () => {
         const msg = JSON.parse(rawDataToString(data)) as { id?: number; method?: string };
         if (msg.method === "Target.createTarget") {
           socket.send(JSON.stringify({ id: msg.id, result: { targetId: "T_QP" } }));
+        } else if (msg.method === "Target.attachToTarget") {
+          socket.send(JSON.stringify({ id: msg.id, result: { sessionId: "S1" } }));
+        } else if (
+          msg.method === "Target.detachFromTarget" ||
+          msg.method === "Page.enable" ||
+          msg.method === "Runtime.enable" ||
+          msg.method === "Network.enable" ||
+          msg.method === "DOM.enable" ||
+          msg.method === "Accessibility.enable" ||
+          msg.method === "Runtime.runIfWaitingForDebugger"
+        ) {
+          socket.send(JSON.stringify({ id: msg.id, result: {} }));
         }
       });
     });
@@ -431,22 +473,39 @@ describe("cdp", () => {
     });
     const wss = new WebSocketServer({ noServer: true });
     server.on("upgrade", (req, socket, head) => {
-      if (req.url?.startsWith("/e/bad")) {
-        socket.destroy();
-        return;
-      }
       wss.handleUpgrade(req, socket, head, (ws) => {
         wss.emit("connection", ws, req);
       });
     });
-    wss.on("connection", (socket) => {
+    wss.on("connection", (socket, req) => {
       socket.on("message", (data) => {
         const msg = JSON.parse(rawDataToString(data)) as {
           id?: number;
           method?: string;
         };
+        if (req.url?.startsWith("/e/bad")) {
+          socket.send(
+            JSON.stringify({
+              id: msg.id,
+              error: { message: "Browserless endpoint rejected command" },
+            }),
+          );
+          return;
+        }
         if (msg.method === "Target.createTarget") {
           socket.send(JSON.stringify({ id: msg.id, result: { targetId: "ROOT_FALLBACK" } }));
+        } else if (msg.method === "Target.attachToTarget") {
+          socket.send(JSON.stringify({ id: msg.id, result: { sessionId: "S1" } }));
+        } else if (
+          msg.method === "Target.detachFromTarget" ||
+          msg.method === "Page.enable" ||
+          msg.method === "Runtime.enable" ||
+          msg.method === "Network.enable" ||
+          msg.method === "DOM.enable" ||
+          msg.method === "Accessibility.enable" ||
+          msg.method === "Runtime.runIfWaitingForDebugger"
+        ) {
+          socket.send(JSON.stringify({ id: msg.id, result: {} }));
         }
       });
     });

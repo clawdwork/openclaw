@@ -5,9 +5,11 @@ import { castAgentMessage, castAgentMessages } from "../test-helpers/agent-messa
 import {
   OMITTED_ASSISTANT_REASONING_TEXT,
   assessLastAssistantMessage,
+  dropReasoningFromHistory,
   dropThinkingBlocks,
   isAssistantMessageWithContent,
   sanitizeThinkingForRecovery,
+  stripInvalidThinkingSignatures,
   wrapAnthropicStreamWithRecovery,
 } from "./thinking.js";
 
@@ -152,6 +154,184 @@ describe("dropThinkingBlocks", () => {
 
     expect(oldAssistant.content).toEqual([
       { type: "text", text: OMITTED_ASSISTANT_REASONING_TEXT },
+    ]);
+  });
+});
+
+describe("dropReasoningFromHistory", () => {
+  it("returns the original reference when no thinking blocks are present", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "hello" }),
+      castAgentMessage({ role: "assistant", content: [{ type: "text", text: "world" }] }),
+    ];
+
+    const result = dropReasoningFromHistory(messages);
+    expect(result).toBe(messages);
+  });
+
+  it("strips assistant reasoning from prior completed turns", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "first" }),
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "thinking", thinking: "private" },
+          { type: "text", text: "visible" },
+        ],
+      }),
+      castAgentMessage({ role: "user", content: "second" }),
+    ];
+
+    const result = dropReasoningFromHistory(messages);
+    const assistant = result[1] as AssistantMessage;
+
+    expect(result).not.toBe(messages);
+    expect(assistant.content).toEqual([{ type: "text", text: "visible" }]);
+  });
+
+  it("uses omitted-reasoning text when a completed assistant turn is reasoning-only", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "first" }),
+      castAgentMessage({
+        role: "assistant",
+        content: [{ type: "thinking", thinking: "private" }],
+      }),
+      castAgentMessage({ role: "user", content: "second" }),
+    ];
+
+    const result = dropReasoningFromHistory(messages);
+    const assistant = result[1] as AssistantMessage;
+
+    expect(assistant.content).toEqual([{ type: "text", text: OMITTED_ASSISTANT_REASONING_TEXT }]);
+  });
+
+  it("preserves reasoning for the active tool-call continuation after the latest user turn", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "look up the answer" }),
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "thinking", thinking: "call the tool" },
+          { type: "toolCall", id: "call123456", name: "lookup", arguments: {} },
+        ],
+      }),
+      castAgentMessage({
+        role: "toolResult",
+        toolCallId: "call123456",
+        toolName: "lookup",
+        content: "42",
+      }),
+    ];
+
+    const result = dropReasoningFromHistory(messages);
+
+    expect(result).toBe(messages);
+  });
+
+  it("strips reasoning from old tool-call turns once a later user turn starts", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "look up the answer" }),
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "thinking", thinking: "call the tool" },
+          { type: "toolCall", id: "call123456", name: "lookup", arguments: {} },
+        ],
+      }),
+      castAgentMessage({
+        role: "toolResult",
+        toolCallId: "call123456",
+        toolName: "lookup",
+        content: "42",
+      }),
+      castAgentMessage({ role: "assistant", content: [{ type: "text", text: "42" }] }),
+      castAgentMessage({ role: "user", content: "thanks" }),
+    ];
+
+    const result = dropReasoningFromHistory(messages);
+    const assistant = result[1] as AssistantMessage;
+
+    expect(assistant.content).toEqual([
+      { type: "toolCall", id: "call123456", name: "lookup", arguments: {} },
+    ]);
+  });
+});
+
+describe("stripInvalidThinkingSignatures", () => {
+  it("returns the original reference when no invalid thinking signatures are present", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({ role: "user", content: "hello" }),
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "thinking", thinking: "internal", thinkingSignature: "sig" },
+          { type: "text", text: "answer" },
+        ],
+      }),
+    ];
+
+    const result = stripInvalidThinkingSignatures(messages);
+
+    expect(result).toBe(messages);
+  });
+
+  it("strips thinking blocks with missing, empty, or blank signatures", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "thinking", thinking: "missing" },
+          { type: "thinking", thinking: "empty", thinkingSignature: "" },
+          { type: "thinking", thinking: "blank", thinkingSignature: "   " },
+          { type: "thinking", thinking: "signed", thinkingSignature: "sig" },
+          { type: "text", text: "answer" },
+        ],
+      }),
+    ];
+
+    const result = stripInvalidThinkingSignatures(messages);
+    const assistant = result[0] as Extract<AgentMessage, { role: "assistant" }>;
+
+    expect(result).not.toBe(messages);
+    expect(assistant.content).toEqual([
+      { type: "thinking", thinking: "signed", thinkingSignature: "sig" },
+      { type: "text", text: "answer" },
+    ]);
+  });
+
+  it("uses non-empty omitted-reasoning text when all thinking signatures are invalid", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({
+        role: "assistant",
+        content: [{ type: "thinking", thinking: "reasoning", thinkingSignature: "" }],
+      }),
+    ];
+
+    const result = stripInvalidThinkingSignatures(messages);
+    const assistant = result[0] as Extract<AgentMessage, { role: "assistant" }>;
+
+    expect(assistant.content).toEqual([{ type: "text", text: OMITTED_ASSISTANT_REASONING_TEXT }]);
+  });
+
+  it("strips redacted thinking blocks with invalid opaque signatures", () => {
+    const messages: AgentMessage[] = [
+      castAgentMessage({
+        role: "assistant",
+        content: [
+          { type: "redacted_thinking", data: "" },
+          { type: "redacted_thinking", signature: "   " },
+          { type: "redacted_thinking", data: "opaque" },
+          { type: "text", text: "answer" },
+        ],
+      }),
+    ];
+
+    const result = stripInvalidThinkingSignatures(messages);
+    const assistant = result[0] as Extract<AgentMessage, { role: "assistant" }>;
+
+    expect(assistant.content).toEqual([
+      { type: "redacted_thinking", data: "opaque" },
+      { type: "text", text: "answer" },
     ]);
   });
 });

@@ -29,6 +29,26 @@ function isThinkingBlock(block: AssistantContentBlock): boolean {
   );
 }
 
+function isToolCallBlock(block: AssistantContentBlock): boolean {
+  if (!block || typeof block !== "object") {
+    return false;
+  }
+  const type = (block as { type?: unknown }).type;
+  return type === "toolCall" || type === "tool_use" || type === "function_call";
+}
+
+function hasAssistantToolCall(message: AssistantMessage): boolean {
+  return message.content.some((block) => isToolCallBlock(block));
+}
+
+function isToolResultMessage(message: AgentMessage): boolean {
+  return (
+    !!message &&
+    typeof message === "object" &&
+    (message as { role?: unknown }).role === "toolResult"
+  );
+}
+
 function isSignedThinkingBlock(block: AssistantContentBlock): boolean {
   if (!isThinkingBlock(block)) {
     return false;
@@ -59,6 +79,67 @@ function hasMeaningfulText(block: AssistantContentBlock): boolean {
 function buildOmittedAssistantReasoningContent(): AssistantContentBlock[] {
   // Provider converters drop blank text blocks; keep this neutral text non-empty so the assistant turn survives replay.
   return [{ type: "text", text: OMITTED_ASSISTANT_REASONING_TEXT } as AssistantContentBlock];
+}
+
+function hasReplayableThinkingSignature(block: AssistantContentBlock): boolean {
+  if (!isThinkingBlock(block)) {
+    return false;
+  }
+  const record = block as {
+    data?: unknown;
+    signature?: unknown;
+    thinkingSignature?: unknown;
+    thought_signature?: unknown;
+  };
+  const candidates =
+    (block as { type?: unknown }).type === "redacted_thinking"
+      ? [record.data, record.signature, record.thinkingSignature, record.thought_signature]
+      : [record.signature, record.thinkingSignature, record.thought_signature];
+  return candidates.some((signature) => {
+    return typeof signature === "string" && signature.trim().length > 0;
+  });
+}
+
+/**
+ * Strip thinking blocks with clearly invalid replay signatures.
+ *
+ * Anthropic and Bedrock reject persisted thinking blocks when the signature is
+ * absent, empty, or blank. They are also the authority for opaque signature
+ * validity, so this intentionally avoids local length or shape heuristics.
+ */
+export function stripInvalidThinkingSignatures(messages: AgentMessage[]): AgentMessage[] {
+  let touched = false;
+  const out: AgentMessage[] = [];
+
+  for (const message of messages) {
+    if (!isAssistantMessageWithContent(message)) {
+      out.push(message);
+      continue;
+    }
+
+    const nextContent: AssistantContentBlock[] = [];
+    let changed = false;
+    for (const block of message.content) {
+      if (!isThinkingBlock(block) || hasReplayableThinkingSignature(block)) {
+        nextContent.push(block);
+        continue;
+      }
+      changed = true;
+      touched = true;
+    }
+
+    if (!changed) {
+      out.push(message);
+      continue;
+    }
+
+    out.push({
+      ...message,
+      content: nextContent.length > 0 ? nextContent : buildOmittedAssistantReasoningContent(),
+    });
+  }
+
+  return touched ? out : messages;
 }
 
 /**
@@ -116,11 +197,86 @@ export function dropThinkingBlocks(messages: AgentMessage[]): AgentMessage[] {
   return touched ? out : messages;
 }
 
+function shouldPreserveCurrentToolTurnReasoning(
+  messages: AgentMessage[],
+  index: number,
+  latestUserIndex: number,
+): boolean {
+  const message = messages[index];
+  if (
+    index < latestUserIndex ||
+    !isAssistantMessageWithContent(message) ||
+    !hasAssistantToolCall(message)
+  ) {
+    return false;
+  }
+
+  for (let i = index - 1; i >= 0; i -= 1) {
+    const role = (messages[i] as { role?: unknown })?.role;
+    if (role === "user") {
+      break;
+    }
+    if (role === "assistant") {
+      return false;
+    }
+  }
+
+  for (let i = index + 1; i < messages.length; i += 1) {
+    const next = messages[i];
+    const role = (next as { role?: unknown })?.role;
+    if (isToolResultMessage(next)) {
+      return true;
+    }
+    if (role === "user") {
+      return false;
+    }
+  }
+
+  return false;
+}
+
 function stripAllThinkingBlocks(messages: AgentMessage[]): AgentMessage[] {
   let touched = false;
   const out: AgentMessage[] = [];
   for (const message of messages) {
     if (!isAssistantMessageWithContent(message)) {
+      out.push(message);
+      continue;
+    }
+
+    const nextContent = message.content.filter((block) => !isThinkingBlock(block));
+    if (nextContent.length === message.content.length) {
+      out.push(message);
+      continue;
+    }
+
+    touched = true;
+    out.push({
+      ...message,
+      content: nextContent.length > 0 ? nextContent : buildOmittedAssistantReasoningContent(),
+    });
+  }
+  return touched ? out : messages;
+}
+
+export function dropReasoningFromHistory(messages: AgentMessage[]): AgentMessage[] {
+  let latestUserIndex = -1;
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if ((messages[index] as { role?: unknown })?.role === "user") {
+      latestUserIndex = index;
+      break;
+    }
+  }
+
+  let touched = false;
+  const out: AgentMessage[] = [];
+  for (let index = 0; index < messages.length; index += 1) {
+    const message = messages[index];
+    if (!isAssistantMessageWithContent(message)) {
+      out.push(message);
+      continue;
+    }
+    if (shouldPreserveCurrentToolTurnReasoning(messages, index, latestUserIndex)) {
       out.push(message);
       continue;
     }
