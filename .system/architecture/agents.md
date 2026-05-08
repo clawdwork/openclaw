@@ -4,6 +4,41 @@
 
 ---
 
+## Agent Roster (auto-synced from openclaw.json)
+
+<!-- AUTO-GENERATED:agent-roster START -->
+
+| Agent ID            | Model             | Thinking (default) | Sub-agent thinking | Skills |
+| ------------------- | ----------------- | ------------------ | ------------------ | ------ |
+| `main`              | DeepSeek V4 Pro   | medium             | —                  | 0      |
+| `marketing`         | Gemini 3 Flash    | —                  | medium             | 6      |
+| `seo`               | DeepSeek V4 Pro   | medium             | medium             | 30     |
+| `blogger`           | Gemini 3.1 Pro    | medium             | medium             | 14     |
+| `social-research`   | DeepSeek V4 Pro   | medium             | medium             | 13     |
+| `social-writer`     | Gemini 3.1 Pro    | medium             | medium             | 6      |
+| `sales`             | GPT-5.4-Mini      | —                  | medium             | 6      |
+| `product`           | Gemini 3 Flash    | —                  | low                | 6      |
+| `support`           | Gemini 3 Flash    | —                  | low                | 5      |
+| `search`            | Gemini 3 Flash    | —                  | medium             | 3      |
+| `legal`             | Gemini 3.1 Pro    | —                  | medium             | 6      |
+| `finance`           | Gemini 3.1 Pro    | —                  | medium             | 6      |
+| `data`              | Gemini 3.1 Pro    | —                  | medium             | 7      |
+| `media-content`     | Gemini 3.1 Pro    | —                  | low                | 12     |
+| `quality-critic` ⭐ | DeepSeek V4 Pro   | high               | xhigh              | 1      |
+| `dev-coder`         | DeepSeek V4 Flash | medium             | medium             | 0      |
+| `prod-coder`        | DeepSeek V4 Pro   | medium             | medium             | 0      |
+| `planner`           | DeepSeek V4 Pro   | medium             | medium             | 0      |
+| `grunt`             | GPT-5.4-Nano      | —                  | off                | 0      |
+| `workspace-auditor` | Gemini 3.1 Pro    | —                  | medium             | 2      |
+
+⭐ = only agent permitted at `thinking: high` per system policy. All others default to `medium`.
+
+<!-- AUTO-GENERATED:agent-roster END -->
+
+> Edit `~/.openclaw/openclaw.json` to change agent assignments. Then run `scripts/sync/sync_agents.py` to update this section + `costs.md` + `SOUL.md`.
+
+---
+
 ## Task Routing (1-Level Spawning)
 
 > **Codebase constraint**: Sub-agents cannot spawn other sub-agents.
