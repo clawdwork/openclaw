@@ -12,7 +12,8 @@ type LoopDetectorKind =
   | "unknown_tool_repeat"
   | "known_poll_no_progress"
   | "global_circuit_breaker"
-  | "ping_pong";
+  | "ping_pong"
+  | "session_call_limit";
 
 type LoopDetectionResult =
   | { stuck: false }
@@ -31,13 +32,15 @@ export const WARNING_THRESHOLD = 10;
 export const UNKNOWN_TOOL_THRESHOLD = 10;
 export const CRITICAL_THRESHOLD = 20;
 export const GLOBAL_CIRCUIT_BREAKER_THRESHOLD = 30;
+export const SESSION_TOOL_CALL_LIMIT = 500;
 const DEFAULT_LOOP_DETECTION_CONFIG = {
-  enabled: false,
+  enabled: true,
   historySize: TOOL_CALL_HISTORY_SIZE,
   warningThreshold: WARNING_THRESHOLD,
   unknownToolThreshold: UNKNOWN_TOOL_THRESHOLD,
   criticalThreshold: CRITICAL_THRESHOLD,
   globalCircuitBreakerThreshold: GLOBAL_CIRCUIT_BREAKER_THRESHOLD,
+  sessionToolCallLimit: SESSION_TOOL_CALL_LIMIT,
   detectors: {
     genericRepeat: true,
     knownPollNoProgress: true,
@@ -52,6 +55,7 @@ type ResolvedLoopDetectionConfig = {
   unknownToolThreshold: number;
   criticalThreshold: number;
   globalCircuitBreakerThreshold: number;
+  sessionToolCallLimit: number;
   detectors: {
     genericRepeat: boolean;
     knownPollNoProgress: boolean;
@@ -78,6 +82,13 @@ function selectHistoryForScope(
 
 function asPositiveInt(value: number | undefined, fallback: number): number {
   if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+    return fallback;
+  }
+  return value;
+}
+
+function asNonNegativeInt(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
     return fallback;
   }
   return value;
@@ -114,6 +125,10 @@ function resolveLoopDetectionConfig(config?: ToolLoopDetectionConfig): ResolvedL
     ),
     criticalThreshold,
     globalCircuitBreakerThreshold,
+    sessionToolCallLimit: asNonNegativeInt(
+      config?.sessionToolCallLimit,
+      DEFAULT_LOOP_DETECTION_CONFIG.sessionToolCallLimit,
+    ),
     detectors: {
       genericRepeat:
         config?.detectors?.genericRepeat ?? DEFAULT_LOOP_DETECTION_CONFIG.detectors.genericRepeat,
@@ -475,6 +490,28 @@ export function detectToolCallLoop(
   if (!resolvedConfig.enabled) {
     return { stuck: false };
   }
+
+  // Hard ceiling: defense-in-depth against runaway loops whose pattern does
+  // not match any specific detector. Fires regardless of loop shape once a
+  // session has burned more than `sessionToolCallLimit` tool calls.
+  const sessionCallCount = state.toolCallCount ?? 0;
+  if (
+    resolvedConfig.sessionToolCallLimit > 0 &&
+    sessionCallCount >= resolvedConfig.sessionToolCallLimit
+  ) {
+    log.error(
+      `Session tool-call ceiling reached: ${sessionCallCount} calls (limit ${resolvedConfig.sessionToolCallLimit}); blocking ${toolName}`,
+    );
+    return {
+      stuck: true,
+      level: "critical",
+      detector: "session_call_limit",
+      count: sessionCallCount,
+      message: `CRITICAL: this session has made ${sessionCallCount} tool calls, exceeding the per-session ceiling of ${resolvedConfig.sessionToolCallLimit}. Session execution blocked to prevent runaway resource use. Report the task as failed and stop calling tools.`,
+      warningKey: `session-call-limit:${resolvedConfig.sessionToolCallLimit}`,
+    };
+  }
+
   const history = selectHistoryForScope(state.toolCallHistory ?? [], scope);
   const currentHash = hashToolCall(toolName, params);
   const unknownToolStreak = getUnknownToolRepeatStreak(history, toolName);
@@ -636,6 +673,8 @@ export function recordToolCall(
   if (!state.toolCallHistory) {
     state.toolCallHistory = [];
   }
+
+  state.toolCallCount = (state.toolCallCount ?? 0) + 1;
 
   state.toolCallHistory.push({
     toolName,

@@ -10,6 +10,12 @@ export type SessionState = {
   state: SessionStateValue;
   queueDepth: number;
   toolCallHistory?: ToolCallRecord[];
+  /**
+   * Monotonic count of tool calls recorded in this session. Unlike
+   * `toolCallHistory` (which is a sliding window), this counter is never
+   * trimmed and drives the per-session hard ceiling guardrail.
+   */
+  toolCallCount?: number;
   toolLoopWarningBuckets?: Map<string, number>;
   commandPollCounts?: Map<string, { count: number; lastPollAt: number }>;
 };
@@ -114,6 +120,9 @@ function mergeSessionState(target: SessionState, source: SessionState): void {
       : Math.max(target.lastLongRunningWarnAgeMs, source.lastLongRunningWarnAgeMs);
   if (source.toolCallHistory?.length) {
     target.toolCallHistory = [...(target.toolCallHistory ?? []), ...source.toolCallHistory];
+  }
+  if (source.toolCallCount) {
+    target.toolCallCount = (target.toolCallCount ?? 0) + source.toolCallCount;
   }
   if (source.toolLoopWarningBuckets?.size) {
     const buckets = (target.toolLoopWarningBuckets ??= new Map());

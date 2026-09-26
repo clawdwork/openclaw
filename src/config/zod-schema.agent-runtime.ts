@@ -541,6 +541,7 @@ const ToolLoopDetectionSchema = z
     unknownToolThreshold: z.number().int().positive().optional(),
     criticalThreshold: z.number().int().positive().optional(),
     globalCircuitBreakerThreshold: z.number().int().positive().optional(),
+    sessionToolCallLimit: z.number().int().nonnegative().optional(),
     detectors: ToolLoopDetectionDetectorSchema,
     postCompactionGuard: ToolLoopPostCompactionGuardSchema,
   })

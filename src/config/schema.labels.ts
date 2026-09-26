@@ -221,6 +221,7 @@ export const FIELD_LABELS: Record<string, string> = {
   "tools.exec.applyPatch.allowModels": "apply_patch Model Allowlist",
   "tools.loopDetection.enabled": "Tool-loop Detection",
   "tools.loopDetection.historySize": "Tool-loop History Size",
+  "tools.loopDetection.sessionToolCallLimit": "Per-session Tool Call Ceiling",
   "tools.loopDetection.warningThreshold": "Tool-loop Warning Threshold",
   "tools.loopDetection.unknownToolThreshold": "Unknown-tool Loop Threshold",
   "tools.loopDetection.criticalThreshold": "Tool-loop Critical Threshold",

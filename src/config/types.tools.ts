@@ -172,8 +172,15 @@ export type ToolLoopPostCompactionGuardConfig = {
 };
 
 export type ToolLoopDetectionConfig = {
-  /** Enable tool-loop protection (default: false). */
+  /** Enable tool-loop protection (default: true). */
   enabled?: boolean;
+  /**
+   * Hard ceiling on total tool calls per session. When exceeded, the session is
+   * blocked regardless of loop shape. Defense-in-depth against runaway loops
+   * whose pattern does not match any specific detector. Set to 0 to disable.
+   * Default: 500.
+   */
+  sessionToolCallLimit?: number;
   /** Maximum tool call history entries retained for loop detection (default: 30). */
   historySize?: number;
   /** Warning threshold before a warning-only loop classification (default: 10). */

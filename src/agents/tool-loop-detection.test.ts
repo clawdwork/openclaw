@@ -301,7 +301,7 @@ describe("tool-loop-detection", () => {
   });
 
   describe("detectToolCallLoop", () => {
-    it("is disabled by default", () => {
+    it("is enabled by default", () => {
       const state = createState();
 
       for (let i = 0; i < 20; i += 1) {
@@ -309,6 +309,54 @@ describe("tool-loop-detection", () => {
       }
 
       const loopResult = detectToolCallLoop(state, "read", { path: "/same.txt" });
+      expect(loopResult.stuck).toBe(true);
+    });
+
+    it("blocks once session tool-call ceiling is exceeded, regardless of loop shape", () => {
+      const state = createState();
+      const config: ToolLoopDetectionConfig = {
+        enabled: true,
+        sessionToolCallLimit: 5,
+      };
+
+      // Each call uses unique args so no loop-shape detector would catch it.
+      for (let i = 0; i < 5; i += 1) {
+        recordToolCall(state, "read", { path: `/unique-${i}.txt` }, `call-${i}`, config);
+      }
+
+      const result = detectToolCallLoop(state, "read", { path: "/next.txt" }, config);
+      expect(result.stuck).toBe(true);
+      if (result.stuck) {
+        expect(result.detector).toBe("session_call_limit");
+        expect(result.level).toBe("critical");
+        expect(result.count).toBe(5);
+      }
+    });
+
+    it("does not enforce session tool-call ceiling when set to 0", () => {
+      const state = createState();
+      const config: ToolLoopDetectionConfig = {
+        enabled: true,
+        sessionToolCallLimit: 0,
+      };
+
+      for (let i = 0; i < 50; i += 1) {
+        recordToolCall(state, "read", { path: `/unique-${i}.txt` }, `call-${i}`, config);
+      }
+
+      const result = detectToolCallLoop(state, "read", { path: "/next.txt" }, config);
+      expect(result.stuck).toBe(false);
+    });
+
+    it("can be disabled via config", () => {
+      const state = createState();
+      const disabledConfig: ToolLoopDetectionConfig = { enabled: false };
+
+      for (let i = 0; i < 20; i += 1) {
+        recordToolCall(state, "read", { path: "/same.txt" }, `off-${i}`, disabledConfig);
+      }
+
+      const loopResult = detectToolCallLoop(state, "read", { path: "/same.txt" }, disabledConfig);
       expect(loopResult.stuck).toBe(false);
     });
 
